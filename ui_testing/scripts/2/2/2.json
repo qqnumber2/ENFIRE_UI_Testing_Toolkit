@@ -1,0 +1,32 @@
+[
+  {
+    "action_type": "click",
+    "x": 382,
+    "y": 241,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.671,
+    "auto_id": "General",
+    "control_type": "Group"
+  },
+  {
+    "action_type": "click",
+    "x": 385,
+    "y": 287,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.195,
+    "auto_id": "Name",
+    "control_type": "Edit"
+  },
+  {
+    "action_type": "type",
+    "x": null,
+    "y": null,
+    "text": "1234",
+    "screenshot": null,
+    "delay": 2.618,
+    "auto_id": null,
+    "control_type": null
+  }
+]

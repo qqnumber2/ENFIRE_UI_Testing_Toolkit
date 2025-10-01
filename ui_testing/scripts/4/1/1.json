@@ -1,0 +1,162 @@
+[
+  {
+    "action_type": "click",
+    "x": 111,
+    "y": 61,
+    "text": null,
+    "screenshot": null,
+    "delay": 6.365,
+    "auto_id": "Menu",
+    "control_type": "Button"
+  },
+  {
+    "action_type": "click",
+    "x": 75,
+    "y": 195,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.492,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "click",
+    "x": 113,
+    "y": 201,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.813,
+    "auto_id": null,
+    "control_type": "Button"
+  },
+  {
+    "action_type": "click",
+    "x": 238,
+    "y": 64,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.616,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 493,
+    "y": 350,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.499,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 1038,
+    "y": 385,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.452,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 815,
+    "y": 162,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.575,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_000O.png",
+    "delay": 2.153,
+    "auto_id": null,
+    "control_type": null
+  },
+  {
+    "action_type": "click",
+    "x": 432,
+    "y": 58,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.459,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 416,
+    "y": 327,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.725,
+    "auto_id": "Name",
+    "control_type": "Edit"
+  },
+  {
+    "action_type": "type",
+    "x": null,
+    "y": null,
+    "text": "1234",
+    "screenshot": null,
+    "delay": 2.372,
+    "auto_id": null,
+    "control_type": null
+  },
+  {
+    "action_type": "click",
+    "x": 171,
+    "y": 58,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.007,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 108,
+    "y": 66,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.473,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 1107,
+    "y": 570,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.897,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "click",
+    "x": 421,
+    "y": 59,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.893,
+    "auto_id": "Attributes",
+    "control_type": "Button"
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_001O.png",
+    "delay": 2.269,
+    "auto_id": null,
+    "control_type": null
+  }
+]

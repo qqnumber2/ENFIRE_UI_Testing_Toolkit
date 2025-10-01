@@ -1,0 +1,130 @@
+[
+  {
+    "action_type": "click",
+    "x": 102,
+    "y": 59,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.139
+  },
+  {
+    "action_type": "click",
+    "x": 112,
+    "y": 203,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.515
+  },
+  {
+    "action_type": "click",
+    "x": 110,
+    "y": 202,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.489
+  },
+  {
+    "action_type": "click",
+    "x": 242,
+    "y": 61,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.584
+  },
+  {
+    "action_type": "click",
+    "x": 443,
+    "y": 392,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.464
+  },
+  {
+    "action_type": "click",
+    "x": 1210,
+    "y": 393,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.391
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_000O.png",
+    "delay": 1.518
+  },
+  {
+    "action_type": "click",
+    "x": 808,
+    "y": 170,
+    "text": null,
+    "screenshot": null,
+    "delay": 2.977
+  },
+  {
+    "action_type": "click",
+    "x": 434,
+    "y": 61,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.955
+  },
+  {
+    "action_type": "click",
+    "x": 410,
+    "y": 315,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.301
+  },
+  {
+    "action_type": "type",
+    "x": null,
+    "y": null,
+    "text": "1234",
+    "screenshot": null,
+    "delay": 2.247
+  },
+  {
+    "action_type": "click",
+    "x": 185,
+    "y": 49,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.0
+  },
+  {
+    "action_type": "click",
+    "x": 109,
+    "y": 58,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.104
+  },
+  {
+    "action_type": "click",
+    "x": 1117,
+    "y": 570,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.723
+  },
+  {
+    "action_type": "click",
+    "x": 442,
+    "y": 62,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.526
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_001O.png",
+    "delay": 2.059
+  }
+]

@@ -1,0 +1,98 @@
+[
+  {
+    "action_type": "click",
+    "x": 386,
+    "y": 307,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.685
+  },
+  {
+    "action_type": "type",
+    "x": null,
+    "y": null,
+    "text": "2345",
+    "screenshot": null,
+    "delay": 2.82
+  },
+  {
+    "action_type": "click",
+    "x": 160,
+    "y": 207,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.0
+  },
+  {
+    "action_type": "click",
+    "x": 349,
+    "y": 381,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.412
+  },
+  {
+    "action_type": "type",
+    "x": null,
+    "y": null,
+    "text": "1234",
+    "screenshot": null,
+    "delay": 2.456
+  },
+  {
+    "action_type": "click",
+    "x": 676,
+    "y": 375,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.0
+  },
+  {
+    "action_type": "click",
+    "x": 679,
+    "y": 377,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.776
+  },
+  {
+    "action_type": "click",
+    "x": 452,
+    "y": 462,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.603
+  },
+  {
+    "action_type": "click",
+    "x": 440,
+    "y": 421,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.695
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_000O.png",
+    "delay": 2.635
+  },
+  {
+    "action_type": "click",
+    "x": 57,
+    "y": 156,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.874
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_001O.png",
+    "delay": 1.59
+  }
+]
