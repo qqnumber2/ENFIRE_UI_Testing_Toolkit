@@ -41,6 +41,8 @@ class PlayerConfig:
     diff_tolerance: float = 0.01  # 0.0 = exact; >0 allows small diffs
     diff_tolerance_percent: float = 0.01
     use_default_delay_always: bool = False
+    use_automation_ids: bool = True
+    use_automation_ids: bool = True
 
 class Player:
     def __init__(self, config: PlayerConfig) -> None:
@@ -85,7 +87,7 @@ class Player:
                 ctrl_type: Optional[str] = action.get("control_type")
 
                 # Try UIA first if we have an AutomationID and pywinauto is available
-                if auto_id and Desktop is not None:
+                if auto_id and getattr(self.config, "use_automation_ids", True) and Desktop is not None:
                     try:
                         desk = Desktop(backend="uia")
                         target = None
@@ -112,7 +114,7 @@ class Player:
                                     f"{' ctrl='+ctrl_type if ctrl_type else ''}")
                         target.click_input()
                         # Optionally wait a hair to let UI settle
-                        time.sleep(0.05)
+                        time.sleep(0.02)
                         continue  # UIA path handled; go next action
                     except Exception as e:
                         logger.warning(
@@ -169,7 +171,7 @@ class Player:
         try:
             sw, sh = pyautogui.size()
             pyautogui.moveTo(sw - 5, sh - 5, duration=0)
-            time.sleep(0.05)
+            time.sleep(0.02)
             shot = pyautogui.screenshot()
         finally:
             pyautogui.FAILSAFE = prev_failsafe
