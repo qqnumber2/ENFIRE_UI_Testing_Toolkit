@@ -26,11 +26,19 @@ except Exception:
 
 # Optional AI summaries (safe if missing)
 try:
-    from ui_testing.ai_summarizer import write_run_bug_report
+    from ui_testing.ai_summarizer import write_run_bug_report, BugNote
 except Exception:
     try:
-        from .ai_summarizer import write_run_bug_report  # type: ignore
+        from .ai_summarizer import write_run_bug_report, BugNote  # type: ignore
     except Exception:
+        @dataclass
+        class BugNote:
+            note_path: Path
+            note_text: str
+            summary: Optional[str] = None
+            recommendations: Optional[List[str]] = None
+            analysis: Optional[str] = None
+
         def write_run_bug_report(*_a, **_k):  # no-op fallback
             return None
 
@@ -514,12 +522,19 @@ class TestRunnerGUI:
                 if script_failed:
                     note = write_run_bug_report(self.paths, script_rel, results)
                     if note:
-                        md_path, note_text = note
-                        logging.info(f"Defect draft saved: {md_path}")
+                        logging.info(f"Defect draft saved: {note.note_path}")
+                        if note.analysis:
+                            for line in note.analysis.splitlines():
+                                logging.info(f"AI Analysis: {line}")
+                        if note.summary:
+                            logging.info(f"AI Summary: {note.summary}")
+                        if note.recommendations:
+                            for rec in note.recommendations:
+                                logging.info(f"AI Recommendation: {rec}")
                         try:
-                            self.root.after(0, lambda s=script_rel, p=md_path, text=note_text: self._deliver_defect_note(s, p, text))
+                            self.root.after(0, lambda s=script_rel, p=note.note_path, text=note.note_text: self._deliver_defect_note(s, p, text))
                         except Exception:
-                            self._deliver_defect_note(script_rel, md_path, note_text)
+                            self._deliver_defect_note(script_rel, note.note_path, note.note_text)
             except Exception as e:
                 logging.exception(f"Playback error for {script_rel}: {e}")
         self._player_running = False
