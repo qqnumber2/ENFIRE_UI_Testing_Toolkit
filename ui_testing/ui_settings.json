@@ -1,0 +1,7 @@
+{
+  "theme": "superhero",
+  "default_delay": 0.5,
+  "tolerance": 0.15,
+  "ignore_recorded_delays": true,
+  "normalize_script": null
+}
