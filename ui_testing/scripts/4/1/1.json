@@ -1,73 +1,43 @@
 [
   {
     "action_type": "click",
-    "x": 111,
-    "y": 61,
+    "x": 101,
+    "y": 49,
     "text": null,
     "screenshot": null,
-    "delay": 6.365,
+    "delay": 2.57,
     "auto_id": "Menu",
     "control_type": "Button"
   },
   {
     "action_type": "click",
-    "x": 75,
-    "y": 195,
+    "x": 94,
+    "y": 190,
     "text": null,
     "screenshot": null,
-    "delay": 0.492,
-    "auto_id": null,
-    "control_type": "Text"
-  },
-  {
-    "action_type": "click",
-    "x": 113,
-    "y": 201,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.813,
+    "delay": 0.805,
     "auto_id": null,
     "control_type": "Button"
   },
   {
     "action_type": "click",
-    "x": 238,
+    "x": 98,
+    "y": 293,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.737,
+    "auto_id": null,
+    "control_type": "Button"
+  },
+  {
+    "action_type": "click",
+    "x": 244,
     "y": 64,
     "text": null,
     "screenshot": null,
-    "delay": 0.616,
-    "auto_id": null,
-    "control_type": "Custom"
-  },
-  {
-    "action_type": "click",
-    "x": 493,
-    "y": 350,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.499,
-    "auto_id": null,
-    "control_type": "Custom"
-  },
-  {
-    "action_type": "click",
-    "x": 1038,
-    "y": 385,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.452,
-    "auto_id": null,
-    "control_type": "Custom"
-  },
-  {
-    "action_type": "click",
-    "x": 815,
-    "y": 162,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.575,
-    "auto_id": null,
-    "control_type": "Text"
+    "delay": 3.695,
+    "auto_id": "Create",
+    "control_type": "Button"
   },
   {
     "action_type": "screenshot",
@@ -75,79 +45,19 @@
     "y": null,
     "text": null,
     "screenshot": "0_000O.png",
-    "delay": 2.153,
+    "delay": 7.941,
     "auto_id": null,
     "control_type": null
   },
   {
     "action_type": "click",
-    "x": 432,
-    "y": 58,
+    "x": 556,
+    "y": 412,
     "text": null,
     "screenshot": null,
-    "delay": 1.459,
+    "delay": 2.913,
     "auto_id": null,
     "control_type": "Custom"
-  },
-  {
-    "action_type": "click",
-    "x": 416,
-    "y": 327,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.725,
-    "auto_id": "Name",
-    "control_type": "Edit"
-  },
-  {
-    "action_type": "type",
-    "x": null,
-    "y": null,
-    "text": "1234",
-    "screenshot": null,
-    "delay": 2.372,
-    "auto_id": null,
-    "control_type": null
-  },
-  {
-    "action_type": "click",
-    "x": 171,
-    "y": 58,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.007,
-    "auto_id": null,
-    "control_type": "Custom"
-  },
-  {
-    "action_type": "click",
-    "x": 108,
-    "y": 66,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.473,
-    "auto_id": null,
-    "control_type": "Custom"
-  },
-  {
-    "action_type": "click",
-    "x": 1107,
-    "y": 570,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.897,
-    "auto_id": null,
-    "control_type": "Text"
-  },
-  {
-    "action_type": "click",
-    "x": 421,
-    "y": 59,
-    "text": null,
-    "screenshot": null,
-    "delay": 0.893,
-    "auto_id": "Attributes",
-    "control_type": "Button"
   },
   {
     "action_type": "screenshot",
@@ -155,7 +65,147 @@
     "y": null,
     "text": null,
     "screenshot": "0_001O.png",
-    "delay": 2.269,
+    "delay": 6.986,
+    "auto_id": null,
+    "control_type": null
+  },
+  {
+    "action_type": "click",
+    "x": 1138,
+    "y": 165,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.84,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "click",
+    "x": 228,
+    "y": 77,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.198,
+    "auto_id": "Create",
+    "control_type": "Button"
+  },
+  {
+    "action_type": "click",
+    "x": 692,
+    "y": 414,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.571,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 991,
+    "y": 163,
+    "text": null,
+    "screenshot": null,
+    "delay": 6.644,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_002O.png",
+    "delay": 1.912,
+    "auto_id": null,
+    "control_type": null
+  },
+  {
+    "action_type": "click",
+    "x": 632,
+    "y": 407,
+    "text": null,
+    "screenshot": null,
+    "delay": 2.008,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 810,
+    "y": 171,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.04,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "click",
+    "x": 239,
+    "y": 52,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.188,
+    "auto_id": "Create",
+    "control_type": "Button"
+  },
+  {
+    "action_type": "click",
+    "x": 1111,
+    "y": 510,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.658,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 758,
+    "y": 159,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.583,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "click",
+    "x": 217,
+    "y": 56,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.692,
+    "auto_id": "Create",
+    "control_type": "Button"
+  },
+  {
+    "action_type": "click",
+    "x": 1129,
+    "y": 518,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.789,
+    "auto_id": null,
+    "control_type": "Custom"
+  },
+  {
+    "action_type": "click",
+    "x": 795,
+    "y": 163,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.963,
+    "auto_id": null,
+    "control_type": "Text"
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_003O.png",
+    "delay": 1.275,
     "auto_id": null,
     "control_type": null
   }

@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 import logging
+import re
 from pathlib import Path
 from statistics import mean
 from typing import Dict, List, Optional, Tuple
@@ -119,6 +120,34 @@ def _summarize_text(text: str, max_sentences: int = 3) -> Optional[str]:
         return summary or None
     except Exception:
         return None
+
+
+
+def _brief_summary(total: int, failure_count: int, worst_idx: str, worst_val: float, tol_str: str, location: str, coverage: float) -> str:
+    if failure_count <= 0:
+        prefix = f"0/{total} checkpoints failed"
+    elif failure_count == 1:
+        prefix = "1 checkpoint failed"
+    else:
+        prefix = f"{failure_count}/{total} checkpoints failed"
+
+    coverage_text = f"covers ~{coverage:.1f}% of the screen" if coverage > 0 else "covers a very small area"
+    return f"{prefix}; worst diff {worst_val:.2f}% (tol {tol_str}%) at checkpoint {worst_idx}; region {location}, {coverage_text}."
+
+
+
+def _condense_summary(summary: Optional[str], fallback: str, max_sentences: int = 2, max_chars: int = 220) -> str:
+    if summary:
+        compact = " ".join(summary.split())
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', compact) if s.strip()]
+        trimmed = " ".join(sentences[:max_sentences]).strip()
+        if trimmed:
+            if len(trimmed) > max_chars:
+                trimmed = trimmed[:max_chars].rsplit(" ", 1)[0].rstrip(",;") + "..."
+            if trimmed and trimmed[-1] not in ".!?":
+                trimmed += "."
+            return trimmed
+    return fallback
 
 
 def _box_statistics(boxes: List[tuple[int, int, int, int]], shape: Tuple[int, int, int]) -> Dict[str, float | str | int]:
@@ -292,6 +321,7 @@ def write_run_bug_report(paths, script_rel: str, results: List[Dict[str, str]]) 
         count = int(stats.get("count", 0) or 0)
         coverage = float(stats.get("coverage_pct", 0.0) or 0.0)
         location = str(stats.get("location", "unknown region"))
+        worst_idx = str(worst.get("index", "?"))
         if count == 1 and location.startswith("upper"):
             hint = "Transient popup/banner present"
         elif coverage > 10.0:
@@ -312,14 +342,23 @@ def write_run_bug_report(paths, script_rel: str, results: List[Dict[str, str]]) 
 
         context_parts = [
             f"Total checkpoints: {len(results)}; failures: {len(failures)}.",
-            f"Worst diff: {worst_val:.3f}% at checkpoint {worst.get('index', '?')}.",
+            f"Worst diff: {worst_val:.3f}% at checkpoint {worst_idx}.",
             f"Diff regions located in the {location} covering approx. {coverage:.2f}% of the screen.",
             f"Heuristic cause: {hint}.",
         ] + analysis_lines
 
-        summary = _summarize_text(" ".join(context_parts))
-        if not summary:
-            summary = " ".join(context_parts[:3])
+        summary_source = " ".join(context_parts)
+        generated_summary = _summarize_text(summary_source, max_sentences=2)
+        fallback_summary = _brief_summary(
+            len(results),
+            len(failures),
+            worst_idx,
+            worst_val,
+            tol_str,
+            location,
+            coverage,
+        )
+        summary = _condense_summary(generated_summary, fallback_summary)
 
         recommendations = _recommendations_from_context(
             script_rel,

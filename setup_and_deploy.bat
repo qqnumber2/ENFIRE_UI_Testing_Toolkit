@@ -1,10 +1,13 @@
 @echo off
 setlocal
-set "SCRIPT=%~dp0setup_and_deploy.ps1"
-if not exist "%SCRIPT%" (
-  echo Could not locate setup_and_deploy.ps1
-  exit /b 1
+set PS1=%~dp0setup_and_deploy.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PS1%"
+if %ERRORLEVEL% NEQ 0 (
+  echo.
+  echo Setup failed with error %ERRORLEVEL%.
+  pause
+) else (
+  echo.
+  echo Setup succeeded.
+  pause
 )
-powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT%" %*
-endlocal
-

@@ -733,16 +733,20 @@ class PreviewPanel(ttk.Frame):
 
     def _thumb_size(self) -> tuple[int, int]:
         try:
-            parent = self.preview_labels["O"].master.master
-            total_w = parent.winfo_width() or 1200
-            total_h = parent.winfo_height() or 700
-            pad_w = 24
-            pad_h = 36
-            cell_w = max(160, (total_w - pad_w * 3) // 2)
-            cell_h = max(120, (total_h - pad_h * 3) // 2)
+            label = self.preview_labels.get("O")
+            if label is None:
+                raise RuntimeError
+            frame = label.master
+            frame.update_idletasks()
+            total_w = frame.winfo_width() or frame.winfo_reqwidth() or 600
+            total_h = frame.winfo_height() or frame.winfo_reqheight() or 340
+            pad_w = 8
+            pad_h = 16
+            cell_w = max(220, total_w - pad_w)
+            cell_h = max(180, total_h - pad_h)
             return (cell_w, cell_h)
         except Exception:
-            return (520, 290)
+            return (640, 360)
 
     def _load_thumb(self, path: Path, maxw: int, maxh: int) -> Optional[ImageTk.PhotoImage]:
         try:

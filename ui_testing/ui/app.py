@@ -15,6 +15,11 @@ from tkinter import filedialog, messagebox, scrolledtext
 import ttkbootstrap as ttk
 from ttkbootstrap.toast import ToastNotification
 
+try:
+    from pynput import keyboard as pynput_keyboard
+except Exception:
+    pynput_keyboard = None  # type: ignore[attr-defined]
+
 from ui_testing.environment import Paths, build_default_paths, resource_path
 from ui_testing.dialogs import NewRecordingDialog, RecordingRequest
 from ui_testing.player import Player, PlayerConfig
@@ -41,8 +46,10 @@ class TestRunnerApp:
     def __init__(self) -> None:
         # --- root window & Tk variables ---
         self.root = ttk.Window(themename="cosmo")
+        self.root.withdraw()
         self.root.title("UI Testing")
-        self.root.geometry("1480x940")
+        self._default_geometry = "1480x940"
+        self.root.geometry(self._default_geometry)
         try:
             self.root.iconbitmap(resource_path("assets/ui_testing.ico"))
         except Exception:
@@ -77,10 +84,16 @@ class TestRunnerApp:
         # --- logging ---
         self._setup_logging()
 
+        self._body_paned = None
+        self._left_panes = None
+
+        self._restore_window_state()
+
         # --- core engine objects ---
         self.recorder: Optional[Recorder] = None
         self._recorder_watch_thread: Optional[threading.Thread] = None
         self._player_running = False
+        self._hotkey_listener = None
 
         self.player = Player(
             PlayerConfig(
@@ -106,12 +119,20 @@ class TestRunnerApp:
         self._apply_theme(self.theme_var.get())
         self._bind_setting_traces()
 
+        if not getattr(self.settings, "window_geometry", None):
+            self.root.after(150, self._set_initial_sash_positions)
+
         self._current_result_row: Optional[Dict[str, str]] = None
         self._resize_job: Optional[str] = None
 
+        self.root.protocol("WM_DELETE_WINDOW", self._on_window_close)
+
+        self.root.deiconify()
         self._load_tests()
-        self.root.bind("<Escape>", self._global_escape)
+        self.root.bind("<KeyPress-f>", self._global_escape)
+        self.root.bind("<KeyPress-F>", self._global_escape)
         self.root.bind("<Configure>", self._on_window_resize)
+        self._start_global_hotkeys()
 
     # ------------------------------------------------------------------
     # Layout & logging
@@ -139,22 +160,27 @@ class TestRunnerApp:
 
         body = ttk.Panedwindow(self.root, orient=tk.HORIZONTAL)
         body.pack(fill=tk.BOTH, expand=True, padx=12, pady=(0, 12))
+        self._body_paned = body
 
-        left = ttk.Frame(body)
-        body.add(left, weight=1)
+        left_panes = ttk.Panedwindow(body, orient=tk.VERTICAL)
+        body.add(left_panes, weight=1)
+        self._left_panes = left_panes
+
+        tests_frame = ttk.Frame(left_panes)
+        logs_frame = ttk.Frame(left_panes)
+        left_panes.add(tests_frame, weight=3)
+        left_panes.add(logs_frame, weight=2)
 
         right_panes = ttk.Panedwindow(body, orient=tk.VERTICAL)
-        body.add(right_panes, weight=3)
+        body.add(right_panes, weight=4)
 
         right_results = ttk.Frame(right_panes)
         right_preview = ttk.Frame(right_panes)
-        right_log = ttk.Frame(right_panes)
-        right_panes.add(right_results, weight=2)
-        right_panes.add(right_preview, weight=3)
-        right_panes.add(right_log, weight=1)
+        right_panes.add(right_results, weight=1)
+        right_panes.add(right_preview, weight=5)
 
         self.tests_panel = TestsPanel(
-            left,
+            tests_frame,
             on_selection_change=self._on_tests_selection_changed,
             on_open_json=self.open_json,
             on_delete_test=self.delete_test,
@@ -172,7 +198,7 @@ class TestRunnerApp:
         self.preview_panel.pack(fill=tk.BOTH, expand=True)
         self.preview_panel.bind_open_handlers(self._open_preview_file)
 
-        self.log_panel = LogPanel(right_log)
+        self.log_panel = LogPanel(logs_frame)
         self.log_panel.pack(fill=tk.BOTH, expand=True)
         self.log_panel.attach_logger()
 
@@ -241,7 +267,7 @@ class TestRunnerApp:
         )
         self.recorder.start()
         _LOGGER.info("Recording started for: %s", script_rel)
-        _LOGGER.info("Hotkeys: 'p' = screenshot (primary monitor), 'Esc' = STOP (also refreshes Available Tests).")
+        _LOGGER.info("Hotkeys: 'p' = screenshot (primary monitor), 'F' = STOP (also refreshes Available Tests).")
 
         if self._recorder_watch_thread is None or not self._recorder_watch_thread.is_alive():
             self._recorder_watch_thread = threading.Thread(target=self._watch_recorder_stopped, daemon=True)
@@ -381,7 +407,7 @@ class TestRunnerApp:
     def _run_scripts_worker(self, scripts: Sequence[str]) -> None:
         for script_rel in scripts:
             if self.player.should_stop():
-                _LOGGER.info("Playback interrupted by user (Esc).")
+                _LOGGER.info("Playback interrupted by user (F).")
                 break
             _LOGGER.info("Running: %s", script_rel)
             try:
@@ -436,13 +462,31 @@ class TestRunnerApp:
             update_ui()
 
     def _clipboard_note(self, note: BugNote) -> None:
+        previous: Optional[str] = None
+        try:
+            previous = self.root.clipboard_get()
+        except Exception:
+            previous = None
         try:
             self.root.clipboard_clear()
             self.root.clipboard_append(note.note_text)
             self.root.update()
-            _LOGGER.info("Defect note copied to clipboard: %s", note.note_path)
+            _LOGGER.info("Defect note copied to clipboard (restoring previous contents): %s", note.note_path)
         except Exception as exc:
             _LOGGER.warning("Failed to copy defect note to clipboard: %s", exc)
+        finally:
+            if previous is not None:
+                try:
+                    self.root.clipboard_clear()
+                    self.root.clipboard_append(previous)
+                    self.root.update()
+                except Exception:
+                    pass
+            else:
+                try:
+                    self.root.clipboard_clear()
+                except Exception:
+                    pass
 
     def _report_test_outcome(self, script_rel: str, passed: bool) -> None:
         if not self.testplan_reporter:
@@ -498,7 +542,10 @@ class TestRunnerApp:
         target = paths.get(key)
         if not target or not target.exists():
             return
-        open_path_in_explorer(target)
+        try:
+            os.startfile(str(target))  # type: ignore[attr-defined]
+        except Exception:
+            open_path_in_explorer(target)
 
     def _on_window_resize(self, _evt: tk.Event) -> None:
         if self._resize_job is not None:
@@ -519,6 +566,60 @@ class TestRunnerApp:
             self.stop_recording()
         elif self._player_running:
             self.stop_playback()
+
+    def _start_global_hotkeys(self) -> None:
+        if pynput_keyboard is None:
+            _LOGGER.debug("pynput not available; global F hotkey disabled.")
+            return
+        if self._hotkey_listener:
+            return
+        try:
+            listener = pynput_keyboard.Listener(on_press=self._on_global_key_press)
+            listener.daemon = True
+            listener.start()
+            self._hotkey_listener = listener
+        except Exception as exc:
+            _LOGGER.warning("Failed to start global hotkeys: %s", exc)
+            self._hotkey_listener = None
+
+    def _stop_global_hotkeys(self) -> None:
+        listener = self._hotkey_listener
+        if listener:
+            try:
+                listener.stop()
+            except Exception:
+                pass
+        self._hotkey_listener = None
+
+    def _on_global_key_press(self, key) -> None:
+        if pynput_keyboard is None:
+            return
+        try:
+            if isinstance(key, pynput_keyboard.KeyCode) and key.char and key.char.lower() == 'f':
+                self.root.after(0, self._global_escape)
+        except Exception:
+            pass
+
+    def _on_window_close(self) -> None:
+        try:
+            state = self.root.state()
+        except Exception:
+            state = None
+        if state == 'zoomed':
+            self.settings.window_state = 'zoomed'
+            self.settings.window_geometry = None
+        else:
+            self.settings.window_state = state or 'normal'
+            try:
+                self.settings.window_geometry = self.root.geometry()
+            except Exception:
+                self.settings.window_geometry = None
+        self._save_settings()
+        self._stop_global_hotkeys()
+        try:
+            self.root.destroy()
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------
     # Test asset helpers
@@ -584,10 +685,10 @@ class TestRunnerApp:
 
         sections = [
             ("Overview", "UI Testing Overview\n\n- Available Tests displays scripts as procedure/section/test (e.g. 4/1/1).\n- The counter badge reflects how many tests are currently selected.\n- Use the toolbar to adjust tolerance, delay, theme, and the ENFIRE normalization script.\n"),
-            ("Recording", "Recording a Test\n\n1) Click 'Record New'. Enter procedure (e.g. 4), section (e.g. 1), and a descriptive test name.\n2) While recording:\n   - Mouse clicks capture Automation IDs when available.\n   - Keyboard typing is recorded (press 'p' to capture a checkpoint).\n   - Press 'Esc' from anywhere to stop recording and refresh the Available Tests tree.\n3) Output lives beside the program: JSON in scripts/<proc>/<sec>/<test>.json and screenshots under images/.\n"),
+            ("Recording", "Recording a Test\n\n1) Click 'Record New'. Enter procedure (e.g. 4), section (e.g. 1), and a descriptive test name.\n2) While recording:\n   - Mouse clicks capture Automation IDs when available.\n   - Keyboard typing is recorded (press 'p' to capture a checkpoint).\n   - Press 'F' from anywhere to stop recording and refresh the Available Tests tree.\n3) Output lives beside the program: JSON in scripts/<proc>/<sec>/<test>.json and screenshots under images/.\n"),
             ("Playback", "Playback & Toggles\n\n- Select tests from the tree then run them with 'Run Selected' or 'Run All'.\n- 'Ignore recorded delays' forces the default delay between steps.\n- 'Use Automation IDs' toggles UIA lookups; disable it for pure coordinate playback.\n- Default delay and tolerance spinners tune pacing and diff thresholds on the fly.\n"),
             ("Results", "Results, Notes, and Test Plan\n\n- The Results panel lists checkpoints with pass/fail status and diff percent.\n- Passing or failing a run updates the ENFIRE XLSM (procedure.section sheets) and shows a confirmation toast.\n- Failing runs automatically create a bug draft in results/<proc>/<sec>/<test>/.\n"),
-            ("Tips", "Tips & Shortcuts\n\n- Right-click a test to open or delete its JSON.\n- Hotkeys: 'p' captures a screenshot, 'Esc' stops playback/recording, 'Ctrl+L' opens the logs folder.\n- Keep Windows scaling consistent to minimize screenshot drift.\n"),
+            ("Tips", "Tips & Shortcuts\n\n- Right-click a test to open or delete its JSON.\n- Hotkeys: 'p' captures a screenshot, 'F' stops playback/recording, 'Ctrl+L' opens the logs folder.\n- Keep Windows scaling consistent to minimize screenshot drift.\n"),
         ]
         for title, body in sections:
             frame = ttk.Frame(notebook, padding=12)
@@ -605,7 +706,10 @@ class TestRunnerApp:
         self._save_settings()
 
     def run(self) -> None:
-        self.root.mainloop()
+        try:
+            self.root.mainloop()
+        finally:
+            self._stop_global_hotkeys()
 
     # ------------------------------------------------------------------
     # Settings helpers
@@ -668,6 +772,54 @@ class TestRunnerApp:
             self.normalize_label_var.set(f"Normalize: {self.normalize_script}")
         else:
             self.normalize_label_var.set("Normalize: Not set")
+
+    def _restore_window_state(self) -> None:
+        state = getattr(self.settings, 'window_state', None)
+        geom = getattr(self.settings, 'window_geometry', None)
+        try:
+            if state == 'zoomed':
+                try:
+                    self.root.state('zoomed')
+                    return
+                except Exception:
+                    pass
+            if geom:
+                try:
+                    self.root.geometry(geom)
+                except Exception:
+                    pass
+            if state and state not in (None, 'normal', 'zoomed'):
+                try:
+                    self.root.state(state)
+                except Exception:
+                    pass
+            elif not geom and state != 'zoomed':
+                try:
+                    self.root.state('zoomed')
+                except Exception:
+                    self.root.geometry(self._default_geometry)
+        except Exception:
+            if geom:
+                try:
+                    self.root.geometry(geom)
+                except Exception:
+                    pass
+
+    def _set_initial_sash_positions(self) -> None:
+        if getattr(self.settings, 'window_geometry', None):
+            return
+        try:
+            self.root.update_idletasks()
+            if self._body_paned is not None:
+                total_w = self._body_paned.winfo_width() or 1200
+                target = max(200, int(total_w * 0.18))
+                self._body_paned.sashpos(0, target)
+            if self._left_panes is not None:
+                total_h = self._left_panes.winfo_height() or 600
+                target_h = int(total_h * 0.65)
+                self._left_panes.sashpos(0, target_h)
+        except Exception:
+            pass
 
     def _save_settings(self) -> None:
         self.settings.theme = self.theme_var.get()

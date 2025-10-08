@@ -15,6 +15,9 @@ class AppSettings:
     ignore_recorded_delays: bool = False
     use_automation_ids: bool = True
     normalize_script: Optional[str] = None
+    window_geometry: Optional[str] = None
+    window_state: Optional[str] = None
+    target_app_regex: Optional[str] = r".*ENFIRE.*"
 
     @classmethod
     def load(cls, path: Path) -> AppSettings:
@@ -31,6 +34,9 @@ class AppSettings:
             ignore_recorded_delays=bool(data.get("ignore_recorded_delays", cls.ignore_recorded_delays)),
             use_automation_ids=bool(data.get("use_automation_ids", cls.use_automation_ids)),
             normalize_script=data.get("normalize_script"),
+            window_geometry=data.get("window_geometry"),
+            window_state=data.get("window_state"),
+            target_app_regex=data.get("target_app_regex", cls.target_app_regex),
         )
 
     def save(self, path: Path) -> None:

@@ -59,18 +59,12 @@ class Player:
         shot_idx = 0
         base_code = dotted_code_from_test_name(Path(script_name).name)
         
-        for action in actions:
+        total_actions = len(actions)
+        i = 0
+        while i < total_actions:
+            action = actions[i]
             a_type = action.get("action_type")
-            # Pre-action delay: prefer recorded delay, else default pacing
-            if getattr(self.config, "use_default_delay_always", False):
-                pre = self.config.wait_between_actions
-            else:
-                pre = action.get("delay", self.config.wait_between_actions)
-            try:
-                pre = float(pre)
-            except Exception:
-                pre = self.config.wait_between_actions
-            pre = max(0.0, pre)
+            pre = self._compute_action_delay(a_type, action)
             if pre > 0:
                 remaining = pre
                 while remaining > 0 and not self.should_stop():
@@ -86,13 +80,11 @@ class Player:
                 auto_id: Optional[str]   = action.get("auto_id")
                 ctrl_type: Optional[str] = action.get("control_type")
 
-                # Try UIA first if we have an AutomationID and pywinauto is available
                 if auto_id and getattr(self.config, "use_automation_ids", True) and Desktop is not None:
                     try:
                         desk = Desktop(backend="uia")
                         target = None
 
-                        # If a window title regex is configured, scope search within that app
                         if self.config.app_title_regex:
                             try:
                                 appwin = desk.window(title_re=self.config.app_title_regex)
@@ -103,7 +95,6 @@ class Player:
                             except Exception:
                                 target = None
 
-                        # If scoping failed or not configured, try a global UIA search
                         if target is None:
                             query2: Dict[str, Any] = {"auto_id": auto_id}
                             if ctrl_type:
@@ -111,36 +102,170 @@ class Player:
                             target = desk.window(**query2).wrapper_object()
 
                         logger.info(f"Playback(UIA): click auto_id='{auto_id}'"
-                                    f"{' ctrl='+ctrl_type if ctrl_type else ''}")
+                                    f"{' ctrl=' + ctrl_type if ctrl_type else ''}")
                         target.click_input()
-                        # Optionally wait a hair to let UI settle
                         time.sleep(0.02)
-                        continue  # UIA path handled; go next action
+                        i += 1
+                        continue
                     except Exception as e:
                         logger.warning(
                             f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
                         )
 
-                # Fallback to screen coordinates
                 logger.info(f"Playback: click at ({x}, {y})")
                 pyautogui.click(x, y)
+
+            elif a_type == "mouse_down":
+                x = int(action.get("x", 0))
+                y = int(action.get("y", 0))
+                button = str(action.get("button") or "left").lower()
+                logger.debug(f"Playback: mouse_down({button}) at ({x}, {y})")
+                try:
+                    pyautogui.mouseDown(x=x, y=y, button=button)
+                except Exception as exc:
+                    logger.warning(f"mouse_down failed at ({x}, {y}): {exc}")
+
+            elif a_type == "mouse_move":
+                button = action.get("button")
+                try:
+                    duration_val = action.get("move_duration")
+                    move_duration = max(0.0, float(duration_val)) if duration_val is not None else 0.0
+                except Exception:
+                    move_duration = 0.0
+
+                if button:
+                    final_x = int(action.get("x", 0))
+                    final_y = int(action.get("y", 0))
+                    j = i + 1
+                    while j < total_actions:
+                        next_action = actions[j]
+                        if next_action.get("action_type") != "mouse_move" or next_action.get("button") != button:
+                            break
+                        final_x = int(next_action.get("x", final_x))
+                        final_y = int(next_action.get("y", final_y))
+                        j += 1
+
+                    duration = move_duration if move_duration > 0 else 0.02
+                    duration = min(duration, 0.08)
+                    logger.debug(f"Playback: drag -> ({final_x}, {final_y}) [{button}]")
+                    try:
+                        pyautogui.moveTo(final_x, final_y, duration=duration)
+                    except Exception as exc:
+                        logger.warning(f"drag move failed to ({final_x}, {final_y}): {exc}")
+                    i = j
+                    continue
+
+                x = int(action.get("x", 0))
+                y = int(action.get("y", 0))
+                try:
+                    if move_duration > 0:
+                        pyautogui.moveTo(x, y, duration=move_duration)
+                    else:
+                        pyautogui.moveTo(x, y)
+                except Exception as exc:
+                    logger.warning(f"mouse_move failed to ({x}, {y}): {exc}")
+
+            elif a_type == "mouse_up":
+                x = int(action.get("x", 0))
+                y = int(action.get("y", 0))
+                button = str(action.get("button") or "left").lower()
+                logger.debug(f"Playback: mouse_up({button}) at ({x}, {y})")
+                try:
+                    pyautogui.mouseUp(x=x, y=y, button=button)
+                except Exception as exc:
+                    logger.warning(f"mouse_up failed at ({x}, {y}): {exc}")
+
+            elif a_type == "key":
+                key_name = action.get("key")
+                if key_name:
+                    logger.info(f"Playback: key {key_name}")
+                    try:
+                        pyautogui.press(key_name)
+                    except Exception as exc:
+                        logger.warning(f"key press failed ({key_name}): {exc}")
+            elif a_type == "hotkey":
+                keys = action.get("keys")
+                if not keys:
+                    i += 1
+                    continue
+                if not isinstance(keys, list):
+                    try:
+                        keys = list(keys)
+                    except Exception:
+                        keys = [str(keys)]
+                str_keys = [str(k).lower() for k in keys]
+                label = ' + '.join(str_keys)
+                logger.info(f"Playback: hotkey {label}")
+                try:
+                    pyautogui.hotkey(*str_keys)
+                except Exception as exc:
+                    logger.warning(f"hotkey failed ({label}): {exc}")
+
+            elif a_type == "scroll":
+                x = action.get("x")
+                y = action.get("y")
+                dx = int(action.get("scroll_dx", 0) or 0)
+                dy = int(action.get("scroll_dy", 0) or 0)
+                if dx or dy:
+                    if x is not None and y is not None:
+                        try:
+                            cur = pyautogui.position()
+                            cx = int(getattr(cur, 'x', cur[0]))
+                            cy = int(getattr(cur, 'y', cur[1]))
+                        except Exception:
+                            cx = cy = None
+                        try:
+                            if cx != int(x) or cy != int(y):
+                                pyautogui.moveTo(int(x), int(y), duration=0)
+                        except Exception:
+                            pass
+                        xi = int(x)
+                        yi = int(y)
+                    else:
+                        xi = yi = None
+                    logger.info(f"Playback: scroll at ({xi if xi is not None else '?'}, {yi if yi is not None else '?'}) dx={dx}, dy={dy}")
+                    try:
+                        if dy:
+                            pyautogui.scroll(dy, x=xi, y=yi)
+                        if dx:
+                            if hasattr(pyautogui, 'hscroll'):
+                                pyautogui.hscroll(dx, x=xi, y=yi)
+                            else:
+                                logger.debug("Horizontal scroll not supported on this platform")
+                        time.sleep(0.02)
+                    except Exception as exc:
+                        logger.warning(f"scroll failed at ({xi if xi is not None else '?'}, {yi if yi is not None else '?'}):: {exc}")
 
             elif a_type == "type":
                 text = action.get("text", "")
                 safe_preview = text.replace("\n", "<ENTER>")
+                
                 logger.info(f"Playback: type '{safe_preview}'")
                 pyautogui.typewrite(text, interval=0.02)
 
             elif a_type == "screenshot":
-                # Give the UI a brief moment to settle before capturing
-                time.sleep(max(0.1, self.config.wait_between_actions))
+                time.sleep(0.03)
+
+                prev_pos = None
+                try:
+                    pos = pyautogui.position()
+                    if hasattr(pos, "x") and hasattr(pos, "y"):
+                        prev_pos = (int(pos.x), int(pos.y))
+                    else:
+                        prev_pos = (int(pos[0]), int(pos[1]))
+                except Exception:
+                    prev_pos = None
 
                 logger.info(f"Playback: screenshot #{shot_idx}")
                 test_img = self._capture_screenshot_primary()
+                if prev_pos is not None:
+                    try:
+                        pyautogui.moveTo(prev_pos[0], prev_pos[1], duration=0)
+                    except Exception:
+                        pass
                 img_dir = self.config.images_dir / script_name
                 img_dir.mkdir(parents=True, exist_ok=True)
 
-                # Deterministic names: 0_000T.png for playback, compare with 0_000O.png
                 test_name = ensure_png_name(0, shot_idx, "T")
                 test_path = img_dir / test_name
                 test_img.save(test_path)
@@ -161,6 +286,7 @@ class Player:
                 results.append(result)
                 shot_idx += 1
 
+            i += 1
         # Write Excel after this test
         self._write_excel_results(script_name, results)
         return results
@@ -391,6 +517,35 @@ class Player:
         else:
             self._stop_event.set()
 
+    def _compute_action_delay(self, action_type: str, action: Dict[str, Any]) -> float:
+        default_wait = float(getattr(self.config, 'wait_between_actions', 0.0) or 0.0)
+        use_default = bool(getattr(self.config, 'use_default_delay_always', False))
+        drag_actions = {'mouse_down', 'mouse_move', 'mouse_up'}
+        scroll_actions = {'scroll'}
+
+        if use_default and action_type not in drag_actions and action_type not in scroll_actions:
+            target = default_wait
+        else:
+            target = action.get('delay', 0.0 if action_type in scroll_actions else default_wait)
+
+        try:
+            delay = float(target)
+        except Exception:
+            if action_type in drag_actions:
+                delay = 0.01
+            elif action_type in scroll_actions:
+                delay = 0.0
+            else:
+                delay = default_wait
+
+        if delay < 0:
+            delay = 0.0
+        if use_default and action_type in drag_actions and delay == 0.0:
+            delay = 0.01
+        if action_type in drag_actions:
+            delay *= 0.1
+        return delay
+
     def should_stop(self) -> bool:
         return self._stop_event.is_set()
 
@@ -448,3 +603,9 @@ class Player:
             logger.info(f"Excel results saved: {out_path}")
         except Exception as e:
             logger.warning(f"Failed to save Excel results: {e}")
+
+
+
+
+
+
