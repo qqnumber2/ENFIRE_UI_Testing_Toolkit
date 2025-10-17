@@ -1,0 +1,108 @@
+﻿<ResourceDictionary x:Class="Enfire.EsriRuntime.Wpf.Management.Settings.Views.CommonView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:Enfire.EsriRuntime.Wpf.UI.Controls"
+             xmlns:viewModels="clr-namespace:Enfire.EsriRuntime.Wpf.Management.Settings.ViewModels"
+             xmlns:surface="http://schemas.microsoft.com/surface/2008"
+             xmlns:automation="clr-namespace:Enfire.EsriRuntime.Wpf.Utility.AutomationIds"
+             xmlns:converters="clr-namespace:Enfire.EsriRuntime.Wpf.Crossfire.Converters"
+             mc:Ignorable="d">
+    <DataTemplate DataType="{x:Type viewModels:CommonViewModel}">
+        <DataTemplate.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="/UI/ItemSelector/Views/ItemSelectorEditorDataTemplate.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </DataTemplate.Resources>
+        <DockPanel LastChildFill="True">
+            <DockPanel.Resources>
+                <Style TargetType="{x:Type WrapPanel}">
+                    <Setter Property="ItemWidth" Value="350" />
+                </Style>
+            </DockPanel.Resources>
+            <StackPanel>
+                <StackPanel Margin="15,0,0,20">
+                    <TextBlock HorizontalAlignment="Left" Text="Measurement Units" VerticalAlignment="Top" Style="{DynamicResource SectionHeaderTextBlock}" />
+                    <WrapPanel Margin="0,0,0,20">
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                            <TextBlock HorizontalAlignment="Left" Text="Map Units" VerticalAlignment="Top" 
+                                       Style="{DynamicResource LabelTextBlock}" 
+                                       AutomationProperties.AutomationId="{x:Static automation:CommonIds.MapUnits}"/>
+                            <ContentPresenter Content="{Binding CoordinateFormatSelector}" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                            <TextBlock HorizontalAlignment="Left" Text="Angle Units" VerticalAlignment="Top" 
+                                       Style="{DynamicResource LabelTextBlock}" 
+                                       AutomationProperties.AutomationId="{x:Static automation:CommonIds.AngleUnits}"/>
+                            <controls:SurfaceComboBox HorizontalAlignment="Left" ItemsSource="{Binding AngularUnits}" 
+                                                      SelectedValue="{Binding SelectedAngleUnit, Mode=TwoWay}"
+                                                      VerticalAlignment="Top" Margin="0,0,15,0">
+                            </controls:SurfaceComboBox>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                            <TextBlock HorizontalAlignment="Left" Text="Distance Units" VerticalAlignment="Top" 
+                                       Style="{DynamicResource LabelTextBlock}" 
+                                       AutomationProperties.AutomationId="{x:Static automation:CommonIds.DistanceUnits}"/>
+                            <ContentPresenter Content="{Binding LengthUnitSelector}" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                            <TextBlock HorizontalAlignment="Left" Text="Speed Units" VerticalAlignment="Top" 
+                                       Style="{DynamicResource LabelTextBlock}"
+                                       AutomationProperties.AutomationId="{x:Static automation:CommonIds.SpeedUnits}"/>
+                            <ContentPresenter Content="{Binding SpeedUnitSelector}" />
+                        </StackPanel>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="15,0,0,20">
+                    <TextBlock HorizontalAlignment="Left" Text="Time" VerticalAlignment="Top" Style="{DynamicResource SectionHeaderTextBlock}" />
+                    <WrapPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Time Format" VerticalAlignment="Top" 
+                                       Style="{DynamicResource LabelTextBlock}"
+                                       AutomationProperties.AutomationId="{x:Static automation:CommonIds.TimeFormat}"/>
+                            <ContentPresenter Content="{Binding TimeFormatSelector}" />
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0">
+                            <TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Time Zone" VerticalAlignment="Top" 
+                                       Style="{DynamicResource LabelTextBlock}"
+                                       AutomationProperties.AutomationId="{x:Static automation:CommonIds.TimeZone}"/>
+                            <controls:SurfaceComboBox HorizontalAlignment="Left" ItemsSource="{Binding TimeZones}" 
+                                                      SelectedValue="{Binding SelectedTimeZone, Mode=TwoWay}" 
+                                                      VerticalAlignment="Top" Margin="0,0,15,0">
+                            </controls:SurfaceComboBox>
+                        </StackPanel>
+                    </WrapPanel>
+                </StackPanel>
+                <StackPanel Margin="15,0,0,0">
+                    <TextBlock HorizontalAlignment="Left" Text="Report" Style="{DynamicResource SectionHeaderTextBlock}" />
+                    <WrapPanel>
+                        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <StackPanel.Resources>
+                                <converters:BoolToOppositeConverter x:Key="BoolToOppositeConverter" />
+                            </StackPanel.Resources>
+                            <TextBlock HorizontalAlignment="Left" Text="Report Save Location" VerticalAlignment="Top" Style="{DynamicResource LabelTextBlock}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock HorizontalAlignment="Left" Text="{Binding ReportPath}" TextWrapping="NoWrap"
+                                                    TextTrimming="CharacterEllipsis" Width="235" VerticalAlignment="Center"
+                                                    AutomationProperties.AutomationId="{x:Static automation:CommonIds.ReportPath}"
+                                                    ToolTip="{Binding ReportPath}" />
+                                <Button Content="Select" Width="65" Height="45" HorizontalContentAlignment="Center"
+                                                Command="{Binding SelectReportPathCommand}" />
+                            </StackPanel>
+                            <TextBlock HorizontalAlignment="Left" Text="Report Type" VerticalAlignment="Top" Style="{DynamicResource LabelTextBlock}" />
+                            <RadioButton IsChecked="{Binding WordTruePdfFalse}" Content="Word" 
+                                         AutomationProperties.AutomationId="{x:Static automation:CommonIds.WordReport}" />
+                            <RadioButton IsChecked="{Binding WordTruePdfFalse, Converter={StaticResource BoolToOppositeConverter}}" Content="PDF" 
+                                         AutomationProperties.AutomationId="{x:Static automation:CommonIds.PdfReport}" />
+                        </StackPanel>
+                    </WrapPanel>
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+    </DataTemplate>
+</ResourceDictionary>

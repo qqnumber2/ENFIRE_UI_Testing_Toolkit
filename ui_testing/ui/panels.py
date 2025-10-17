@@ -7,12 +7,14 @@ import subprocess
 from collections import OrderedDict
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence
+from datetime import datetime
 
 import tkinter as tk
 from tkinter import scrolledtext
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from ttkbootstrap.tooltip import ToolTip
 from PIL import Image, ImageTk
 
 from ui_testing.ui.notes import NoteEntry
@@ -57,13 +59,14 @@ def _relative_luminance(hex_color: str) -> float:
 
     def channel(value: int) -> float:
         c = value / 255.0
-        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-
     return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
 
 
 def _is_dark_color(hex_color: str) -> bool:
-    return _relative_luminance(hex_color) < 0.5
+    try:
+        return _relative_luminance(hex_color) < 0.5
+    except Exception:
+        return False
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -74,127 +77,145 @@ class ActionsPanel(ttk.Frame):
         self,
         master: tk.Misc,
         *,
-        theme_var: tk.StringVar,
-        default_delay_var: tk.DoubleVar,
-        tolerance_var: tk.DoubleVar,
-        use_default_delay_var: tk.BooleanVar,
-        use_automation_ids_var: tk.BooleanVar,
-        normalize_label_var: tk.StringVar,
         record_callback: Callable[[], None],
         stop_record_callback: Callable[[], None],
         run_selected_callback: Callable[[], None],
         run_all_callback: Callable[[], None],
         normalize_callback: Callable[[], None],
         choose_normalize_callback: Callable[[], None],
+        normalize_label_var: tk.StringVar,
+        clear_normalize_callback: Callable[[], None],
         open_logs_callback: Callable[[], None],
         instructions_callback: Callable[[], None],
-        theme_change_callback: Callable[[str], None],
+        settings_callback: Callable[[], None],
+        semantic_helper_callback: Callable[[], None],
     ) -> None:
         super().__init__(master)
-        self.theme_var = theme_var
-
         toolbar = ttk.Frame(self, padding=(12, 10))
         toolbar.pack(fill=tk.X)
         toolbar.grid_columnconfigure(0, weight=1)
         toolbar.grid_columnconfigure(1, weight=0)
 
-        button_group = ttk.Frame(toolbar)
-        button_group.grid(row=0, column=0, sticky="w")
+        self._button_container = ttk.Frame(toolbar)
+        self._button_container.grid(row=0, column=0, sticky="ew")
+        self._button_container.bind("<Configure>", self._on_button_container_resize)
+        self._button_widgets: List[tk.Widget] = []
 
         primary_buttons = [
-            ("Record New", record_callback, "primary"),
-            ("Stop Recording", stop_record_callback, "warning"),
-            ("Run Selected", run_selected_callback, "success"),
-            ("Run All", run_all_callback, "success-outline"),
-            ("Instructions", instructions_callback, "info-outline"),
-            ("Open Logs", open_logs_callback, "secondary-outline"),
+            {
+                "label": "Record New",
+                "command": record_callback,
+                "style": "primary",
+                "icon": "⏺",
+                "tooltip": "Record New (Ctrl+R)",
+            },
+            {
+                "label": "Stop Recording",
+                "command": stop_record_callback,
+                "style": "warning",
+                "icon": "⏹",
+                "tooltip": "Stop Recording (F)",
+            },
+            {
+                "label": "Run Selected",
+                "command": run_selected_callback,
+                "style": "success",
+                "icon": "⏯",
+                "tooltip": "Run Selected (Ctrl+Enter)",
+            },
+            {
+                "label": "Run All",
+                "command": run_all_callback,
+                "style": "success-outline",
+                "icon": "⏭",
+                "tooltip": "Run All Tests",
+            },
+            {
+                "label": "Instructions",
+                "command": instructions_callback,
+                "style": "info-outline",
+                "icon": "ℹ",
+                "tooltip": "Instructions",
+            },
+            {
+                "label": "Open Logs",
+                "command": open_logs_callback,
+                "style": "secondary-outline",
+            },
+            {
+                "label": "Normalize ENFIRE",
+                "command": normalize_callback,
+                "style": "secondary",
+            },
+            {
+                "label": "Set Normalize Script",
+                "command": choose_normalize_callback,
+                "style": "secondary-link",
+            },
+            {
+                "label": "Clear Normalize",
+                "command": clear_normalize_callback,
+                "style": "danger-outline",
+            },
+            {
+                "label": "Settings",
+                "command": settings_callback,
+                "style": "secondary",
+                "icon": "⚙",
+                "tooltip": "Settings",
+            },
+            {
+                "label": "Semantic Helper",
+                "command": semantic_helper_callback,
+                "style": "info",
+                "icon": "✨",
+                "tooltip": "Semantic Helper",
+            },
         ]
-        for idx, (label, command, style) in enumerate(primary_buttons):
-            ttk.Button(
-                button_group,
-                text=label,
-                command=command,
-                bootstyle=style,
-            ).pack(side=tk.LEFT, padx=(0 if idx == 0 else 6), pady=2)
+        for spec in primary_buttons:
+            text = spec.get("icon") or spec["label"]
+            btn = ttk.Button(
+                self._button_container,
+                text=text,
+                command=spec["command"],
+                bootstyle=spec["style"],
+                width=6 if spec.get("icon") else 12,
+            )
+            tooltip_text = spec.get("tooltip")
+            if tooltip_text:
+                ToolTip(btn, tooltip_text)
+            self._button_widgets.append(btn)
 
-        ttk.Button(
-            button_group,
-            text="Normalize ENFIRE",
-            command=normalize_callback,
-            bootstyle="secondary",
-        ).pack(side=tk.LEFT, padx=6, pady=2)
-        ttk.Button(
-            button_group,
-            text="Set",
-            command=choose_normalize_callback,
-            bootstyle="secondary-link",
-        ).pack(side=tk.LEFT, padx=(0, 6), pady=2)
-        ttk.Label(button_group, textvariable=normalize_label_var, bootstyle="secondary").pack(
-            side=tk.LEFT, padx=(0, 6), pady=2
+        self._normalize_label = ttk.Label(
+            self._button_container, textvariable=normalize_label_var, bootstyle="secondary", anchor="w"
         )
+        self._button_widgets.append(self._normalize_label)
+        try:
+            idx = next(i for i, spec in enumerate(primary_buttons) if spec["label"] == "Set Normalize Script") + 1
+            self._button_widgets.insert(idx, self._button_widgets.pop())
+        except StopIteration:
+            pass
 
-        options_group = ttk.Frame(toolbar)
-        options_group.grid(row=0, column=1, sticky="e")
+        self.after(100, self._reflow_buttons)
 
-        theme_frame = ttk.Frame(options_group)
-        theme_frame.pack(side=tk.LEFT, padx=(0, 12))
-        ttk.Label(theme_frame, text="Theme").pack(side=tk.LEFT, padx=(0, 6))
-        theme_combo = ttk.Combobox(
-            theme_frame,
-            state="readonly",
-            width=12,
-            values=[
-                "cosmo",
-                "flatly",
-                "minty",
-                "litera",
-                "sandstone",
-                "pulse",
-                "darkly",
-                "cyborg",
-                "superhero",
-            ],
-        )
-        theme_combo.set(theme_var.get())
-        theme_combo.pack(side=tk.LEFT)
-        theme_combo.bind("<<ComboboxSelected>>", lambda _evt: theme_change_callback(theme_combo.get()))
+    def _on_button_container_resize(self, event: tk.Event) -> None:
+        self._reflow_buttons(event.width)
 
-        delay_frame = ttk.Frame(options_group)
-        delay_frame.pack(side=tk.LEFT, padx=(0, 12))
-        ttk.Label(delay_frame, text="Default Delay (s)").pack(side=tk.LEFT, padx=(0, 6))
-        ttk.Spinbox(
-            delay_frame,
-            from_=0.0,
-            to=5.0,
-            increment=0.1,
-            textvariable=default_delay_var,
-            width=6,
-        ).pack(side=tk.LEFT)
-
-        tol_frame = ttk.Frame(options_group)
-        tol_frame.pack(side=tk.LEFT, padx=(0, 12))
-        ttk.Label(tol_frame, text="Tolerance (% max diff)").pack(side=tk.LEFT, padx=(0, 6))
-        ttk.Spinbox(
-            tol_frame,
-            from_=0.0,
-            to=1.0,
-            increment=0.01,
-            textvariable=tolerance_var,
-            width=6,
-        ).pack(side=tk.LEFT)
-
-        ttk.Checkbutton(
-            options_group,
-            text="Ignore recorded delays",
-            variable=use_default_delay_var,
-            bootstyle="round-toggle",
-        ).pack(side=tk.LEFT, padx=(0, 12))
-        ttk.Checkbutton(
-            options_group,
-            text="Use Automation IDs",
-            variable=use_automation_ids_var,
-            bootstyle="round-toggle",
-        ).pack(side=tk.LEFT)
+    def _reflow_buttons(self, width: Optional[int] = None) -> None:
+        if not self._button_widgets:
+            return
+        container = self._button_container
+        if width is None or width <= 0:
+            width = container.winfo_width() or 1
+        columns = max(1, len(self._button_widgets))
+        for child in container.winfo_children():
+            child.grid_forget()
+        for index, widget in enumerate(self._button_widgets):
+            row = index // columns
+            col = index % columns
+            widget.grid(row=row, column=col, padx=4, pady=2, sticky="ew")
+        for col_index in range(columns):
+            container.grid_columnconfigure(col_index, weight=1)
 
 
 class TestsPanel(ttk.Frame):
@@ -240,17 +261,24 @@ class TestsPanel(ttk.Frame):
             width=3,
             anchor="center",
             padding=(8, 2),
-            bootstyle="secondary-inverse",
+            style="TestsPanel.Badge.TLabel",
         )
         self._count_badge.pack(side=tk.LEFT)
-        self._summary_label = ttk.Label(self._info_row, textvariable=self.selected_tests_var)
-        self._summary_label.pack(side=tk.LEFT, padx=(10, 0))
+        self._summary_label = ttk.Label(
+            self._info_row,
+            textvariable=self.selected_tests_var,
+            wraplength=260,
+            style="TestsPanel.Summary.TLabel",
+        )
+        self._summary_label.pack(side=tk.LEFT, padx=(10, 0), fill=tk.X, expand=True)
         ttk.Button(
             self._info_row,
             text="Deselect All",
             command=self.clear_selection,
             bootstyle="secondary-outline",
         ).pack(side=tk.RIGHT)
+
+        self._info_row.bind("<Configure>", self._on_info_row_resize)
 
         self._menu = tk.Menu(self, tearoff=False)
         self._menu.add_command(label="Open JSON", command=self._open_selected_json)
@@ -261,6 +289,13 @@ class TestsPanel(ttk.Frame):
 
     def populate(self, grouped_tests: Dict[str, Sequence[object]]) -> None:
         previous_selection = list(self._selected_scripts.keys())
+        selected_tab_text = None
+        if self.nb.tabs():
+            try:
+                current_tab = self.nb.select()
+                selected_tab_text = self.nb.tab(current_tab, "text")
+            except Exception:
+                selected_tab_text = None
         self._test_map.clear()
         self._script_to_item.clear()
         self._display_map.clear()
@@ -272,7 +307,7 @@ class TestsPanel(ttk.Frame):
             self.nb.forget(tab)
         self._trees.clear()
 
-        for proc in sorted(grouped_tests.keys(), key=str):
+        for proc in sorted(grouped_tests.keys(), key=self._numeric_key):
             frame = ttk.Frame(self.nb, padding=(6, 6))
             self.nb.add(frame, text=str(proc))
             tree = ttk.Treeview(
@@ -299,10 +334,18 @@ class TestsPanel(ttk.Frame):
         self._apply_selection()
         self._update_selected_label()
         self._apply_info_styles()
+        if selected_tab_text:
+            for tab_id in self.nb.tabs():
+                if self.nb.tab(tab_id, "text") == selected_tab_text:
+                    try:
+                        self.nb.select(tab_id)
+                    except Exception:
+                        pass
+                    break
 
     def _populate_tree(self, tree: ttk.Treeview, script_list: Sequence[object]) -> None:
         nodes: Dict[tuple[str, ...], str] = {}
-        for entry in sorted(script_list, key=lambda value: str(value)):
+        for entry in sorted(script_list, key=lambda value: self._numeric_key(str(value))):
             rel_path = entry if isinstance(entry, Path) else Path(str(entry))
             parts = rel_path.parts
             rel_str = rel_path.as_posix()
@@ -332,6 +375,13 @@ class TestsPanel(ttk.Frame):
         self._apply_selection()
         self._update_selected_label()
 
+    def _on_info_row_resize(self, event: tk.Event) -> None:
+        extra = max(event.width - 210, 140)
+        self._summary_label.configure(wraplength=extra)
+
+    def on_theme_changed(self) -> None:
+        self._apply_info_styles()
+
     def _apply_info_styles(self) -> None:
         style = ttk.Style()
         candidates = [
@@ -354,12 +404,34 @@ class TestsPanel(ttk.Frame):
         info_style = "TestsPanel.Info.TFrame"
         badge_style = "TestsPanel.Badge.TLabel"
         summary_style = "TestsPanel.Summary.TLabel"
+        tree_style = "TestsPanel.Treeview"
+
+        tree_fg = style.lookup("Treeview", "foreground") or summary_fg
+        tree_bg = style.lookup("Treeview", "background") or frame_bg
+        tree_field = style.lookup("Treeview", "fieldbackground") or tree_bg
+        tree_sel_bg = style.lookup("Treeview", "selectbackground") or _blend_colors(tree_bg, badge_bg, 0.35)
+        tree_sel_fg = style.lookup("Treeview", "selectforeground") or badge_fg
+
         style.configure(info_style, background=frame_bg)
         style.configure(badge_style, background=badge_bg, foreground=badge_fg, font=("", 10, "bold"))
-        style.configure(summary_style, background=frame_bg, foreground=summary_fg, font=("", 10))
+        style.configure(summary_style, background=frame_bg, foreground=tree_fg, font=("", 10))
+
+        style.configure(
+            tree_style,
+            foreground=tree_fg,
+            background=tree_bg,
+            fieldbackground=tree_field,
+            rowheight=style.lookup("Treeview", "rowheight") or 26,
+        )
+        style.map(
+            tree_style,
+            foreground=[("selected", tree_sel_fg)],
+            background=[("selected", tree_sel_bg)],
+        )
+
         self._info_row.configure(style=info_style)
-        self._count_badge.configure(style=badge_style)
-        self._summary_label.configure(style=summary_style)
+        self._count_badge.configure(style=badge_style, foreground=badge_fg, background=badge_bg)
+        self._summary_label.configure(style=summary_style, foreground=tree_fg, background=frame_bg)
 
     def _on_tree_press(self, event: tk.Event, tree: ttk.Treeview):
         if event.state & (0x0001 | 0x0004 | 0x0008):
@@ -487,6 +559,22 @@ class TestsPanel(ttk.Frame):
 
     def on_theme_changed(self) -> None:
         self._apply_info_styles()
+
+    def _numeric_key(self, value: str):
+        try:
+            parts = Path(value).parts
+        except Exception:
+            parts = (value,)
+        key_parts = []
+        for part in parts:
+            if part.isdigit():
+                key_parts.append(("num", int(part)))
+            else:
+                try:
+                    key_parts.append(("num", int(part)))
+                except ValueError:
+                    key_parts.append(("str", part))
+        return tuple(key_parts)
         self._apply_selection()
 
 
@@ -528,28 +616,64 @@ class ResultsPanel(ttk.Frame):
         results_frame = ttk.Frame(notebook, padding=4)
         notebook.add(results_frame, text="Results")
 
-        cols = ("script", "index", "original", "test", "diff", "status")
-        self.result_tree = ttk.Treeview(results_frame, columns=cols, show="headings", height=12, bootstyle="info")
+        progress_frame = ttk.Frame(results_frame)
+        progress_frame.pack(fill=tk.X, pady=(0, 6))
+        self._progress_label_var = tk.StringVar(value="Idle")
+        self._progress_value = tk.DoubleVar(value=0.0)
+        self._progress_label = ttk.Label(progress_frame, textvariable=self._progress_label_var)
+        self._progress_label.pack(side=tk.LEFT, padx=(0, 8))
+        self._progress_bar = ttk.Progressbar(
+            progress_frame,
+            mode="determinate",
+            maximum=1.0,
+            variable=self._progress_value,
+            bootstyle="info-striped",
+        )
+        self._progress_bar.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        cols = ("script", "index", "timestamp", "original", "test", "diff", "status")
+        display_cols = ("script", "index", "timestamp", "diff", "status")
+        self.result_tree = ttk.Treeview(
+            results_frame,
+            columns=cols,
+            displaycolumns=display_cols,
+            show="headings",
+            height=12,
+            bootstyle="info",
+        )
         headings = {
             "script": "Script",
             "index": "Idx",
+            "timestamp": "Time",
             "original": "Original",
             "test": "Test",
             "diff": "Diff (%)",
             "status": "Status",
         }
+        self._heading_labels = headings
+        self._sortable_columns = display_cols
+        self._column_indices = {name: idx for idx, name in enumerate(cols)}
+        self._active_sort: Optional[tuple[str, bool]] = None
         for cid, width, anchor in (
-            ("script", 280, "w"),
-            ("index", 60, "center"),
-            ("original", 220, "w"),
-            ("test", 220, "w"),
-            ("diff", 90, "e"),
-            ("status", 120, "center"),
+            ("script", 320, "w"),
+            ("index", 80, "center"),
+            ("timestamp", 180, "center"),
+            ("diff", 260, "w"),
+            ("status", 140, "center"),
         ):
-            self.result_tree.heading(cid, text=headings[cid])
+            self.result_tree.heading(
+                cid,
+                text=headings[cid],
+                command=lambda col=cid: self._sort_results(col),
+            )
             self.result_tree.column(cid, width=width, anchor=anchor)
+        for hidden in ("original", "test"):
+            self.result_tree.column(hidden, width=1, stretch=False, minwidth=1)
+
         self.result_tree.pack(fill=tk.BOTH, expand=True)
+        self._refresh_heading_text()
         self.result_tree.tag_configure("pass", foreground="#0b6e2e", font="-weight bold")
+        self.result_tree.tag_configure("warn", foreground="#a35f00", font="-weight bold")
         self.result_tree.tag_configure("fail", foreground="#b00020", font="-weight bold")
         self.result_tree.bind("<<TreeviewSelect>>", self._on_result_change)
 
@@ -583,33 +707,112 @@ class ResultsPanel(ttk.Frame):
             for item in tree.get_children(""):
                 tree.delete(item)
         self._notes.clear()
+        self._active_sort = None
+        self._refresh_heading_text()
+        self._progress_label_var.set("Idle")
+        self._progress_value.set(0.0)
+
+    def begin_run(self, total_scripts: int) -> None:
+        if total_scripts <= 0:
+            self._progress_bar.configure(mode="determinate", maximum=1.0)
+            self._progress_value.set(0.0)
+            self._progress_label_var.set("Idle")
+            return
+        self._progress_bar.configure(mode="determinate", maximum=float(total_scripts))
+        self._progress_value.set(0.0)
+        self._progress_label_var.set(f"0 / {total_scripts} scripts")
+
+    def update_progress(
+        self,
+        script: str,
+        script_index: int,
+        total_scripts: int,
+        checkpoint: Optional[str] = None,
+        checkpoint_timestamp: Optional[str] = None,
+    ) -> None:
+        total = max(1, total_scripts)
+        self._progress_bar.configure(maximum=float(total))
+        self._progress_value.set(float(min(script_index, total)))
+        details: List[str] = []
+        if checkpoint:
+            details.append(f"checkpoint {checkpoint}")
+        if checkpoint_timestamp:
+            details.append(checkpoint_timestamp)
+        label = f"{script_index}/{total} - {script}"
+        if details:
+            label = f"{label} ({' | '.join(details)})"
+        self._progress_label_var.set(label)
 
     def append_results(self, script_name: str, results: Sequence[Dict[str, str]]) -> None:
-        any_fail = False
+        summary_level = "pass"
+        summary_data: Optional[Dict[str, str]] = None
+        latest_item = None
         for r in results:
             idx = r.get("index", 0)
+            if isinstance(idx, str) and str(idx).lower() == "summary":
+                summary_data = r
+                continue
             orig = r.get("original", "")
             test = r.get("test", "")
             diffp = r.get("diff_percent", "")
             status = r.get("status", "fail")
-            tag = "pass" if status == "pass" else "fail"
+            timestamp = r.get("timestamp", "")
+            note = r.get("note", "")
+            if status == "pass":
+                tag = "pass"
+            elif status == "warn":
+                tag = "warn"
+            else:
+                tag = "fail"
             if tag == "fail":
-                any_fail = True
-            diff_str = f"{float(diffp):.3f}" if diffp not in (None, "") else ""
-            self.result_tree.insert(
+                summary_level = "fail"
+            elif tag == "warn" and summary_level != "fail":
+                summary_level = "warn"
+            try:
+                diff_val = float(diffp)
+                diff_str = f"{diff_val:.3f}"
+            except Exception:
+                diff_str = ""
+            if note:
+                diff_str = note
+            try:
+                idx_display = int(idx) + 1
+            except Exception:
+                idx_display = idx
+            if status == "warn":
+                status_display = "WARN"
+            else:
+                status_display = "PASS" if tag == "pass" else "FAIL"
+            latest_item = self.result_tree.insert(
                 "",
                 tk.END,
                 values=(
                     script_name,
-                    idx,
+                    idx_display,
+                    timestamp,
                     orig,
                     test,
                     diff_str,
-                    "? PASS" if tag == "pass" else "? FAIL",
+                    status_display,
                 ),
-                tags=(tag,),
+                tags=("detail", tag),
             )
-        self.result_tree.insert(
+        summary_note = ""
+        if summary_data:
+            summary_level = summary_data.get("status", summary_level)
+            summary_note = summary_data.get("note", "")
+        if summary_level == "fail":
+            summary_status = "OVERALL FAIL"
+            summary_tags = ("summary", "fail")
+        elif summary_level == "warn":
+            summary_status = "OVERALL WARN"
+            summary_tags = ("summary", "warn")
+            if not summary_note:
+                summary_note = "Run completed without validations."
+        else:
+            summary_status = "OVERALL PASS"
+            summary_tags = ("summary", "pass")
+        summary_item = self.result_tree.insert(
             "",
             tk.END,
             values=(
@@ -618,10 +821,107 @@ class ResultsPanel(ttk.Frame):
                 "",
                 "",
                 "",
-                "? OVERALL PASS" if not any_fail else "? OVERALL FAIL",
+                summary_note,
+                summary_status,
             ),
-            tags=("pass",) if not any_fail else ("fail",),
+            tags=summary_tags,
         )
+        if summary_item:
+            self.result_tree.see(summary_item)
+        elif latest_item:
+            self.result_tree.see(latest_item)
+        if self._active_sort:
+            self._reapply_active_sort()
+
+    def on_theme_changed(self) -> None:
+        try:
+            self.result_tree.tag_configure("pass", foreground="#0b6e2e", font="-weight bold")
+            self.result_tree.tag_configure("warn", foreground="#a35f00", font="-weight bold")
+            self.result_tree.tag_configure("fail", foreground="#b00020", font="-weight bold")
+        except Exception:
+            pass
+
+    def _sort_results(self, column: str) -> None:
+        current_column, current_direction = self._active_sort if self._active_sort else (None, True)
+        if current_column == column:
+            ascending = not current_direction
+        else:
+            ascending = True
+        self._apply_sort(column, ascending, remember=True)
+
+    def _apply_sort(self, column: str, ascending: bool, *, remember: bool) -> None:
+        idx = self._column_indices.get(column)
+        if idx is None:
+            return
+        detail_items: List[tuple[object, str]] = []
+        summary_items: List[str] = []
+        for item in self.result_tree.get_children(""):
+            tags = tuple(self.result_tree.item(item, "tags") or ())
+            if "summary" in tags:
+                summary_items.append(item)
+                continue
+            values = self.result_tree.item(item, "values")
+            value = values[idx] if idx < len(values) else ""
+            sort_key = self._coerce_sort_key(column, value)
+            detail_items.append((sort_key, item))
+        detail_items.sort(key=lambda rec: (rec[0] is None, rec[0]))
+        if not ascending:
+            detail_items.reverse()
+        for _, item_id in detail_items:
+            self.result_tree.move(item_id, "", tk.END)
+        for item_id in summary_items:
+            self.result_tree.move(item_id, "", tk.END)
+        if remember:
+            self._active_sort = (column, ascending)
+        self._refresh_heading_text()
+
+    def _reapply_active_sort(self) -> None:
+        if not self._active_sort:
+            return
+        column, ascending = self._active_sort
+        self._apply_sort(column, ascending, remember=False)
+
+    def _coerce_sort_key(self, column: str, value: object) -> Optional[object]:
+        if value is None:
+            return None
+        text = str(value).strip()
+        if not text:
+            return None
+        if column == "index":
+            try:
+                return int(float(text))
+            except Exception:
+                return None
+        if column == "timestamp":
+            try:
+                return datetime.strptime(text, "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                return text
+        if column == "diff":
+            try:
+                return float(text)
+            except Exception:
+                return None
+        if column == "status":
+            mapping = {"PASS": 0, "FAIL": 1}
+            return mapping.get(text.upper(), 2)
+        return text.lower()
+
+    def _refresh_heading_text(self) -> None:
+        active_column = None
+        ascending = True
+        if self._active_sort:
+            active_column, ascending = self._active_sort
+        for cid in self._sortable_columns:
+            label = self._heading_labels.get(cid, cid.title())
+            if cid == active_column:
+                suffix = "ASC" if ascending else "DESC"
+                label = f"{label} ({suffix})"
+            self.result_tree.heading(
+                cid,
+                text=label,
+                command=lambda col=cid: self._sort_results(col),
+            )
 
     def add_note(self, script: str, note: NoteEntry) -> None:
         timestamp = note.created_at.strftime("%Y-%m-%d %H:%M:%S")
@@ -641,10 +941,11 @@ class ResultsPanel(ttk.Frame):
         payload = {
             "script": row[0] if len(row) > 0 else "",
             "index": row[1] if len(row) > 1 else "",
-            "original": row[2] if len(row) > 2 else "",
-            "test": row[3] if len(row) > 3 else "",
-            "diff": row[4] if len(row) > 4 else "",
-            "status": row[5] if len(row) > 5 else "",
+            "timestamp": row[2] if len(row) > 2 else "",
+            "original": row[3] if len(row) > 3 else "",
+            "test": row[4] if len(row) > 4 else "",
+            "diff": row[5] if len(row) > 5 else "",
+            "status": row[6] if len(row) > 6 else "",
         }
         self._on_result_select(payload)
 
@@ -809,6 +1110,9 @@ class LogPanel(ttk.Frame):
         handler = TkHandler(self.text)
         logging.getLogger().addHandler(handler)
 
+    def on_theme_changed(self) -> None:
+        pass
+
 
 # ---------------------------------------------------------------------------
 # Utility helpers
@@ -825,7 +1129,6 @@ def open_path_in_explorer(path: Path) -> None:
             os.startfile(str(path))  # type: ignore[attr-defined]
         except Exception:
             _LOGGER.warning("Failed to open path %s", path)
-
 
 
 

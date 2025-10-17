@@ -1,0 +1,1596 @@
+[
+  {
+    "action_type": "click",
+    "x": 123,
+    "y": 353,
+    "delay": 4.065,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 449,
+    "y": 262,
+    "delay": 2.509,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 415,
+    "y": 301,
+    "delay": 0.86,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 414,
+    "y": 253,
+    "delay": 0.522,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 591,
+    "y": 304,
+    "delay": 0.537,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 489,
+    "y": 255,
+    "delay": 0.455,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 932,
+    "y": 335,
+    "delay": 0.451,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 176,
+    "y": 48,
+    "delay": 3.579,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_000O.png",
+    "delay": 1.452
+  },
+  {
+    "action_type": "click",
+    "x": 688,
+    "y": 253,
+    "delay": 0.703,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 454,
+    "y": 345,
+    "delay": 3.379,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 859,
+    "y": 265,
+    "delay": 0.637,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 691,
+    "y": 356,
+    "delay": 0.368,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 852,
+    "y": 269,
+    "delay": 0.553,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 942,
+    "y": 352,
+    "delay": 0.375,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 492,
+    "y": 341,
+    "delay": 0.505,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 337,
+    "y": 351,
+    "delay": 0.413,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 359,
+    "y": 350,
+    "delay": 0.071,
+    "button": "left",
+    "path": [
+      [
+        337,
+        351
+      ],
+      [
+        338,
+        351
+      ],
+      [
+        346,
+        351
+      ],
+      [
+        348,
+        351
+      ],
+      [
+        349,
+        351
+      ],
+      [
+        350,
+        351
+      ],
+      [
+        359,
+        350
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 338,
+    "y": 351,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 479,
+    "y": 345,
+    "delay": 0.385,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 556,
+    "y": 339,
+    "delay": 0.595,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 460,
+    "y": 336,
+    "delay": 0.333,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 834,
+    "y": 353,
+    "delay": 0.374,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 518,
+    "y": 345,
+    "delay": 0.36,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1225,
+    "y": 335,
+    "delay": 0.406,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 562,
+    "y": 353,
+    "delay": 0.534,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1458,
+    "y": 345,
+    "delay": 0.498,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 1454,
+    "y": 349,
+    "delay": 0.085,
+    "button": "left",
+    "path": [
+      [
+        1458,
+        345
+      ],
+      [
+        1454,
+        349
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1458,
+    "y": 345,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 489,
+    "y": 346,
+    "delay": 0.482,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1643,
+    "y": 363,
+    "delay": 0.415,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 558,
+    "y": 367,
+    "delay": 0.405,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 546,
+    "y": 348,
+    "delay": 0.283,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 99,
+    "y": 553,
+    "delay": 0.523,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 404,
+    "y": 347,
+    "delay": 0.416,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 291,
+    "y": 597,
+    "delay": 0.606,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 433,
+    "y": 344,
+    "delay": 0.503,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 619,
+    "y": 597,
+    "delay": 0.497,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 744,
+    "y": 348,
+    "delay": 0.56,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 475,
+    "y": 375,
+    "delay": 0.519,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 723,
+    "y": 320,
+    "delay": 0.369,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 727,
+    "y": 337,
+    "delay": 0.043,
+    "button": "left",
+    "path": [
+      [
+        723,
+        320
+      ],
+      [
+        724,
+        321
+      ],
+      [
+        724,
+        323
+      ],
+      [
+        725,
+        323
+      ],
+      [
+        725,
+        324
+      ],
+      [
+        725,
+        325
+      ],
+      [
+        726,
+        325
+      ],
+      [
+        726,
+        326
+      ],
+      [
+        726,
+        327
+      ],
+      [
+        726,
+        328
+      ],
+      [
+        726,
+        329
+      ],
+      [
+        726,
+        330
+      ],
+      [
+        727,
+        337
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 726,
+    "y": 329,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 910,
+    "y": 362,
+    "delay": 0.399,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 729,
+    "y": 338,
+    "delay": 0.381,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 709,
+    "y": 359,
+    "delay": 0.488,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 724,
+    "y": 359,
+    "delay": 0.115,
+    "button": "left",
+    "path": [
+      [
+        709,
+        359
+      ],
+      [
+        710,
+        359
+      ],
+      [
+        711,
+        359
+      ],
+      [
+        712,
+        359
+      ],
+      [
+        724,
+        359
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 709,
+    "y": 359,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 801,
+    "y": 355,
+    "delay": 0.307,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1160,
+    "y": 366,
+    "delay": 0.448,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 1089,
+    "y": 378,
+    "delay": 0.12,
+    "button": "left",
+    "path": [
+      [
+        1160,
+        366
+      ],
+      [
+        1149,
+        367
+      ],
+      [
+        1129,
+        371
+      ],
+      [
+        1127,
+        371
+      ],
+      [
+        1125,
+        372
+      ],
+      [
+        1123,
+        372
+      ],
+      [
+        1122,
+        372
+      ],
+      [
+        1089,
+        378
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1160,
+    "y": 366,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 875,
+    "y": 356,
+    "delay": 0.324,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1510,
+    "y": 377,
+    "delay": 0.397,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 1411,
+    "y": 403,
+    "delay": 0.129,
+    "button": "left",
+    "path": [
+      [
+        1510,
+        377
+      ],
+      [
+        1496,
+        380
+      ],
+      [
+        1465,
+        389
+      ],
+      [
+        1463,
+        389
+      ],
+      [
+        1461,
+        390
+      ],
+      [
+        1459,
+        391
+      ],
+      [
+        1457,
+        391
+      ],
+      [
+        1455,
+        392
+      ],
+      [
+        1411,
+        403
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1510,
+    "y": 377,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 865,
+    "y": 339,
+    "delay": 0.394,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1699,
+    "y": 356,
+    "delay": 0.417,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 1476,
+    "y": 417,
+    "delay": 0.133,
+    "button": "left",
+    "path": [
+      [
+        1699,
+        356
+      ],
+      [
+        1685,
+        363
+      ],
+      [
+        1647,
+        377
+      ],
+      [
+        1593,
+        396
+      ],
+      [
+        1570,
+        402
+      ],
+      [
+        1567,
+        403
+      ],
+      [
+        1563,
+        404
+      ],
+      [
+        1559,
+        406
+      ],
+      [
+        1555,
+        406
+      ],
+      [
+        1476,
+        417
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1699,
+    "y": 356,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 887,
+    "y": 341,
+    "delay": 0.534,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 207,
+    "y": 576,
+    "delay": 0.563,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 764,
+    "y": 360,
+    "delay": 0.465,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 396,
+    "y": 565,
+    "delay": 0.402,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 801,
+    "y": 335,
+    "delay": 0.437,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 642,
+    "y": 560,
+    "delay": 0.773,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 803,
+    "y": 343,
+    "delay": 0.525,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 890,
+    "y": 637,
+    "delay": 0.513,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 881,
+    "y": 621,
+    "delay": 0.114,
+    "button": "left",
+    "path": [
+      [
+        890,
+        637
+      ],
+      [
+        890,
+        636
+      ],
+      [
+        887,
+        631
+      ],
+      [
+        887,
+        630
+      ],
+      [
+        886,
+        630
+      ],
+      [
+        886,
+        629
+      ],
+      [
+        881,
+        621
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 890,
+    "y": 637,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 797,
+    "y": 356,
+    "delay": 0.394,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1200,
+    "y": 696,
+    "delay": 0.393,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 806,
+    "y": 344,
+    "delay": 0.554,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1427,
+    "y": 633,
+    "delay": 0.443,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 1388,
+    "y": 619,
+    "delay": 0.125,
+    "button": "left",
+    "path": [
+      [
+        1427,
+        633
+      ],
+      [
+        1416,
+        629
+      ],
+      [
+        1415,
+        629
+      ],
+      [
+        1414,
+        629
+      ],
+      [
+        1413,
+        628
+      ],
+      [
+        1411,
+        628
+      ],
+      [
+        1388,
+        619
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1427,
+    "y": 633,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 721,
+    "y": 358,
+    "delay": 0.483,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1757,
+    "y": 638,
+    "delay": 0.443,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 865,
+    "y": 341,
+    "delay": 0.464,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 163,
+    "y": 816,
+    "delay": 0.575,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 794,
+    "y": 354,
+    "delay": 0.684,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 426,
+    "y": 850,
+    "delay": 0.489,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 412,
+    "y": 433,
+    "delay": 0.676,
+    "auto_id": "CompositionOther",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.566,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.224,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.204,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.192,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.192,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.172,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.189,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.187,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.187,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.176,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 746,
+    "y": 424,
+    "delay": 0.518,
+    "auto_id": "PavementOther",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.389,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.196,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.176,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.163,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.176,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.168,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.184,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.164,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.18,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.159,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 1110,
+    "y": 416,
+    "delay": 0.811,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_001O.png",
+    "delay": 2.505
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "theme": "superhero",
+  "default_delay": 0.5,
+  "tolerance": 0.01,
+  "ignore_recorded_delays": false,
+  "use_automation_ids": true,
+  "use_screenshots": true,
+  "prefer_semantic_scripts": true,
+  "normalize_script": null,
+  "window_geometry": null,
+  "window_state": "zoomed",
+  "target_app_regex": ".*ENFIRE.*"
+}

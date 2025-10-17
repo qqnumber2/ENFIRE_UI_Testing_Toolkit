@@ -1,0 +1,906 @@
+﻿<UserControl x:Class="Enfire.EsriRuntime.Wpf.MainWindow.Views.MainWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:tz="http://schemas.abtsoftware.co.uk/transitionz"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:surface="http://schemas.microsoft.com/surface/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:collection="clr-namespace:Enfire.EsriRuntime.Wpf.Collection"
+             xmlns:collectionViews="clr-namespace:Enfire.EsriRuntime.Wpf.Collection.Views"
+             xmlns:devices="clr-namespace:Enfire.EsriRuntime.Wpf.Devices.ViewModels"
+             xmlns:deviceViewModels="clr-namespace:Enfire.EsriRuntime.Wpf.Devices.ViewModels"
+             xmlns:deviceViews="clr-namespace:Enfire.EsriRuntime.Wpf.Devices.Views"
+             xmlns:roads="clr-namespace:Enfire.EsriRuntime.Wpf.Entities.GeographicEntities.Recons.Roads.Collection"
+             xmlns:views="clr-namespace:Enfire.EsriRuntime.Wpf.Explorer.Views"
+             xmlns:mapViewModels="clr-namespace:Enfire.EsriRuntime.Wpf.MainWindow.ViewModels"
+             xmlns:mapViews="clr-namespace:Enfire.EsriRuntime.Wpf.Map.Views"
+             xmlns:measurementViewModel="clr-namespace:Enfire.EsriRuntime.Wpf.Tools.MapMeasurement.ViewModels"
+             xmlns:measurementView="clr-namespace:Enfire.EsriRuntime.Wpf.Tools.MapMeasurement.Views"
+             xmlns:magneticDeclinationOffsetCalculatorViewModel="clr-namespace:Enfire.EsriRuntime.Wpf.Tools.MagneticDeclinationOffsetCalculator.ViewModels"
+             xmlns:magneticDeclinationOffsetCalculatorView="clr-namespace:Enfire.EsriRuntime.Wpf.Tools.MagneticDeclinationOffsetCalculator.Views"    
+             xmlns:behaviors="clr-namespace:Enfire.EsriRuntime.Wpf.UI.Behaviors"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:commands="clr-namespace:Enfire.EsriRuntime.Wpf.UI.Commands"
+             xmlns:controls="clr-namespace:Enfire.EsriRuntime.Wpf.UI.Controls"
+             xmlns:converters="clr-namespace:Enfire.EsriRuntime.Wpf.UI.Converters" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance mapViewModels:MainWindowViewModel, IsDesignTimeCreatable=False}"
+             x:Name="MainWindowControl"
+             xmlns:automation="clr-namespace:Enfire.EsriRuntime.Wpf.Utility.AutomationIds">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToolBar.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="/UI/ItemSelector/Views/ItemSelectorEditorDataTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" HiddenNotCollapsed="False" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToInvertedVisibilityConverter" HiddenNotCollapsed="False" Invert="True" />
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" HiddenNotCollapsed="False" />
+            <converters:ActiveViewModelVisibilityToBoolConverter x:Key="ActiveViewModelVisibilityToBoolConverter" />
+            <converters:ActiveViewModelVisibilityToTabNavConverter x:Key="ActiveViewModelVisibilityToTabNavConverter" />
+            <converters:BooleanToMarginConverter x:Key="BooleanToMarginConverter"/>
+
+            <DataTemplate DataType="{x:Type collection:GeometryCollectorsViewModelBase}"
+                      x:Key="GeometryCollectorsTemplate">
+                <collectionViews:GeometryCollectorsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type measurementViewModel:MapMeasurementToolViewModel}"
+                      x:Key="MapMeasurementToolTemplate">
+                <measurementView:MapMeasurementToolView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type magneticDeclinationOffsetCalculatorViewModel:MagneticDeclinationOffsetCalculatorViewModel}"
+                      x:Key="MagneticDeclinationOffsetCalculatorTemplate">
+                <magneticDeclinationOffsetCalculatorView:MagneticDeclinationOffsetCalculatorView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type collection:EntityCollectorBase}">
+                <ContentControl Content="{Binding GeometryCollector}"
+                            ContentTemplate="{StaticResource GeometryCollectorsTemplate}" />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type roads:RoadCollector}">
+                <roads:RoadCollectorView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type deviceViewModels:VideoRecordingViewModel}">
+                <Grid>
+                    <Grid.Resources>
+                        <Style TargetType="Grid">
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black" Opacity="0.8" />
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Grid.Resources>
+                    <deviceViews:VideoRecordingView />
+                </Grid>
+            </DataTemplate>
+
+            <!-- Map Scales Combo Box ToggleButton Style -->
+            <ControlTemplate x:Key="ComboBoxToggleButton"
+                 TargetType="{x:Type ToggleButton}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="20" />
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="Border" Grid.ColumnSpan="2" BorderThickness="2">
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="DarkGray" Opacity="0.3" />
+                        </Border.BorderBrush>
+                        <Border.Background>
+                            <SolidColorBrush Color="Gray" Opacity="0.7" />
+                        </Border.Background>
+                    </Border>
+                    <Path x:Name="Arrow" Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Data="M 0 0 L 4 4 L 8 0 Z">
+                        <Path.Fill>
+                            <SolidColorBrush Color="White" />
+                        </Path.Fill>
+                    </Path>
+                </Grid>
+            </ControlTemplate>
+
+            <!-- Map Scales Combo Box Style -->
+            <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
+                <Setter Property="SnapsToDevicePixels" Value="true" />
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="MinWidth" Value="20" />
+                <Setter Property="MinHeight" Value="20" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ComboBox}">
+                            <Grid>
+                                <ToggleButton x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}"
+                        Grid.Column="2" Focusable="false" ClickMode="Press"
+                        IsChecked="{Binding IsDropDownOpen, Mode=TwoWay,
+                                    RelativeSource={RelativeSource TemplatedParent}}" />
+                                <ContentPresenter x:Name="ContentSite"
+                            IsHitTestVisible="False"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left">
+                                </ContentPresenter>
+
+                                <Popup x:Name="Popup" Placement="Bottom"
+                             IsOpen="{TemplateBinding IsDropDownOpen}"
+                             AllowsTransparency="True" Focusable="False"
+                             PopupAnimation="Slide">
+                                    <Grid x:Name="DropDown"
+                                SnapsToDevicePixels="True"
+                                MinWidth="{TemplateBinding ActualWidth}"
+                                MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border x:Name="DropDownBorder" BorderThickness="2">
+                                            <Border.BorderBrush>
+                                                <SolidColorBrush Color="Black" />
+                                            </Border.BorderBrush>
+                                            <Border.Background>
+                                                <SolidColorBrush Color="Black" Opacity="0.8" />
+                                            </Border.Background>
+                                        </Border>
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="HasItems" Value="false">
+                                    <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
+                                </Trigger>
+                                <Trigger Property="IsGrouping" Value="true">
+                                    <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+                                </Trigger>
+                                <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
+                                    <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Animation for elements losing or gaining visibility -->
+            <Style x:Key="VisibilityDropDown">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=IsVisible}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                             From="0" To="48"
+                                                             Duration="0:0:0.25"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="SnapsToDevicePixels" Value="true" />
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                            <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="Transparent">
+                                <TextBlock FontSize="16" HorizontalAlignment="Left" Text="{Binding StringFormat={}{0:n0}}" Foreground="White" />
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="Black" />
+                                </Border.BorderBrush>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="WindowButton" TargetType="{x:Type Button}">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type Button}">
+                            <StackPanel x:Name="RootGrid" Margin="0"
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                                <Grid HorizontalAlignment="Center" Width="40" Height="40">
+                                    <Ellipse x:Name="OuterCircle" StrokeThickness="3" Stroke="{TemplateBinding Foreground}" />
+                                    <ContentPresenter IsHitTestVisible="False" Content="{TemplateBinding Content}"
+                                                  Margin="8" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Fill" TargetName="OuterCircle">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.4" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" TargetName="RootGrid" Value="0.33" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="WindowToggleButton" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate  TargetType="{x:Type ToggleButton}">
+                            <StackPanel x:Name="RootGrid" Margin="0"
+                                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                                <Grid HorizontalAlignment="Center" Width="40" Height="40">
+                                    <Ellipse x:Name="OuterCircle" StrokeThickness="3" Stroke="{TemplateBinding Foreground}" />
+                                    <ContentPresenter IsHitTestVisible="False" Content="{TemplateBinding Content}"
+                                                  Margin="8" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Fill" TargetName="OuterCircle">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.4" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Fill" TargetName="OuterCircle">
+                                        <Setter.Value>
+                                            <SolidColorBrush Color="LightGray" Opacity="0.4" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Circular basemap button -->
+            <Style x:Key="BasemapButton" TargetType="{x:Type ButtonBase}">
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid x:Name="RootGrid" Width="40" Background="Transparent">
+                                <StackPanel VerticalAlignment="Top">
+                                    <Grid x:Name="ContentGrid" Width="40" Height="40" HorizontalAlignment="Center">
+                                        <Ellipse x:Name="OuterCircle" StrokeThickness="3" Stroke="White"/>
+                                        <Grid x:Name="InnerContentGrid" HorizontalAlignment="Stretch" Height="Auto" VerticalAlignment="Stretch">
+                                            <ContentPresenter x:Name="Content" Content="{TemplateBinding Content}" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                              Margin="8"/>
+                                        </Grid>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                    <Setter Property="Fill" TargetName="OuterCircle" Value="LightGray" />
+                                </DataTrigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" TargetName="RootGrid" Value="0.33" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="ToolTip">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToolTip">
+                            <ContentPresenter />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="{DynamicResource PrimaryAccentBrush}" IsEnabled="{Binding IsShellStackVisible, Converter={StaticResource InverseBoolConverter}}">
+        <Grid.Resources>
+            <!-- Data Template for the Video Recording Window -->
+            <DataTemplate DataType="{x:Type devices:VideoRecordingViewModel}">
+                <Grid>
+                    <Grid.Resources>
+                        <Style TargetType="Grid">
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black" Opacity="0.8" />
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Grid.Resources>
+                    <deviceViews:VideoRecordingView />
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="23" />
+        </Grid.RowDefinitions>
+
+        <Grid KeyboardNavigation.TabNavigation="{Binding ElementName=ActiveViewModelParentGrid, Path=DataContext.IsActiveViewModelVisible, Converter={StaticResource ActiveViewModelVisibilityToTabNavConverter}}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <mapViews:MapView DataContext="{Binding MapViewModel}"
+                              x:Name="MapView"
+                              Grid.Row="0"
+                              LongPress="MapView_LongPress"
+                              MouseRightButtonUp="MapControlView_MouseRightButtonUp">
+            </mapViews:MapView>
+
+            <mapViews:MapControlView DataContext="{Binding MapViewModel.MapControlViewModel}"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Right"
+                                     Margin="0,150,15,0"
+                                     KeyboardNavigation.ControlTabNavigation="None" />
+
+            <materialDesign:PopupBox Name="PresetPopup" Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                UnfurlOrientation="Vertical"
+                VerticalAlignment="Bottom"
+                PopupMode="Click"
+                StaysOpen="True"
+                Background="{DynamicResource PrimaryAccentBrush}"
+                Margin="50"
+                IsPopupOpen="{Binding PopupReconMenuOpen, Mode=TwoWay}"
+                Visibility="{Binding PopupReconButtonVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <ItemsControl ItemsSource="{Binding PopUpReconMenuViewModel.PopupRecons, UpdateSourceTrigger=PropertyChanged}" Height="200" Width="100">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <controls:CustomGridPanel Columns="2" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Click="PopupBox_Closed"
+                                    Background="{DynamicResource PrimaryAccentBrush}"
+                                    Command="{Binding Command}"
+                                    AutomationProperties.AutomationId="{x:Static automation:AppBarIds.AppBarClosePopup}"
+                                    KeyboardNavigation.IsTabStop="False">
+                                <controls:SvgIcon Source="{Binding Svg}" IsHitTestVisible="False" />
+                                <Button.ToolTip>
+                                    <ToolTip BorderBrush="Black"  Padding="0">
+                                        <Border BorderThickness="2" BorderBrush="{DynamicResource DarkAccentBrush}">
+                                            <TextBlock Text="{Binding Title}"  Width="90" Height="25" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource DarkAccentBrush}" Background="{DynamicResource LightAccentBrush}" />
+                                        </Border>
+                                    </ToolTip>
+                                </Button.ToolTip>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </materialDesign:PopupBox>
+
+            <!-- Grid containing the appbar, location display, and map control view, which lie on the same plane -->
+            <StackPanel Orientation="Vertical"
+                        Grid.Row="0">
+                <!-- Appbar -->
+                <surface:SurfaceScrollViewer
+                              HorizontalScrollBarVisibility="Visible"
+                              VerticalScrollBarVisibility="Disabled"
+                              DataContext="{Binding AppBarViewModel}"
+                              KeyboardNavigation.ControlTabNavigation="None"
+                              Background="{DynamicResource PrimaryAccentBrush}"
+                              VerticalAlignment="Top"
+                              Visibility="{Binding Visibility, Mode=OneWay}"
+                              HorizontalContentAlignment="Left"
+                              Margin="0"
+                              Height="100"
+                              Style="{StaticResource SurfaceScrollViewerAppBar}"
+                              AutomationProperties.AutomationId="{x:Static automation:AppBarIds.AppBar}">
+
+                    <surface:SurfaceScrollViewer.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="/Resources/Styles/AppBarStyle.xaml" />
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </surface:SurfaceScrollViewer.Resources>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,12,0,6">
+                        <!-- Permanent buttons -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button AutomationProperties.Name="File"
+                                    AutomationProperties.AutomationId="{x:Static automation:AppBarIds.AppBarFile}"
+                                    Command="{Binding OpenFileView}"
+                                    IsEnabled="{Binding EnableDefaultAppBarButtons}"
+                                    KeyboardNavigation.IsTabStop="{Binding ElementName=ActiveViewModelParentGrid, Path=DataContext.IsActiveViewModelVisible, Converter={StaticResource ActiveViewModelVisibilityToBoolConverter}}">
+                                <controls:SvgIcon Source="/Resources/Svgs/baseline-folder-24px.svg" />
+                            </Button>
+
+                            <ToggleButton AutomationProperties.Name="Menu"
+                                          AutomationProperties.AutomationId="{x:Static automation:AppBarIds.AppBarMenu}"
+                                          Command="{Binding ToggleExplorerView}"
+                                          CommandParameter="{Binding ElementName=ExplorerView, Path=DataContext}"
+                                          IsChecked="{Binding ElementName=ExplorerView, Path=DataContext.IsOpen, Mode=OneWay}"
+                                          IsEnabled="{Binding EnableDefaultAppBarButtons}"
+                                          KeyboardNavigation.IsTabStop="{Binding ElementName=ActiveViewModelParentGrid, Path=DataContext.IsActiveViewModelVisible, Converter={StaticResource ActiveViewModelVisibilityToBoolConverter}}">
+                                <controls:SvgIcon Source="/Resources/Svgs/baseline-menu-24px.svg" />
+                                <ToggleButton.Triggers>
+                                    <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ThicknessAnimation Storyboard.TargetName="PresetPopup"
+                                    Storyboard.TargetProperty="Margin"
+                                    From="50,0,0,50" To="290,0,0,50"
+                                    Duration="0:0:0.10"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ThicknessAnimation Storyboard.TargetName="PresetPopup"
+                                    Storyboard.TargetProperty="Margin"
+                                    From="290,0,0,50" To="50,0,0,50"
+                                    Duration="0:0:0.10" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </ToggleButton.Triggers>
+                            </ToggleButton>
+
+                            <Grid>
+                                <Button Visibility="{Binding ElementName=MainWindowControl, Path=DataContext.IsSelectingMultiple,
+                                    Converter={StaticResource BoolToVisibilityConverter}}"
+                                        AutomationProperties.AutomationId="{x:Static automation:AppBarIds.AppBarOne}"
+                                        AutomationProperties.Name="Select One"
+                                        Command="{Binding SelectSingleEntity}"
+                                        CommandParameter="{Binding ElementName=MainWindowControl, Path=DataContext}"
+                                        IsEnabled="{Binding EnableDefaultAppBarButtons}"
+                                        KeyboardNavigation.IsTabStop="{Binding ElementName=ActiveViewModelParentGrid, Path=DataContext.IsActiveViewModelVisible, Converter={StaticResource ActiveViewModelVisibilityToBoolConverter}}">
+                                    <controls:SvgIcon Source="/Resources/Svgs/select-single.svg" />
+                                </Button>
+                                <Button Visibility="{Binding ElementName=MainWindowControl, Path=DataContext.IsSelectingMultiple, Converter={StaticResource BoolToInvertedVisibilityConverter}}"
+                                        AutomationProperties.Name="Select Many"
+                                        AutomationProperties.AutomationId="{x:Static automation:AppBarIds.AppBarMany}"
+                                        Command="{Binding SelectMultipleEntities}"
+                                        CommandParameter="{Binding ElementName=MainWindowControl, Path=DataContext}"
+                                        IsEnabled="{Binding EnableDefaultAppBarButtons}"
+                                        KeyboardNavigation.IsTabStop="{Binding ElementName=ActiveViewModelParentGrid, Path=DataContext.IsActiveViewModelVisible, Converter={StaticResource ActiveViewModelVisibilityToBoolConverter}}">
+                                    <controls:SvgIcon Source="/Resources/Svgs/multiselect.svg" />
+                                    <Button.ToolTip>
+                                        <ToolTip BorderBrush="Black"  Padding="0">
+                                            <Border BorderThickness="2" BorderBrush="{DynamicResource DarkAccentBrush}">
+                                                <TextBlock Text="Shift, Ctrl"  Width="75" Height="25" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{DynamicResource DarkAccentBrush}" Background="{DynamicResource LightAccentBrush}" />
+                                            </Border>
+                                        </ToolTip>
+                                    </Button.ToolTip>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                        <!-- Dynamic Buttons -->
+                        <ItemsControl DataContext="{Binding CurrentAppBar}"
+                                      ItemsSource="{Binding CommandsList}"
+                                      KeyboardNavigation.IsTabStop="False"
+                                      KeyboardNavigation.ControlTabNavigation="None"
+                                      KeyboardNavigation.TabNavigation="{Binding ElementName=ActiveViewModelParentGrid, Path=DataContext.IsActiveViewModelVisible, Converter={StaticResource ActiveViewModelVisibilityToTabNavConverter}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type commands:AppBarCommand}">
+                                    <Button AutomationProperties.Name="{Binding Name}"
+                                            AutomationProperties.AutomationId="{Binding AutomationId}"
+                                            Command="{Binding Command}"
+                                            FontSize="{Binding LabelFontSize}">
+                                        <Button.Resources>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Padding" Value="3,0,3,0" />
+                                                <Setter Property="FontFamily" Value="{DynamicResource HeaderFontFamily}" />
+                                            </Style>
+                                        </Button.Resources>
+                                        <controls:SvgIcon Source="{Binding IconPath}"
+                                                          StrokeBrush="{DynamicResource OnPrimaryAccentBrush}" />
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </surface:SurfaceScrollViewer>
+
+
+                <DockPanel>
+                    <!-- Message Block -->
+                    <Border BorderBrush="Black"
+                            Background="Black"
+                            BorderThickness="4"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Visibility="{Binding MapViewModel.ShortMessageVisibility}"
+                            MaxWidth="350"
+                            DockPanel.Dock="Top"
+                            IsHitTestVisible="False">
+                        <TextBlock Text="{Binding MapViewModel.ShortMessage}" Foreground="White" VerticalAlignment="Center" TextWrapping="Wrap" Margin="4" />
+                    </Border>
+                </DockPanel>
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Right" Orientation="Vertical">
+                        <StackPanel.Margin>
+                            <Binding Path="MapViewModel.ShortMessageVisibility" Converter="{StaticResource BooleanToMarginConverter}" />
+                        </StackPanel.Margin>
+                        <!-- Location control -->
+                            <Border BorderBrush="Black"
+                                HorizontalAlignment="Right"
+                                BorderThickness="4">
+                                <StackPanel x:Name="ScaleCoordinateBar"
+                                        Orientation="Horizontal">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBlock}"
+                                           BasedOn="{StaticResource SectionHeaderTextBlock}">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Setter Property="Margin" Value="6" />
+                                            <Setter Property="FontSize" Value="16" />
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <StackPanel.Background>
+                                        <SolidColorBrush Color="Black" Opacity="0.8" />
+                                    </StackPanel.Background>
+                                    <Button Grid.Row="0"
+                                        AutomationProperties.AutomationId="{x:Static automation:MapControlIds.RadialMenuButton}"
+                                        Foreground="Black"
+                                        Background="Black"
+                                        Click="RadialMenuDisplayButton_Click"
+                                        HorizontalAlignment="Center"
+                                        HorizontalContentAlignment="Center"
+                                        IsTabStop="False">
+                                        <controls:SvgIcon Source="/Resources/Svgs/baseline-menu-24px.svg"
+                                                      Width="24" Height="24"
+                                                      FillBrush="White" />
+                                    </Button>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="45"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="100"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock x:Name="DisplayScale"
+                                               AutomationProperties.AutomationId="{x:Static automation:MapControlIds.MapScaleDisplay}"
+                                               Text="{Binding MapViewModel.GeoView.MapScale, StringFormat=1:{0:N0}}"
+                                               Width="87" TextWrapping="NoWrap" VerticalAlignment="Center"
+                                               TextAlignment="Left" Grid.Column="1"/>
+                                            <Button x:Name="CustomZoom" 
+                                                AutomationProperties.AutomationId="{x:Static automation:MapControlIds.CustomZoomButton}"
+                                                Width="100" BorderBrush="Transparent" 
+                                                Grid.Column="1"
+                                                Command="{Binding MapViewModel.MapControlViewModel.CustomZoomCommand}">
+                                            </Button>
+                                        </Grid>
+                                        <!-- Specific Map Scales Drop Down -->
+                                        <ComboBox x:Name="MapScaleDropDown" ItemsSource="{Binding MapViewModel.MapControlViewModel.MapScales}"
+                                              AutomationProperties.AutomationId="{x:Static automation:MapControlIds.MapScaleCombo}"
+                                              SelectedItem="{Binding MapViewModel.MapControlViewModel.SpecificMapScale, Mode=TwoWay}"
+                                              IsTabStop="False" />
+                                    </StackPanel>
+                                    <Viewbox StretchDirection="DownOnly" Width="164" HorizontalAlignment="Right">
+                                        <TextBlock x:Name="DisplayCoordinate"
+                                               AutomationProperties.AutomationId="{x:Static automation:MapControlIds.CoordinateLabel}"
+                                               Text="{Binding MapViewModel.FormattedCurrentCoordinate}"
+                                               VerticalAlignment="Center" TextAlignment="Right"
+                                               TextWrapping="NoWrap" />
+                                    </Viewbox>
+                                    <ToggleButton x:Name="GoToPromptToggle" Margin="6,0,6,0" Width="40" Height="40"
+                                              AutomationProperties.AutomationId="{x:Static automation:MapControlIds.GoToToggle}"
+                                              KeyboardNavigation.IsTabStop="False"
+                                              Style="{DynamicResource WindowToggleButton}"
+                                              IsChecked="{Binding GotoPromptOpen, Mode=TwoWay}">
+                                        <ToggleButton.Triggers>
+                                            <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="GoToTextBar"
+                                                                     Storyboard.TargetProperty="Height"
+                                                                     From="0" To="65"
+                                                                     Duration="0:0:0.25" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                            <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="GoToTextBar"
+                                                             Storyboard.TargetProperty="Height"
+                                                             From="65" To="0"
+                                                             Duration="0:0:0.25" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger>
+                                        </ToggleButton.Triggers>
+                                        <controls:SvgIcon Source="/Resources/Svgs/goto-24px.svg" Width="25" Height="25" />
+                                    </ToggleButton>
+
+                                    <!-- Set Location button -->
+                                    <Button Margin="1,0,6,0"
+                                    AutomationProperties.AutomationId="{x:Static automation:MapControlIds.ManualSetLocation}"
+                                    Width="40"
+                                    Height="40"
+                                    Style="{DynamicResource WindowButton}"
+                                    Command="{Binding MapViewModel.MapControlViewModel.ManuallySetLocationCommand}" IsEnabled="{Binding MapViewModel.MapControlViewModel.CanManuallySet, UpdateSourceTrigger=PropertyChanged}"
+                                    CommandParameter="{Binding Text, ElementName=coordsEntryBox}">
+                                        <controls:SvgIcon Source="/Resources/Svgs/my_location-24px.svg" 
+                                        Width="24"
+                                        Height="24"
+                                        FillBrush="White"/>
+                                    </Button>
+
+                                    <Grid x:Name="BasemapPopupButtonGrid" 
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Stretch">
+                                        <Grid.Resources>
+                                            <ResourceDictionary>
+                                                <ResourceDictionary.MergedDictionaries>
+                                                    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                                                </ResourceDictionary.MergedDictionaries>
+                                            </ResourceDictionary>
+                                        </Grid.Resources>
+                                        <mah:DropDownButton BorderBrush="White"
+                                                        AutomationProperties.AutomationId="{x:Static automation:MapControlIds.BasemapToggle}"
+                                                        BorderThickness="0"
+                                                        HorizontalContentAlignment="Center"
+                                                        Height="40"
+                                                        Width ="40"
+                                                        ArrowVisibility="Collapsed"
+                                                        DataContext="{Binding BasemapSelectorViewModel}"
+                                                        ItemsSource="{Binding AvailableBasemaps}"
+                                                        DisplayMemberPath="BasemapName"
+                                                        KeyboardNavigation.IsTabStop="false"
+                                                        IsExpanded="{Binding IsBasemapSelectorExpanded, Mode=TwoWay}"
+                                                        >
+                                            <mah:DropDownButton.ButtonStyle>
+                                                <Style BasedOn="{StaticResource BasemapButton}" TargetType="{x:Type ButtonBase}">
+
+                                                </Style>
+                                            </mah:DropDownButton.ButtonStyle>
+                                            <mah:DropDownButton.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Background="Black" Orientation="Vertical" Margin="0,6,0,0"></StackPanel>
+                                                </ItemsPanelTemplate>
+                                            </mah:DropDownButton.ItemsPanel>
+                                            <mah:DropDownButton.ItemContainerStyle>
+                                                <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
+                                                    <Setter Property="Command" Value="{Binding SelectedCommand}" />
+                                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                                    <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                                </Style>
+                                            </mah:DropDownButton.ItemContainerStyle>
+                                            <mah:DropDownButton.Icon>
+                                                <controls:SvgIcon KeyboardNavigation.IsTabStop="false" Padding="0" Margin="0" Source="/Resources/Svgs/map.svg" Width="24" Height="24" />
+                                            </mah:DropDownButton.Icon>
+                                        </mah:DropDownButton>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <!-- GoTo Prompt -->
+                            <Border x:Name="GoToTextBar" BorderBrush="Black" BorderThickness="4"
+                            DockPanel.Dock="Top" HorizontalAlignment="Right" Focusable="True"
+                            Width="345" Height="0" MaxHeight="65" VerticalAlignment="Top"
+                            behaviors:GoToPopupBehavior.IsHideOnLostFocusEnabled="True">
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Background>
+                                        <SolidColorBrush Color="Black" Opacity="0.8" />
+                                    </StackPanel.Background>
+                                    <Border Width="280" Margin="5">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding MapViewModel.MapControlViewModel.IsValidCoordInput}" Value="False">
+                                                        <Setter Property="BorderBrush" Value="Red" />
+                                                        <Setter Property="BorderThickness" Value="2" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+
+                                        <xctk:WatermarkTextBox x:Name="coordsEntryBox" Text="{Binding MapViewModel.MapControlViewModel.CoordinateInput}"
+                                                Style="{DynamicResource LightWatermarkTextBox}" FontSize="16"
+                                                Width="280" Foreground="Black" HorizontalAlignment="Left"
+                                                Watermark="Input coordinates as DD, Mgrs, Utm, Usng, Gars, Geo"
+                                                TextChanged="CoordsEntryBox_TextChanged">
+                                            <xctk:WatermarkTextBox.InputBindings>
+                                                <KeyBinding Command="{Binding Command, ElementName=GoToButton}" Key="Return"
+                                            CommandParameter="{Binding Text, ElementName=coordsEntryBox}" />
+                                            </xctk:WatermarkTextBox.InputBindings>
+                                        </xctk:WatermarkTextBox>
+                                    </Border>
+
+                                    <Button x:Name="GoToButton" Margin="1,0,0,0" Width="40" Height="40"
+                                    AutomationProperties.AutomationId="{x:Static automation:MapControlIds.GoToExecute}"
+                                    Style="{DynamicResource WindowButton}"
+                                    Command="{Binding MapViewModel.MapControlViewModel.GoToCommand}"
+                                    CommandParameter="{Binding Text, ElementName=coordsEntryBox}">
+                                        <controls:SvgIcon Source="/Resources/Svgs/search-24px.svg" Width="24" Height="24" />
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Elevation Drop Down -->
+                            <Border BorderBrush="Black" 
+                                HorizontalAlignment="Right"
+                                BorderThickness="4"
+                                Visibility="{Binding MapViewModel.ElevationSource, Converter={StaticResource NullToVisibilityConverter}}"
+                                Style="{StaticResource VisibilityDropDown}">
+                                <Border.Background>
+                                    <SolidColorBrush Color="Black" Opacity="0.8"/>
+                                </Border.Background>
+                                <Viewbox StretchDirection="DownOnly" Width="379" HorizontalAlignment="Center" DockPanel.Dock="Top" >
+                                    <TextBlock x:Name="DisplayElevation"
+                                               Text="{Binding MapViewModel.DisplayElevation}"
+                                               VerticalAlignment="Center" TextAlignment="Right"
+                                               TextWrapping="NoWrap"
+                                               Margin="10,5,10,5"
+                                               FontSize="16"
+                                               Foreground="White">
+                                    </TextBlock>
+                                </Viewbox>
+                            </Border>
+                    </StackPanel>
+            </DockPanel>
+
+
+            </StackPanel>
+    
+            <!-- Map Measurement Tool View -->
+            <ContentControl Content="{Binding MapMeasurementToolViewModel}" ContentTemplate="{StaticResource MapMeasurementToolTemplate}"
+                            Visibility="{Binding MapMeasurementToolViewModel.MeasurementToolVisibility}"
+                            VerticalAlignment="Top"
+                            Grid.Row="0"
+                            KeyboardNavigation.IsTabStop="False" />
+
+            <ContentControl Content="{Binding GeometryCollector}" ContentTemplate="{StaticResource GeometryCollectorsTemplate}"
+                            Visibility="{Binding GeometryCollector, Converter={StaticResource NullToVisibilityConverter}}"
+                            VerticalAlignment="Top"
+                            Grid.Row="0"
+                            KeyboardNavigation.IsTabStop="False" />
+
+            <ContentControl Content="{Binding EntityCollector}"
+                            VerticalAlignment="Top"
+                            Grid.Row="0"
+                            KeyboardNavigation.IsTabStop="False" />
+
+            <!-- Magnetic Declination Offset Calculator View -->
+            <ContentControl Content="{Binding MagneticDeclinationOffsetCalculatorViewModel}" ContentTemplate="{StaticResource MagneticDeclinationOffsetCalculatorTemplate}"
+                            Visibility="{Binding MagneticDeclinationOffsetCalculatorViewModel.MagneticDeclinationOffsetCalculatorVisibility}"
+                            VerticalAlignment="Top"
+                            Grid.Row="0"
+                            KeyboardNavigation.IsTabStop="False" />
+            <ContentControl Content="{Binding GeometryCollector}" ContentTemplate="{StaticResource GeometryCollectorsTemplate}"
+                            Visibility="{Binding GeometryCollector, Converter={StaticResource NullToVisibilityConverter}}"
+                            VerticalAlignment="Top"
+                            Grid.Row="0"
+                            KeyboardNavigation.IsTabStop="False" />
+            <ContentControl Content="{Binding EntityCollector}"
+                            VerticalAlignment="Top"
+                            Grid.Row="0"
+                            KeyboardNavigation.IsTabStop="False" />
+
+            <!-- Video Recording View -->
+            <ContentControl Content="{Binding VideoRecordingViewModel}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Focusable="True"
+                            KeyboardNavigation.ControlTabNavigation="Cycle"
+                            tz:Transitionz.Translate="{tz:TranslateParams From='-300,0', To='0,0', Duration=100, TransitionOn=Visibility}" />
+
+            <views:ExplorerView x:Name="ExplorerView"
+                                Grid.Row="0"
+                                Margin="0,100,0,0"
+                                DataContext="{Binding ExplorerViewModel}"
+                                HorizontalAlignment="Left"
+                                VerticalContentAlignment="Stretch"
+                                Visibility="Collapsed"
+                                tz:Transitionz.Translate="{tz:TranslateParams From='-300,0', To='0,0', Duration=100, TransitionOn=Visibility}"
+                                tz:Transitionz.Visibility="{Binding IsOpen, Converter={StaticResource BoolToVisibilityConverter }}" />
+            <telerik:RadRadialMenu
+                ItemsSource="{Binding RadialMenuViewModel.Items}"
+                Height="450"
+                Width="450"
+                Visibility="{Binding RadialMenuViewModel.Visible}"
+                IsOpen="{Binding RadialMenuViewModel.IsOpen, Mode=TwoWay}"
+                Name="RadialPopupMenu"
+                StaysOpenOnShow="True"
+                OuterRadiusFactor=".10"
+                InnerRadiusFactor=".25"
+                InnerNavigationRadiusFactor=".65"
+                ShowToolTip="False"
+                IsHitTestVisible="True"
+                Loaded="RadialPopupMenu_Loaded"
+                Closed="RadialPopupMenu_Closed">
+                <telerik:RadRadialMenu.Resources>
+                    <Style TargetType="telerik:NavigationItemButton" BasedOn="{StaticResource NavigationItemButtonStyle}">
+                        <Setter Property="Background" Value="{StaticResource PrimaryAccentBrush}" />
+                        <Setter Property="BorderBrush" Value="Black" />
+                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="BorderThickness" Value="20" />
+                    </Style>
+                    <Style TargetType="telerik:RadialMenuButton" BasedOn="{StaticResource RadialMenuButtonStyle}">
+                        <Setter Property="Background" Value="{StaticResource PrimaryAccentBrush}" />
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <controls:SvgIcon Height="15" Width="15" Source="/Resources/Svgs/baseline-close-24px.svg" FillBrush="{DynamicResource OnPrimaryAccentBrush}" />
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="BackContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <controls:SvgIcon Height="15" Width="15" Source="/Resources/Svgs/baseline-arrow_back-24px.svg" FillBrush="{DynamicResource OnPrimaryAccentBrush}" />
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style TargetType="telerik:RadRadialMenuItem" BasedOn="{StaticResource RadRadialMenuItemStyle}">
+                        <Setter Property="CanUserSelect" Value="False" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="telerik:RadRadialMenuItem">
+                                    <StackPanel>
+                                        <controls:SvgIcon
+                                            Width="25"
+                                            Height="25"
+                                            Source="{Binding IconContent, RelativeSource={RelativeSource TemplatedParent}}">
+                                            <controls:SvgIcon.Resources>
+                                                <Style TargetType="controls:SvgIcon">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding PreserveColor}" Value="False">
+                                                            <Setter Property="FillBrush" Value="{DynamicResource ForegroundBrush}"></Setter>
+                                                            <Setter Property="StrokeBrush" Value="{DynamicResource ForegroundBrush}"></Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </controls:SvgIcon.Resources>
+                                        </controls:SvgIcon>
+                                        <TextBlock FontSize="10"
+                                               FontWeight="Bold"
+                                               FontFamily="Segoe UI, Lucida Sans Unicode, Verdana"
+                                               Text="{TemplateBinding Header}" 
+                                                   TextWrapping="WrapWithOverflow"
+                                                   MaxWidth="65"
+                                                   Padding="0 0 5 0"
+                                                   TextAlignment="Center"/>
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </telerik:RadRadialMenu.Resources>
+                <telerik:RadRadialMenu.ContentMenuBackgroundStyle>
+                    <Style TargetType="Rectangle" BasedOn="{StaticResource ContentMenuStyle}">
+                        <Setter Property="Fill" Value="{StaticResource BackgroundBrush}" />
+                    </Style>
+                </telerik:RadRadialMenu.ContentMenuBackgroundStyle>
+                <telerik:RadRadialMenu.NavigationMenuBackgroundStyle>
+                    <Style TargetType="Rectangle" BasedOn="{StaticResource ContentMenuStyle}">
+                        <Setter Property="Fill" Value="{StaticResource PrimaryAccentBrush}" />
+                    </Style>
+                </telerik:RadRadialMenu.NavigationMenuBackgroundStyle>
+            </telerik:RadRadialMenu>
+        </Grid>
+        <!-- TODO the map view and the scene view can't both bind to the same object -->
+        <!--<esri:SceneView x:Name="SceneView" Visibility="Collapsed"
+                        GraphicsOverlays="{Binding Overlays}" />-->
+    </Grid>
+</UserControl>

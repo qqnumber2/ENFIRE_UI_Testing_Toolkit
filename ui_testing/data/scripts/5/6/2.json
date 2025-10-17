@@ -1,0 +1,149 @@
+[
+  {
+    "action_type": "click",
+    "x": 636,
+    "y": 407,
+    "delay": 5.344,
+    "auto_id": "MapView",
+    "control_type": "Custom",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 232,
+    "y": 145,
+    "delay": 1.229,
+    "auto_id": "ExplorerView",
+    "control_type": "Custom",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 104,
+    "y": 67,
+    "delay": 1.356,
+    "auto_id": "Menu",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Menu",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Menu",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 134,
+    "y": 203,
+    "delay": 0.82,
+    "auto_id": "RootList",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "RootList",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 63,
+    "y": 434,
+    "delay": 1.04,
+    "auto_id": "RootList",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "RootList",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 97,
+    "y": 294,
+    "delay": 1.411,
+    "auto_id": "ConductedOn",
+    "control_type": "Text",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ConductedOn",
+    "control_type": "Text",
+    "property_name": "name",
+    "expected": "141437Z Oct 2025",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 371,
+    "y": 64,
+    "delay": 0.963,
+    "auto_id": "Delete",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Delete",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Delete",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1114,
+    "y": 585,
+    "delay": 1.06,
+    "control_type": "Pane",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 365,
+    "y": 66,
+    "delay": 0.795,
+    "auto_id": "Delete",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Delete",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Delete",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1021,
+    "y": 579,
+    "delay": 0.979,
+    "control_type": "Pane",
+    "button": "left"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_000O.png",
+    "delay": 1.732
+  }
+]

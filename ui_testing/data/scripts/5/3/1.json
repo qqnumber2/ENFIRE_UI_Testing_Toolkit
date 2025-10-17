@@ -1,0 +1,426 @@
+[
+  {
+    "action_type": "click",
+    "x": 962,
+    "y": 504,
+    "delay": 4.493,
+    "auto_id": "MapView",
+    "control_type": "Custom",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 429,
+    "y": 59,
+    "delay": 2.373,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 430,
+    "y": 394,
+    "delay": 4.996,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 142,
+    "y": 320,
+    "delay": 3.636,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 178,
+    "y": 71,
+    "delay": 0.587,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 110,
+    "y": 64,
+    "delay": 0.649,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 110,
+    "y": 64,
+    "delay": 1.521,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_000O.png",
+    "delay": 1.668
+  },
+  {
+    "action_type": "click",
+    "x": 427,
+    "y": 61,
+    "delay": 0.88,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 421,
+    "y": 403,
+    "delay": 1.082,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 412,
+    "y": 380,
+    "delay": 1.603,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 175,
+    "y": 64,
+    "delay": 0.669,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 91,
+    "y": 62,
+    "delay": 0.709,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_001O.png",
+    "delay": 1.134
+  },
+  {
+    "action_type": "click",
+    "x": 433,
+    "y": 54,
+    "delay": 1.135,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 396,
+    "y": 394,
+    "delay": 0.826,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 671,
+    "y": 370,
+    "delay": 0.571,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 631,
+    "y": 352,
+    "delay": 0.101,
+    "button": "left",
+    "path": [
+      [
+        671,
+        370
+      ],
+      [
+        663,
+        365
+      ],
+      [
+        662,
+        364
+      ],
+      [
+        660,
+        364
+      ],
+      [
+        659,
+        363
+      ],
+      [
+        658,
+        362
+      ],
+      [
+        631,
+        352
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 671,
+    "y": 370,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 179,
+    "y": 65,
+    "delay": 0.446,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 112,
+    "y": 67,
+    "delay": 0.507,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_002O.png",
+    "delay": 0.745
+  },
+  {
+    "action_type": "click",
+    "x": 436,
+    "y": 57,
+    "delay": 1.007,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 422,
+    "y": 410,
+    "delay": 0.903,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 887,
+    "y": 360,
+    "delay": 0.579,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 170,
+    "y": 61,
+    "delay": 0.593,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 94,
+    "y": 67,
+    "delay": 0.711,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_003O.png",
+    "delay": 1.697
+  }
+]

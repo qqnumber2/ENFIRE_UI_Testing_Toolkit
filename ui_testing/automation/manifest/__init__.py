@@ -1,0 +1,2 @@
+"""Resources representing AutomationId manifests."""
+

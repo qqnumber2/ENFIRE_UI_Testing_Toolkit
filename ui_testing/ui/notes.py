@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from ui_testing.ai_summarizer import BugNote
+from ui_testing.services.ai_summarizer import BugNote
 
 
 @dataclass

@@ -1,0 +1,1889 @@
+[
+  {
+    "action_type": "click",
+    "x": 149,
+    "y": 398,
+    "delay": 5.717,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 424,
+    "y": 262,
+    "delay": 2.75,
+    "auto_id": "HazardDescription",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "type",
+    "text": "1234567890",
+    "delay": 4.412
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 496,
+    "y": 252,
+    "delay": 0.006,
+    "auto_id": "HazardDescription",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "HazardDescription",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "1234567890",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 256,
+    "y": 263,
+    "delay": 0.436,
+    "button": "left",
+    "path": [
+      [
+        496,
+        252
+      ],
+      [
+        495,
+        252
+      ],
+      [
+        495,
+        253
+      ],
+      [
+        494,
+        253
+      ],
+      [
+        493,
+        253
+      ],
+      [
+        492,
+        253
+      ],
+      [
+        491,
+        254
+      ],
+      [
+        490,
+        254
+      ],
+      [
+        489,
+        254
+      ],
+      [
+        488,
+        254
+      ],
+      [
+        488,
+        255
+      ],
+      [
+        487,
+        255
+      ],
+      [
+        486,
+        255
+      ],
+      [
+        485,
+        255
+      ],
+      [
+        484,
+        256
+      ],
+      [
+        483,
+        256
+      ],
+      [
+        482,
+        256
+      ],
+      [
+        482,
+        257
+      ],
+      [
+        481,
+        257
+      ],
+      [
+        480,
+        257
+      ],
+      [
+        478,
+        257
+      ],
+      [
+        477,
+        258
+      ],
+      [
+        476,
+        258
+      ],
+      [
+        475,
+        258
+      ],
+      [
+        474,
+        258
+      ],
+      [
+        473,
+        258
+      ],
+      [
+        473,
+        259
+      ],
+      [
+        471,
+        259
+      ],
+      [
+        470,
+        259
+      ],
+      [
+        469,
+        259
+      ],
+      [
+        467,
+        259
+      ],
+      [
+        466,
+        259
+      ],
+      [
+        465,
+        260
+      ],
+      [
+        464,
+        260
+      ],
+      [
+        462,
+        260
+      ],
+      [
+        462,
+        261
+      ],
+      [
+        461,
+        261
+      ],
+      [
+        459,
+        261
+      ],
+      [
+        458,
+        261
+      ],
+      [
+        457,
+        261
+      ],
+      [
+        456,
+        261
+      ],
+      [
+        455,
+        261
+      ],
+      [
+        453,
+        261
+      ],
+      [
+        451,
+        262
+      ],
+      [
+        450,
+        262
+      ],
+      [
+        449,
+        262
+      ],
+      [
+        447,
+        262
+      ],
+      [
+        446,
+        262
+      ],
+      [
+        443,
+        263
+      ],
+      [
+        442,
+        263
+      ],
+      [
+        440,
+        263
+      ],
+      [
+        439,
+        263
+      ],
+      [
+        436,
+        263
+      ],
+      [
+        434,
+        263
+      ],
+      [
+        432,
+        263
+      ],
+      [
+        430,
+        263
+      ],
+      [
+        429,
+        263
+      ],
+      [
+        427,
+        263
+      ],
+      [
+        425,
+        263
+      ],
+      [
+        423,
+        263
+      ],
+      [
+        421,
+        263
+      ],
+      [
+        419,
+        263
+      ],
+      [
+        417,
+        263
+      ],
+      [
+        415,
+        263
+      ],
+      [
+        413,
+        263
+      ],
+      [
+        411,
+        263
+      ],
+      [
+        409,
+        263
+      ],
+      [
+        407,
+        263
+      ],
+      [
+        405,
+        263
+      ],
+      [
+        403,
+        263
+      ],
+      [
+        401,
+        263
+      ],
+      [
+        399,
+        263
+      ],
+      [
+        398,
+        263
+      ],
+      [
+        396,
+        263
+      ],
+      [
+        394,
+        263
+      ],
+      [
+        392,
+        263
+      ],
+      [
+        390,
+        263
+      ],
+      [
+        389,
+        263
+      ],
+      [
+        387,
+        263
+      ],
+      [
+        386,
+        263
+      ],
+      [
+        383,
+        263
+      ],
+      [
+        382,
+        263
+      ],
+      [
+        381,
+        263
+      ],
+      [
+        379,
+        263
+      ],
+      [
+        377,
+        263
+      ],
+      [
+        376,
+        263
+      ],
+      [
+        374,
+        263
+      ],
+      [
+        372,
+        263
+      ],
+      [
+        370,
+        263
+      ],
+      [
+        369,
+        263
+      ],
+      [
+        368,
+        263
+      ],
+      [
+        366,
+        263
+      ],
+      [
+        364,
+        263
+      ],
+      [
+        363,
+        263
+      ],
+      [
+        362,
+        263
+      ],
+      [
+        360,
+        263
+      ],
+      [
+        358,
+        263
+      ],
+      [
+        357,
+        263
+      ],
+      [
+        356,
+        263
+      ],
+      [
+        354,
+        264
+      ],
+      [
+        352,
+        264
+      ],
+      [
+        351,
+        264
+      ],
+      [
+        349,
+        264
+      ],
+      [
+        348,
+        264
+      ],
+      [
+        347,
+        264
+      ],
+      [
+        345,
+        264
+      ],
+      [
+        344,
+        264
+      ],
+      [
+        342,
+        264
+      ],
+      [
+        341,
+        264
+      ],
+      [
+        340,
+        264
+      ],
+      [
+        339,
+        264
+      ],
+      [
+        337,
+        264
+      ],
+      [
+        336,
+        264
+      ],
+      [
+        335,
+        264
+      ],
+      [
+        333,
+        264
+      ],
+      [
+        332,
+        264
+      ],
+      [
+        331,
+        264
+      ],
+      [
+        330,
+        264
+      ],
+      [
+        328,
+        264
+      ],
+      [
+        327,
+        264
+      ],
+      [
+        325,
+        264
+      ],
+      [
+        324,
+        264
+      ],
+      [
+        323,
+        264
+      ],
+      [
+        322,
+        264
+      ],
+      [
+        321,
+        264
+      ],
+      [
+        320,
+        264
+      ],
+      [
+        319,
+        264
+      ],
+      [
+        318,
+        264
+      ],
+      [
+        317,
+        264
+      ],
+      [
+        315,
+        264
+      ],
+      [
+        314,
+        264
+      ],
+      [
+        313,
+        264
+      ],
+      [
+        312,
+        264
+      ],
+      [
+        311,
+        264
+      ],
+      [
+        310,
+        264
+      ],
+      [
+        309,
+        264
+      ],
+      [
+        308,
+        264
+      ],
+      [
+        307,
+        264
+      ],
+      [
+        306,
+        264
+      ],
+      [
+        305,
+        264
+      ],
+      [
+        303,
+        264
+      ],
+      [
+        302,
+        264
+      ],
+      [
+        301,
+        264
+      ],
+      [
+        300,
+        264
+      ],
+      [
+        299,
+        264
+      ],
+      [
+        298,
+        264
+      ],
+      [
+        297,
+        264
+      ],
+      [
+        296,
+        264
+      ],
+      [
+        295,
+        264
+      ],
+      [
+        294,
+        264
+      ],
+      [
+        293,
+        264
+      ],
+      [
+        292,
+        264
+      ],
+      [
+        291,
+        264
+      ],
+      [
+        290,
+        264
+      ],
+      [
+        289,
+        264
+      ],
+      [
+        288,
+        264
+      ],
+      [
+        287,
+        264
+      ],
+      [
+        286,
+        264
+      ],
+      [
+        285,
+        264
+      ],
+      [
+        284,
+        264
+      ],
+      [
+        283,
+        264
+      ],
+      [
+        282,
+        264
+      ],
+      [
+        282,
+        263
+      ],
+      [
+        281,
+        263
+      ],
+      [
+        280,
+        263
+      ],
+      [
+        279,
+        263
+      ],
+      [
+        278,
+        263
+      ],
+      [
+        277,
+        263
+      ],
+      [
+        276,
+        263
+      ],
+      [
+        275,
+        263
+      ],
+      [
+        274,
+        263
+      ],
+      [
+        273,
+        263
+      ],
+      [
+        272,
+        263
+      ],
+      [
+        271,
+        263
+      ],
+      [
+        270,
+        263
+      ],
+      [
+        269,
+        263
+      ],
+      [
+        268,
+        263
+      ],
+      [
+        267,
+        263
+      ],
+      [
+        266,
+        263
+      ],
+      [
+        265,
+        263
+      ],
+      [
+        264,
+        263
+      ],
+      [
+        263,
+        263
+      ],
+      [
+        262,
+        263
+      ],
+      [
+        261,
+        263
+      ],
+      [
+        260,
+        263
+      ],
+      [
+        259,
+        263
+      ],
+      [
+        258,
+        263
+      ],
+      [
+        257,
+        263
+      ],
+      [
+        256,
+        263
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 256,
+    "y": 263,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.43,
+    "keys": [
+      "ctrl",
+      "c"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 425,
+    "y": 272,
+    "delay": 0.472,
+    "auto_id": "HazardDescription",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "HazardDescription",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "1234567890",
+    "compare": "equals"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.614,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.208,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.204,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.176,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.176,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.172,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.184,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.204,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.196,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.24,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 736,
+    "y": 268,
+    "delay": 0.604,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 388,
+    "y": 347,
+    "delay": 0.59,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 393,
+    "y": 349,
+    "delay": 0.086,
+    "button": "left",
+    "path": [
+      [
+        388,
+        347
+      ],
+      [
+        390,
+        349
+      ],
+      [
+        391,
+        349
+      ],
+      [
+        392,
+        349
+      ],
+      [
+        393,
+        349
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 392,
+    "y": 349,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 754,
+    "y": 263,
+    "delay": 0.36,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 649,
+    "y": 340,
+    "delay": 0.358,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 785,
+    "y": 274,
+    "delay": 0.347,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 892,
+    "y": 365,
+    "delay": 0.412,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 304,
+    "y": 433,
+    "delay": 7.074,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 301,
+    "y": 521,
+    "delay": 4.732,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 154,
+    "y": 147,
+    "delay": 1.095,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 424,
+    "y": 475,
+    "delay": 0.801,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 200,
+    "y": 396,
+    "delay": 1.879,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 175,
+    "y": 67,
+    "delay": 3.567,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 102,
+    "y": 63,
+    "delay": 0.765,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_000O.png",
+    "delay": 1.849
+  },
+  {
+    "action_type": "click",
+    "x": 436,
+    "y": 56,
+    "delay": 1.157,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 127,
+    "y": 200,
+    "delay": 5.393,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 139,
+    "y": 157,
+    "delay": 1.084,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 378,
+    "y": 461,
+    "delay": 0.723,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 385,
+    "y": 375,
+    "delay": 0.531,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 172,
+    "y": 67,
+    "delay": 0.578,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 111,
+    "y": 71,
+    "delay": 0.494,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_001O.png",
+    "delay": 0.716
+  },
+  {
+    "action_type": "click",
+    "x": 447,
+    "y": 57,
+    "delay": 1.072,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 375,
+    "y": 458,
+    "delay": 1.183,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 694,
+    "y": 419,
+    "delay": 0.475,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "drag",
+    "x": 683,
+    "y": 419,
+    "delay": 0.093,
+    "button": "left",
+    "path": [
+      [
+        694,
+        419
+      ],
+      [
+        693,
+        419
+      ],
+      [
+        683,
+        419
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 694,
+    "y": 419,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 181,
+    "y": 68,
+    "delay": 0.559,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 113,
+    "y": 55,
+    "delay": 0.546,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_002O.png",
+    "delay": 0.67
+  },
+  {
+    "action_type": "click",
+    "x": 425,
+    "y": 74,
+    "delay": 0.99,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 388,
+    "y": 464,
+    "delay": 0.703,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 921,
+    "y": 390,
+    "delay": 0.563,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 162,
+    "y": 61,
+    "delay": 0.485,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 103,
+    "y": 65,
+    "delay": 0.431,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_003O.png",
+    "delay": 0.678
+  },
+  {
+    "action_type": "click",
+    "x": 427,
+    "y": 70,
+    "delay": 10.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 106,
+    "y": 404,
+    "delay": 10.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "TabListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 400,
+    "y": 431,
+    "delay": 1.233,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 407,
+    "y": 515,
+    "delay": 0.606,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 173,
+    "y": 76,
+    "delay": 1.347,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 93,
+    "y": 70,
+    "delay": 0.452,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_004O.png",
+    "delay": 1.427
+  },
+  {
+    "action_type": "click",
+    "x": 414,
+    "y": 54,
+    "delay": 1.056,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 382,
+    "y": 484,
+    "delay": 1.248,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 754,
+    "y": 387,
+    "delay": 0.474,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 162,
+    "y": 66,
+    "delay": 0.571,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 103,
+    "y": 64,
+    "delay": 0.459,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_005O.png",
+    "delay": 0.825
+  },
+  {
+    "action_type": "click",
+    "x": 416,
+    "y": 56,
+    "delay": 1.008,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 367,
+    "y": 466,
+    "delay": 0.797,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 457,
+    "y": 402,
+    "delay": 0.499,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 165,
+    "y": 59,
+    "delay": 0.546,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 97,
+    "y": 61,
+    "delay": 0.427,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_006O.png",
+    "delay": 0.86
+  },
+  {
+    "action_type": "click",
+    "x": 435,
+    "y": 72,
+    "delay": 0.724,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 403,
+    "y": 451,
+    "delay": 0.723,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 173,
+    "y": 389,
+    "delay": 0.427,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 168,
+    "y": 74,
+    "delay": 0.366,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Save",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Save",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 105,
+    "y": 68,
+    "delay": 0.4,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Back",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Back",
+    "compare": "equals"
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_007O.png",
+    "delay": 0.727
+  }
+]

@@ -1,0 +1,2740 @@
+[
+  {
+    "action_type": "click",
+    "x": 436,
+    "y": 65,
+    "delay": 6.33,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Attributes",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 397,
+    "y": 296,
+    "delay": 3.148,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "Ford 1",
+    "compare": "equals"
+  },
+  {
+    "action_type": "type",
+    "text": "1234567890",
+    "delay": 4.249
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 547,
+    "y": 307,
+    "delay": 0.007,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "1234567890",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 244,
+    "y": 267,
+    "delay": 0.306,
+    "button": "left",
+    "path": [
+      [
+        547,
+        307
+      ],
+      [
+        546,
+        307
+      ],
+      [
+        545,
+        307
+      ],
+      [
+        544,
+        307
+      ],
+      [
+        543,
+        307
+      ],
+      [
+        542,
+        307
+      ],
+      [
+        541,
+        307
+      ],
+      [
+        540,
+        307
+      ],
+      [
+        539,
+        307
+      ],
+      [
+        538,
+        307
+      ],
+      [
+        537,
+        307
+      ],
+      [
+        536,
+        307
+      ],
+      [
+        534,
+        307
+      ],
+      [
+        533,
+        307
+      ],
+      [
+        532,
+        307
+      ],
+      [
+        530,
+        307
+      ],
+      [
+        529,
+        307
+      ],
+      [
+        528,
+        307
+      ],
+      [
+        527,
+        307
+      ],
+      [
+        525,
+        307
+      ],
+      [
+        523,
+        307
+      ],
+      [
+        522,
+        307
+      ],
+      [
+        521,
+        307
+      ],
+      [
+        519,
+        307
+      ],
+      [
+        518,
+        307
+      ],
+      [
+        516,
+        306
+      ],
+      [
+        515,
+        306
+      ],
+      [
+        513,
+        306
+      ],
+      [
+        512,
+        306
+      ],
+      [
+        510,
+        306
+      ],
+      [
+        508,
+        306
+      ],
+      [
+        507,
+        306
+      ],
+      [
+        504,
+        306
+      ],
+      [
+        503,
+        306
+      ],
+      [
+        501,
+        306
+      ],
+      [
+        499,
+        306
+      ],
+      [
+        498,
+        306
+      ],
+      [
+        495,
+        306
+      ],
+      [
+        493,
+        306
+      ],
+      [
+        492,
+        306
+      ],
+      [
+        491,
+        306
+      ],
+      [
+        489,
+        306
+      ],
+      [
+        486,
+        305
+      ],
+      [
+        484,
+        305
+      ],
+      [
+        482,
+        305
+      ],
+      [
+        480,
+        305
+      ],
+      [
+        477,
+        305
+      ],
+      [
+        475,
+        305
+      ],
+      [
+        473,
+        304
+      ],
+      [
+        470,
+        304
+      ],
+      [
+        467,
+        304
+      ],
+      [
+        465,
+        303
+      ],
+      [
+        462,
+        303
+      ],
+      [
+        459,
+        303
+      ],
+      [
+        457,
+        303
+      ],
+      [
+        454,
+        303
+      ],
+      [
+        452,
+        303
+      ],
+      [
+        449,
+        303
+      ],
+      [
+        446,
+        302
+      ],
+      [
+        443,
+        302
+      ],
+      [
+        440,
+        301
+      ],
+      [
+        437,
+        301
+      ],
+      [
+        434,
+        300
+      ],
+      [
+        431,
+        300
+      ],
+      [
+        428,
+        300
+      ],
+      [
+        424,
+        300
+      ],
+      [
+        421,
+        299
+      ],
+      [
+        417,
+        298
+      ],
+      [
+        414,
+        298
+      ],
+      [
+        410,
+        297
+      ],
+      [
+        407,
+        297
+      ],
+      [
+        404,
+        297
+      ],
+      [
+        400,
+        296
+      ],
+      [
+        397,
+        295
+      ],
+      [
+        394,
+        295
+      ],
+      [
+        391,
+        294
+      ],
+      [
+        388,
+        293
+      ],
+      [
+        384,
+        293
+      ],
+      [
+        381,
+        293
+      ],
+      [
+        376,
+        292
+      ],
+      [
+        373,
+        291
+      ],
+      [
+        369,
+        291
+      ],
+      [
+        366,
+        290
+      ],
+      [
+        362,
+        289
+      ],
+      [
+        358,
+        289
+      ],
+      [
+        354,
+        289
+      ],
+      [
+        351,
+        288
+      ],
+      [
+        348,
+        287
+      ],
+      [
+        344,
+        286
+      ],
+      [
+        341,
+        285
+      ],
+      [
+        337,
+        285
+      ],
+      [
+        333,
+        285
+      ],
+      [
+        331,
+        284
+      ],
+      [
+        328,
+        284
+      ],
+      [
+        324,
+        283
+      ],
+      [
+        321,
+        282
+      ],
+      [
+        318,
+        281
+      ],
+      [
+        315,
+        281
+      ],
+      [
+        312,
+        281
+      ],
+      [
+        309,
+        280
+      ],
+      [
+        306,
+        279
+      ],
+      [
+        303,
+        279
+      ],
+      [
+        300,
+        278
+      ],
+      [
+        298,
+        278
+      ],
+      [
+        295,
+        278
+      ],
+      [
+        291,
+        277
+      ],
+      [
+        289,
+        276
+      ],
+      [
+        287,
+        276
+      ],
+      [
+        284,
+        275
+      ],
+      [
+        282,
+        275
+      ],
+      [
+        281,
+        275
+      ],
+      [
+        278,
+        274
+      ],
+      [
+        276,
+        274
+      ],
+      [
+        274,
+        273
+      ],
+      [
+        272,
+        272
+      ],
+      [
+        271,
+        272
+      ],
+      [
+        268,
+        272
+      ],
+      [
+        267,
+        272
+      ],
+      [
+        265,
+        271
+      ],
+      [
+        264,
+        271
+      ],
+      [
+        262,
+        270
+      ],
+      [
+        260,
+        270
+      ],
+      [
+        259,
+        270
+      ],
+      [
+        257,
+        270
+      ],
+      [
+        256,
+        270
+      ],
+      [
+        256,
+        269
+      ],
+      [
+        254,
+        269
+      ],
+      [
+        253,
+        268
+      ],
+      [
+        251,
+        268
+      ],
+      [
+        250,
+        268
+      ],
+      [
+        249,
+        268
+      ],
+      [
+        248,
+        268
+      ],
+      [
+        247,
+        267
+      ],
+      [
+        246,
+        267
+      ],
+      [
+        245,
+        267
+      ],
+      [
+        244,
+        267
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 244,
+    "y": 267,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.54,
+    "keys": [
+      "ctrl",
+      "c"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 508,
+    "y": 320,
+    "delay": 0.36,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "1234567890",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 501,
+    "y": 307,
+    "delay": 0.325,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Name",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "1234567890",
+    "compare": "equals"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.577,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.244,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.224,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.208,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.204,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.208,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.22,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.2,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.212,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.225,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.223,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 471,
+    "y": 661,
+    "delay": 2.301,
+    "auto_id": "General",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "General",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "General",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 466,
+    "y": 668,
+    "delay": 0.19,
+    "button": "left",
+    "path": [
+      [
+        471,
+        661
+      ],
+      [
+        470,
+        661
+      ],
+      [
+        470,
+        662
+      ],
+      [
+        469,
+        662
+      ],
+      [
+        466,
+        668
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 471,
+    "y": 661,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 385,
+    "y": 718,
+    "delay": 0.4,
+    "auto_id": "ListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 715,
+    "y": 669,
+    "delay": 0.571,
+    "auto_id": "Units",
+    "control_type": "ComboBox",
+    "button": "left"
+  },
+  {
+    "action_type": "drag",
+    "x": 716,
+    "y": 677,
+    "delay": 0.155,
+    "button": "left",
+    "path": [
+      [
+        715,
+        669
+      ],
+      [
+        716,
+        677
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 715,
+    "y": 669,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 709,
+    "y": 717,
+    "delay": 0.399,
+    "auto_id": "ListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 303,
+    "y": 788,
+    "delay": 4.711,
+    "auto_id": "ExpanderButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ExpanderButton",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Map Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.595,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.04,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.036,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.024,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.025,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 600,
+    "y": 451,
+    "delay": 0.063,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "click",
+    "x": 372,
+    "y": 720,
+    "delay": 0.553,
+    "auto_id": "Series",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.674,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.248,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.212,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.216,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.224,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.212,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.224,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.224,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.204,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.212,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.564,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 404,
+    "y": 785,
+    "delay": 0.534,
+    "auto_id": "Series",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Series",
+    "control_type": "Edit",
+    "property_name": "value",
+    "expected": "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 275,
+    "y": 692,
+    "delay": 0.457,
+    "button": "left",
+    "path": [
+      [
+        404,
+        785
+      ],
+      [
+        403,
+        786
+      ],
+      [
+        402,
+        786
+      ],
+      [
+        401,
+        786
+      ],
+      [
+        400,
+        786
+      ],
+      [
+        399,
+        786
+      ],
+      [
+        398,
+        786
+      ],
+      [
+        397,
+        786
+      ],
+      [
+        396,
+        786
+      ],
+      [
+        395,
+        785
+      ],
+      [
+        394,
+        785
+      ],
+      [
+        394,
+        784
+      ],
+      [
+        393,
+        784
+      ],
+      [
+        393,
+        783
+      ],
+      [
+        392,
+        783
+      ],
+      [
+        391,
+        783
+      ],
+      [
+        391,
+        782
+      ],
+      [
+        390,
+        782
+      ],
+      [
+        390,
+        781
+      ],
+      [
+        389,
+        781
+      ],
+      [
+        389,
+        780
+      ],
+      [
+        387,
+        779
+      ],
+      [
+        386,
+        778
+      ],
+      [
+        385,
+        776
+      ],
+      [
+        384,
+        776
+      ],
+      [
+        383,
+        775
+      ],
+      [
+        381,
+        773
+      ],
+      [
+        380,
+        772
+      ],
+      [
+        379,
+        771
+      ],
+      [
+        378,
+        769
+      ],
+      [
+        377,
+        769
+      ],
+      [
+        376,
+        768
+      ],
+      [
+        375,
+        767
+      ],
+      [
+        374,
+        766
+      ],
+      [
+        372,
+        764
+      ],
+      [
+        370,
+        763
+      ],
+      [
+        370,
+        762
+      ],
+      [
+        369,
+        761
+      ],
+      [
+        368,
+        760
+      ],
+      [
+        367,
+        759
+      ],
+      [
+        366,
+        759
+      ],
+      [
+        366,
+        758
+      ],
+      [
+        365,
+        757
+      ],
+      [
+        364,
+        756
+      ],
+      [
+        363,
+        756
+      ],
+      [
+        362,
+        755
+      ],
+      [
+        361,
+        754
+      ],
+      [
+        360,
+        753
+      ],
+      [
+        359,
+        752
+      ],
+      [
+        358,
+        751
+      ],
+      [
+        357,
+        750
+      ],
+      [
+        356,
+        750
+      ],
+      [
+        355,
+        749
+      ],
+      [
+        354,
+        748
+      ],
+      [
+        354,
+        747
+      ],
+      [
+        353,
+        747
+      ],
+      [
+        352,
+        747
+      ],
+      [
+        352,
+        746
+      ],
+      [
+        351,
+        746
+      ],
+      [
+        351,
+        745
+      ],
+      [
+        350,
+        745
+      ],
+      [
+        350,
+        744
+      ],
+      [
+        349,
+        743
+      ],
+      [
+        348,
+        743
+      ],
+      [
+        347,
+        742
+      ],
+      [
+        346,
+        741
+      ],
+      [
+        345,
+        740
+      ],
+      [
+        344,
+        739
+      ],
+      [
+        344,
+        738
+      ],
+      [
+        343,
+        738
+      ],
+      [
+        342,
+        737
+      ],
+      [
+        341,
+        737
+      ],
+      [
+        341,
+        736
+      ],
+      [
+        340,
+        735
+      ],
+      [
+        339,
+        734
+      ],
+      [
+        338,
+        733
+      ],
+      [
+        337,
+        733
+      ],
+      [
+        336,
+        732
+      ],
+      [
+        336,
+        731
+      ],
+      [
+        335,
+        731
+      ],
+      [
+        335,
+        730
+      ],
+      [
+        334,
+        730
+      ],
+      [
+        333,
+        729
+      ],
+      [
+        332,
+        728
+      ],
+      [
+        331,
+        727
+      ],
+      [
+        330,
+        727
+      ],
+      [
+        330,
+        726
+      ],
+      [
+        329,
+        726
+      ],
+      [
+        329,
+        725
+      ],
+      [
+        328,
+        725
+      ],
+      [
+        328,
+        724
+      ],
+      [
+        327,
+        724
+      ],
+      [
+        326,
+        723
+      ],
+      [
+        325,
+        722
+      ],
+      [
+        324,
+        721
+      ],
+      [
+        324,
+        720
+      ],
+      [
+        323,
+        720
+      ],
+      [
+        322,
+        719
+      ],
+      [
+        321,
+        718
+      ],
+      [
+        320,
+        718
+      ],
+      [
+        320,
+        717
+      ],
+      [
+        320,
+        716
+      ],
+      [
+        319,
+        716
+      ],
+      [
+        318,
+        715
+      ],
+      [
+        318,
+        714
+      ],
+      [
+        317,
+        714
+      ],
+      [
+        317,
+        713
+      ],
+      [
+        316,
+        713
+      ],
+      [
+        316,
+        712
+      ],
+      [
+        315,
+        711
+      ],
+      [
+        314,
+        711
+      ],
+      [
+        314,
+        710
+      ],
+      [
+        313,
+        710
+      ],
+      [
+        313,
+        709
+      ],
+      [
+        313,
+        708
+      ],
+      [
+        312,
+        708
+      ],
+      [
+        312,
+        707
+      ],
+      [
+        311,
+        707
+      ],
+      [
+        310,
+        706
+      ],
+      [
+        310,
+        705
+      ],
+      [
+        309,
+        705
+      ],
+      [
+        309,
+        704
+      ],
+      [
+        308,
+        704
+      ],
+      [
+        308,
+        703
+      ],
+      [
+        307,
+        703
+      ],
+      [
+        306,
+        703
+      ],
+      [
+        306,
+        702
+      ],
+      [
+        305,
+        702
+      ],
+      [
+        305,
+        701
+      ],
+      [
+        304,
+        701
+      ],
+      [
+        304,
+        700
+      ],
+      [
+        303,
+        700
+      ],
+      [
+        302,
+        700
+      ],
+      [
+        301,
+        700
+      ],
+      [
+        301,
+        699
+      ],
+      [
+        300,
+        699
+      ],
+      [
+        299,
+        699
+      ],
+      [
+        298,
+        699
+      ],
+      [
+        297,
+        699
+      ],
+      [
+        297,
+        698
+      ],
+      [
+        296,
+        698
+      ],
+      [
+        295,
+        698
+      ],
+      [
+        295,
+        697
+      ],
+      [
+        294,
+        697
+      ],
+      [
+        293,
+        697
+      ],
+      [
+        292,
+        696
+      ],
+      [
+        291,
+        696
+      ],
+      [
+        290,
+        696
+      ],
+      [
+        289,
+        696
+      ],
+      [
+        289,
+        695
+      ],
+      [
+        288,
+        695
+      ],
+      [
+        287,
+        695
+      ],
+      [
+        286,
+        695
+      ],
+      [
+        285,
+        695
+      ],
+      [
+        284,
+        694
+      ],
+      [
+        283,
+        694
+      ],
+      [
+        282,
+        694
+      ],
+      [
+        281,
+        694
+      ],
+      [
+        280,
+        694
+      ],
+      [
+        280,
+        693
+      ],
+      [
+        279,
+        693
+      ],
+      [
+        278,
+        693
+      ],
+      [
+        278,
+        692
+      ],
+      [
+        277,
+        692
+      ],
+      [
+        276,
+        692
+      ],
+      [
+        275,
+        692
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 275,
+    "y": 692,
+    "delay": 0.001,
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.415,
+    "keys": [
+      "ctrl",
+      "c"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 760,
+    "y": 718,
+    "delay": 0.489,
+    "auto_id": "Edition",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.542,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.192,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.207,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 741,
+    "y": 877,
+    "delay": 0.326,
+    "auto_id": "Sheet",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.173,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.208,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.172,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 535,
+    "y": 886,
+    "delay": 0.618,
+    "auto_id": "MapInfo",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "MapInfo",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Map Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 478,
+    "y": 393,
+    "delay": 0.975,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "scroll",
+    "x": 1103,
+    "y": 582,
+    "delay": 0.654,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1103,
+    "y": 582,
+    "delay": 0.027,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1103,
+    "y": 582,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1103,
+    "y": 582,
+    "delay": 0.03,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1103,
+    "y": 582,
+    "delay": 0.03,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1102,
+    "y": 582,
+    "delay": 0.051,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "click",
+    "x": 497,
+    "y": 844,
+    "delay": 0.791,
+    "auto_id": "Scale",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.225,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.412,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 784,
+    "y": 906,
+    "delay": 0.54,
+    "auto_id": "MapName",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.147,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.224,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.968,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.02,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.018,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.033,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1132,
+    "y": 728,
+    "delay": 0.026,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "click",
+    "x": 537,
+    "y": 974,
+    "delay": 0.787,
+    "auto_id": "ExpanderButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ExpanderButton",
+    "control_type": "Button",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 453,
+    "y": 811,
+    "delay": 0.743,
+    "auto_id": "TownName",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.326,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.228,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.205,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 703,
+    "y": 813,
+    "delay": 0.516,
+    "auto_id": "Distance",
+    "control_type": "Edit",
+    "button": "left"
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.183,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.184,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "hotkey",
+    "delay": 0.196,
+    "keys": [
+      "ctrl",
+      "v"
+    ]
+  },
+  {
+    "action_type": "click",
+    "x": 497,
+    "y": 969,
+    "delay": 0.467,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 465,
+    "y": 354,
+    "delay": 0.694,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 1.131,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.543,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.045,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_000O.png",
+    "delay": 0.906
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.712,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.016,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.011,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.016,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.022,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.016,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.028,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.331,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.038,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.014,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.022,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.02,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.013,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.029,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.373,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.022,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.02,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.017,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1050,
+    "y": 563,
+    "delay": 0.032,
+    "scroll_dx": 0,
+    "scroll_dy": 1
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_001O.png",
+    "delay": 1.498
+  },
+  {
+    "action_type": "scroll",
+    "x": 618,
+    "y": 565,
+    "delay": 5.784,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 614,
+    "y": 569,
+    "delay": 0.044,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 610,
+    "y": 576,
+    "delay": 0.031,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 607,
+    "y": 580,
+    "delay": 0.03,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 606,
+    "y": 581,
+    "delay": 0.01,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 604,
+    "y": 582,
+    "delay": 0.016,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 602,
+    "y": 583,
+    "delay": 0.016,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 598,
+    "y": 587,
+    "delay": 0.046,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 598,
+    "y": 587,
+    "delay": 0.271,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 598,
+    "y": 587,
+    "delay": 0.019,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 598,
+    "y": 587,
+    "delay": 0.013,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 598,
+    "y": 587,
+    "delay": 0.021,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 598,
+    "y": 587,
+    "delay": 0.013,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 595,
+    "y": 592,
+    "delay": 0.025,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 557,
+    "y": 668,
+    "delay": 0.408,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 557,
+    "y": 668,
+    "delay": 0.025,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 557,
+    "y": 668,
+    "delay": 0.016,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 557,
+    "y": 668,
+    "delay": 0.019,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "click",
+    "x": 423,
+    "y": 894,
+    "delay": 0.455,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 590,
+    "y": 370,
+    "delay": 0.485,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 455,
+    "y": 925,
+    "delay": 0.52,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 804,
+    "y": 447,
+    "delay": 0.482,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 468,
+    "y": 899,
+    "delay": 0.58,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1068,
+    "y": 380,
+    "delay": 0.483,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 491,
+    "y": 906,
+    "delay": 0.594,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 1472,
+    "y": 403,
+    "delay": 0.468,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 549,
+    "y": 909,
+    "delay": 0.694,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "drag",
+    "x": 553,
+    "y": 906,
+    "delay": 0.062,
+    "button": "left",
+    "path": [
+      [
+        549,
+        909
+      ],
+      [
+        550,
+        909
+      ],
+      [
+        551,
+        909
+      ],
+      [
+        553,
+        906
+      ]
+    ]
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 551,
+    "y": 909,
+    "delay": 0.0,
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 1697,
+    "y": 407,
+    "delay": 0.478,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 475,
+    "y": 911,
+    "delay": 0.5,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 205,
+    "y": 614,
+    "delay": 0.449,
+    "auto_id": "RootButton",
+    "control_type": "Button",
+    "button": "left"
+  },
+  {
+    "action_type": "click",
+    "x": 514,
+    "y": 910,
+    "delay": 0.529,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "NearestTown",
+    "control_type": "Group",
+    "property_name": "name",
+    "expected": "Nearest Town Information",
+    "compare": "equals"
+  },
+  {
+    "action_type": "click",
+    "x": 447,
+    "y": 631,
+    "delay": 0.457,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "button": "left"
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "ItemSelectorListBox",
+    "control_type": "List",
+    "property_name": "name",
+    "expected": "['', '']",
+    "compare": "equals"
+  },
+  {
+    "action_type": "scroll",
+    "x": 1088,
+    "y": 690,
+    "delay": 2.856,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1088,
+    "y": 690,
+    "delay": 0.021,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1088,
+    "y": 690,
+    "delay": 0.012,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1088,
+    "y": 690,
+    "delay": 0.02,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "scroll",
+    "x": 1088,
+    "y": 690,
+    "delay": 0.022,
+    "scroll_dx": 0,
+    "scroll_dy": -1
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_002O.png",
+    "delay": 1.137
+  }
+]

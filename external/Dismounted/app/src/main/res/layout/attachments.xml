@@ -1,0 +1,29 @@
+
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <data>
+        <variable
+            name="viewModel"
+            type="com.rgi.enfire.dismounted.atak.ui.entity.viewmodel.attachment.AttachmentsTabViewModel" />
+    </data>
+    <ViewFlipper
+        android:id="@+id/attachments_view_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            layout="@layout/attachments_manager"
+            android:id="@+id/attachments_manager"
+            app:viewModel="@{viewModel}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+        <include
+            layout="@layout/attachments_picker"
+            android:id="@+id/attachments_picker"
+            app:viewModel="@{viewModel.attachmentPickerViewModel}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+    </ViewFlipper>
+</layout>

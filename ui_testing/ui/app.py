@@ -1,13 +1,16 @@
 # ui_testing/ui/app.py
 from __future__ import annotations
 
+import json
+import sys
 import logging
 import os
 import threading
 import time
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext
@@ -20,13 +23,18 @@ try:
 except Exception:
     pynput_keyboard = None  # type: ignore[attr-defined]
 
-from ui_testing.environment import Paths, build_default_paths, resource_path
-from ui_testing.dialogs import NewRecordingDialog, RecordingRequest
-from ui_testing.player import Player, PlayerConfig
-from ui_testing.recorder import Recorder, RecorderConfig
-from ui_testing.ai_summarizer import write_run_bug_report, BugNote
-from ui_testing.settings import AppSettings
-from ui_testing.testplan import TestPlanReporter
+package_root = Path(__file__).resolve().parents[2]
+if str(package_root) not in sys.path:
+    sys.path.insert(0, str(package_root))
+
+from ui_testing.app.environment import Paths, build_default_paths, resource_path
+from ui_testing.ui.dialogs import NewRecordingDialog, RecordingRequest
+from ui_testing.ui.background import VideoBackground
+from ui_testing.automation.player import Player, PlayerConfig
+from ui_testing.automation.recorder import Recorder, RecorderConfig
+from ui_testing.services.ai_summarizer import write_run_bug_report, BugNote
+from ui_testing.app.settings import AppSettings
+from ui_testing.services.testplan import TestPlanReporter
 from ui_testing.ui.notes import NoteEntry
 from ui_testing.ui.panels import (
     ActionsPanel,
@@ -36,8 +44,19 @@ from ui_testing.ui.panels import (
     LogPanel,
     open_path_in_explorer,
 )
+from ui_testing.ui.settings_dialog import SettingsDialog
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class _NullBackground:
+    """Fallback background controller when no video is available."""
+
+    def start(self) -> None:  # pragma: no cover - trivial no-op
+        return
+
+    def stop(self) -> None:  # pragma: no cover - trivial no-op
+        return
 
 
 class TestRunnerApp:
@@ -51,6 +70,10 @@ class TestRunnerApp:
         self._default_geometry = "1480x940"
         self.root.geometry(self._default_geometry)
         try:
+            self.root.minsize(1180, 720)
+        except Exception:
+            pass
+        try:
             self.root.iconbitmap(resource_path("assets/ui_testing.ico"))
         except Exception:
             pass
@@ -60,15 +83,20 @@ class TestRunnerApp:
         self.tolerance_var = tk.DoubleVar(master=self.root, value=0.01)
         self.use_default_delay_var = tk.BooleanVar(master=self.root, value=False)
         self.use_automation_ids_var = tk.BooleanVar(master=self.root, value=True)
+        self.use_screenshots_var = tk.BooleanVar(master=self.root, value=True)
+        self.prefer_semantic_var = tk.BooleanVar(master=self.root, value=True)
         self.normalize_label_var = tk.StringVar(master=self.root, value="Normalize: Not set")
+        self._theme_choices = sorted(set(self.root.style.theme_names()))
 
         # --- filesystem paths & persisted settings ---
         self.paths: Paths = build_default_paths()
-        self.settings_path = self.paths.root / "ui_settings.json"
+        self.settings_path = self.paths.data_root / "ui_settings.json"
+        self._log_file = self.paths.logs_dir / "ui_testing.log"
         self.settings = AppSettings.load(self.settings_path)
         self.normalize_script: Optional[str] = self.settings.normalize_script
         self._apply_settings_to_variables()
         self.paths.tolerance = float(self.tolerance_var.get())
+        self.automation_manifest: Dict[str, Dict[str, str]] = self._load_automation_manifest()
 
         if self.paths.test_plan:
             _LOGGER.info("Detected test plan: %s", self.paths.test_plan)
@@ -84,6 +112,7 @@ class TestRunnerApp:
         # --- logging ---
         self._setup_logging()
 
+        self._background = self._init_background()
         self._body_paned = None
         self._left_panes = None
 
@@ -106,8 +135,12 @@ class TestRunnerApp:
                 diff_tolerance_percent=float(self.tolerance_var.get()),
                 use_default_delay_always=bool(self.use_default_delay_var.get()),
                 use_automation_ids=bool(self.use_automation_ids_var.get()),
+                use_screenshots=bool(self.use_screenshots_var.get()),
+                prefer_semantic_scripts=bool(self.prefer_semantic_var.get()),
+                automation_manifest=self.automation_manifest or None,
             )
         )
+        self.player.update_automation_manifest(self.automation_manifest)
 
         # --- GUI assembly ---
         self.actions_panel: ActionsPanel
@@ -128,10 +161,15 @@ class TestRunnerApp:
         self.root.protocol("WM_DELETE_WINDOW", self._on_window_close)
 
         self.root.deiconify()
+        try:
+            self._background.start()
+        except Exception:
+            pass
         self._load_tests()
         self.root.bind("<KeyPress-f>", self._global_escape)
         self.root.bind("<KeyPress-F>", self._global_escape)
         self.root.bind("<Configure>", self._on_window_resize)
+        self._bind_shortcuts()
         self._start_global_hotkeys()
 
     # ------------------------------------------------------------------
@@ -140,21 +178,18 @@ class TestRunnerApp:
     def _build_layout(self) -> None:
         self.actions_panel = ActionsPanel(
             self.root,
-            theme_var=self.theme_var,
-            default_delay_var=self.default_delay_var,
-            tolerance_var=self.tolerance_var,
-            use_default_delay_var=self.use_default_delay_var,
-            use_automation_ids_var=self.use_automation_ids_var,
-            normalize_label_var=self.normalize_label_var,
             record_callback=self.start_recording,
             stop_record_callback=self.stop_recording,
             run_selected_callback=self.run_selected,
             run_all_callback=self.run_all,
             normalize_callback=self.run_normalize_script,
             choose_normalize_callback=self.select_normalize_script,
+            normalize_label_var=self.normalize_label_var,
+            clear_normalize_callback=self.clear_normalize_script,
             open_logs_callback=self.open_logs,
             instructions_callback=self.show_instructions,
-            theme_change_callback=self._on_theme_change,
+            settings_callback=self.open_settings_dialog,
+            semantic_helper_callback=self.semantic_upgrade_selected_scripts,
         )
         self.actions_panel.pack(side=tk.TOP, fill=tk.X)
 
@@ -204,8 +239,66 @@ class TestRunnerApp:
 
         self._update_normalize_label()
 
+    def _init_background(self) -> VideoBackground | _NullBackground:
+        """Create the ambient video background if a source can be found."""
+        try:
+            video_path = self._resolve_background_video()
+        except Exception:
+            _LOGGER.exception("Failed to resolve video background path.")
+            return _NullBackground()
+        if video_path is None:
+            _LOGGER.info("Video background not available; continuing without it.")
+            return _NullBackground()
+        try:
+            return VideoBackground(self.root, video_path, alpha=0.42)
+        except Exception:
+            _LOGGER.exception("Failed to initialize video background.")
+            return _NullBackground()
+
+    def _resolve_background_video(self) -> Optional[str]:
+        """Locate the background video, honoring overrides and fallbacks."""
+        candidates: List[Path] = []
+
+        env_override = os.environ.get("UI_TESTING_BACKGROUND")
+        if env_override:
+            candidates.append(Path(env_override).expanduser())
+
+        settings_override = getattr(self.settings, "background_video", None)
+        if settings_override:
+            candidates.append(Path(settings_override).expanduser())
+
+        module_path = Path(__file__).resolve()
+        repo_assets = module_path.parents[2] / "assets" / "background.mp4"
+        candidates.append(repo_assets)
+
+        parent_assets = module_path.parents[3] / "assets" / "background.mp4"
+        if parent_assets != repo_assets:
+            candidates.append(parent_assets)
+
+        for candidate in candidates:
+            if candidate.is_file():
+                resolved = str(candidate)
+                _LOGGER.info("Using video background: %s", resolved)
+                return resolved
+        return None
+
     def _setup_logging(self) -> None:
         root_logger = logging.getLogger()
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        file_handler_attached = False
+        try:
+            self._log_file.parent.mkdir(parents=True, exist_ok=True)
+            for handler in root_logger.handlers:
+                if isinstance(handler, logging.FileHandler) and getattr(handler, "baseFilename", None) == str(self._log_file):
+                    file_handler_attached = True
+                    break
+            if not file_handler_attached:
+                file_handler = RotatingFileHandler(self._log_file, maxBytes=1_048_576, backupCount=3, encoding="utf-8")
+                file_handler.setFormatter(formatter)
+                root_logger.addHandler(file_handler)
+        except Exception:
+            logging.exception("Failed to initialize file logging")
+
         if not root_logger.handlers:
             logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
         else:
@@ -385,6 +478,16 @@ class TestRunnerApp:
             return
         self._run_scripts_async([self.normalize_script])
 
+    def clear_normalize_script(self) -> None:
+        if not self.normalize_script:
+            messagebox.showinfo("Normalize ENFIRE", "No normalization script is currently set.", parent=self.root)
+            return
+        self.normalize_script = None
+        self.settings.normalize_script = None
+        self._update_normalize_label()
+        self._save_settings()
+        _LOGGER.info("Normalize script cleared.")
+
     def _run_scripts_async(self, scripts: Sequence[str]) -> None:
         self.player.config.wait_between_actions = float(self.default_delay_var.get())
         tol = float(self.tolerance_var.get())
@@ -398,6 +501,7 @@ class TestRunnerApp:
 
         self.results_panel.clear()
         self.preview_panel.reset()
+        self.results_panel.begin_run(len(scripts))
         self._player_running = True
         self.player.request_stop(clear_only=True)
 
@@ -405,25 +509,120 @@ class TestRunnerApp:
         thread.start()
 
     def _run_scripts_worker(self, scripts: Sequence[str]) -> None:
-        for script_rel in scripts:
+        last_procedure: Optional[str] = None
+        total_scripts = max(1, len(scripts))
+        for idx, script_rel in enumerate(scripts, start=1):
             if self.player.should_stop():
                 _LOGGER.info("Playback interrupted by user (F).")
                 break
+            procedure = self._extract_procedure(script_rel)
+            if procedure and procedure != last_procedure:
+                self._normalize_if_required(procedure, script_rel)
+                last_procedure = procedure
+            self._focus_target_app()
             _LOGGER.info("Running: %s", script_rel)
             try:
                 results = self.player.play(script_rel)
+                summary_entry = next((r for r in results if str(r.get("index")).lower() == "summary"), None)
+                has_result_fail = any(
+                    r.get("status") == "fail" for r in results if str(r.get("index")).lower() != "summary"
+                )
                 script_failed = any(r.get("status", "fail") != "pass" for r in results)
+                warn_only = False
+                if summary_entry and summary_entry.get("status") == "warn" and not has_result_fail:
+                    warn_only = True
                 if script_failed:
-                    self._register_note(script_rel, results)
+                    if warn_only:
+                        note = summary_entry.get("note", "Semantic playback executed without any validations.") if summary_entry else "Semantic playback executed without any validations."
+                        self._notify_semantic_warning(script_rel, note)
+                    else:
+                        self._register_note(script_rel, results)
                 else:
                     self._report_test_outcome(script_rel, True)
                 self._append_results(script_rel, results)
+                last_checkpoint: Optional[str] = None
+                checkpoint_ts: Optional[str] = None
+                if results:
+                    detail_entries = [r for r in results if str(r.get("index")).lower() != "summary"]
+                    last_entry = detail_entries[-1] if detail_entries else None
+                    if last_entry:
+                        raw_idx = last_entry.get("index")
+                        try:
+                            last_checkpoint = str(int(raw_idx) + 1)
+                        except Exception:
+                            if raw_idx not in (None, ""):
+                                last_checkpoint = str(raw_idx)
+                        timestamp_val = last_entry.get("timestamp")
+                        if timestamp_val:
+                            checkpoint_ts = str(timestamp_val)
+                self._queue_progress_update(script_rel, idx, total_scripts, last_checkpoint, checkpoint_ts)
                 if script_failed:
                     self._report_test_outcome(script_rel, False)
             except Exception as exc:
                 logging.exception("Playback error for %s: %s", script_rel, exc)
                 self._report_test_outcome(script_rel, False)
+                self._queue_progress_update(script_rel, idx, total_scripts, None, None)
         self._player_running = False
+
+    def _extract_procedure(self, script_rel: str) -> Optional[str]:
+        try:
+            parts = Path(script_rel).parts
+            return parts[0] if parts else None
+        except Exception:
+            return None
+
+    def _normalize_if_required(self, procedure: str, current_script: str) -> None:
+        if not self.normalize_script:
+            return
+        norm = self.normalize_script
+        if not norm or norm == current_script:
+            return
+        script_path = (self.paths.scripts_dir / f"{norm}.json").resolve()
+        if not script_path.exists():
+            _LOGGER.debug("Normalize script missing (%s); skipping.", script_path)
+            return
+        try:
+            _LOGGER.info("Normalizing procedure %s using %s", procedure, norm)
+            self._focus_target_app()
+            self.player.play(norm)
+        except Exception as exc:
+            logging.exception("Normalization failed for %s (%s): %s", procedure, norm, exc)
+
+    def _focus_target_app(self) -> None:
+        regex = getattr(self, "target_app_regex", None)
+        if not regex:
+            return
+        try:
+            from pywinauto import Desktop as PwDesktop  # type: ignore
+            desktop = PwDesktop(backend="uia")
+            window = desktop.window(title_re=regex)
+            try:
+                window.set_focus()
+            except Exception:
+                try:
+                    window.set_keyboard_focus()
+                except Exception:
+                    pass
+        except Exception as exc:
+            _LOGGER.debug("Unable to focus target app (%s): %s", regex, exc)
+
+    def _queue_progress_update(
+        self,
+        script: str,
+        index: int,
+        total: int,
+        checkpoint: Optional[str],
+        checkpoint_ts: Optional[str],
+    ) -> None:
+        try:
+            self.root.after(
+                0,
+                lambda s=script, i=index, t=total, c=checkpoint, ts=checkpoint_ts: self.results_panel.update_progress(
+                    s, i, t, c, ts
+                ),
+            )
+        except Exception:
+            pass
 
     def stop_playback(self) -> None:
         self.player.request_stop()
@@ -436,6 +635,20 @@ class TestRunnerApp:
             self.root.after(0, lambda: self.results_panel.append_results(script_name, results))
         except Exception:
             pass
+
+    def _notify_semantic_warning(self, script_rel: str, note: str) -> None:
+        message = f"{script_rel}\n{note}"
+
+        def _show() -> None:
+            try:
+                ToastNotification(title="Semantic Warning", message=message, duration=6000, bootstyle="warning").show_toast()
+            except Exception:
+                messagebox.showwarning("Semantic Warning", message, parent=self.root)
+
+        try:
+            self.root.after(0, _show)
+        except Exception:
+            _show()
 
     def _register_note(self, script_rel: str, results: Sequence[Dict[str, str]]) -> None:
         note: Optional[BugNote] = write_run_bug_report(self.paths, script_rel, results)
@@ -591,6 +804,30 @@ class TestRunnerApp:
                 pass
         self._hotkey_listener = None
 
+    def _bind_shortcuts(self) -> None:
+        """Register accelerator keys advertised in tooltips."""
+        bindings: Dict[str, Callable[[tk.Event], str]] = {
+            "<Control-r>": self._shortcut_start_recording,
+            "<Control-R>": self._shortcut_start_recording,
+            "<Control-Return>": self._shortcut_run_selected,
+            "<Control-KP_Enter>": self._shortcut_run_selected,
+        }
+        for sequence, handler in bindings.items():
+            try:
+                self.root.bind_all(sequence, handler, add=True)
+            except Exception:
+                _LOGGER.debug("Unable to bind shortcut %s", sequence)
+
+    def _shortcut_start_recording(self, _event: tk.Event) -> str:
+        if self.recorder and getattr(self.recorder, "running", False):
+            return "break"
+        self.start_recording()
+        return "break"
+
+    def _shortcut_run_selected(self, _event: tk.Event) -> str:
+        self.run_selected()
+        return "break"
+
     def _on_global_key_press(self, key) -> None:
         if pynput_keyboard is None:
             return
@@ -617,6 +854,10 @@ class TestRunnerApp:
         self._save_settings()
         self._stop_global_hotkeys()
         try:
+            self._background.stop()
+        except Exception:
+            pass
+        try:
             self.root.destroy()
         except Exception:
             pass
@@ -630,6 +871,146 @@ class TestRunnerApp:
             open_path_in_explorer(target)
         except Exception:
             messagebox.showinfo("Open Logs", str(target), parent=self.root)
+
+    def open_settings_dialog(self, _event: Optional[tk.Event] = None) -> None:
+        dialog = SettingsDialog(
+            self.root,
+            theme_var=self.theme_var,
+            theme_choices=self._theme_choices,
+            default_delay_var=self.default_delay_var,
+            tolerance_var=self.tolerance_var,
+            use_default_delay_var=self.use_default_delay_var,
+            use_automation_ids_var=self.use_automation_ids_var,
+            use_screenshots_var=self.use_screenshots_var,
+            prefer_semantic_var=self.prefer_semantic_var,
+            theme_change_callback=self._on_theme_change,
+        )
+        self._popup_over_root(dialog)
+
+    def semantic_upgrade_selected_scripts(self) -> None:
+        scripts = self.tests_panel.selected_scripts()
+        if not scripts:
+            messagebox.showinfo("Semantic Helper", "Select at least one test in the Available Tests panel.", parent=self.root)
+            return
+        stats_updated: List[str] = []
+        stats_skipped: List[str] = []
+        total_asserts_added = 0
+        for rel in scripts:
+            base_path = self.paths.scripts_dir / f"{rel}.json"
+            if not base_path.exists():
+                continue
+            try:
+                actions = json.loads(base_path.read_text(encoding="utf-8"))
+            except Exception as exc:
+                _LOGGER.warning("Failed to load %s: %s", base_path, exc)
+                continue
+            upgrade = self._upgrade_script_actions(actions)
+            if upgrade is None:
+                stats_skipped.append(rel)
+                continue
+            semantic_actions, removed, inserted = upgrade
+            semantic_path = base_path.with_suffix(".semantic.json")
+            if not semantic_path.exists() or semantic_actions != actions or removed:
+                semantic_path.write_text(json.dumps(semantic_actions, indent=2), encoding="utf-8")
+                stats_updated.append(rel)
+                total_asserts_added += inserted
+        summary: List[str] = []
+        if stats_updated:
+            summary.append(f"Wrote semantic variants (*.semantic.json) for {len(stats_updated)} test(s).")
+            summary.append("Use Settings -> Prefer semantic assertions to play them back.")
+            summary.append(f"Inserted {total_asserts_added} semantic assertion(s).")
+        if stats_skipped:
+            summary.append(f"Skipped {len(stats_skipped)} script(s) without Automation IDs to upgrade.")
+        if not summary:
+            summary.append("Scripts already contain semantic checks.")
+        messagebox.showinfo("Semantic Helper", "\n".join(summary), parent=self.root)
+
+    def _upgrade_script_actions(self, actions: Any) -> Optional[tuple[List[Dict[str, Any]], bool, int]]:
+        if not isinstance(actions, list):
+            return None
+        changed: List[Dict[str, Any]] = []
+        removed_screenshots = False
+        assertions_added = 0
+        for idx, action in enumerate(actions):
+            a_type = action.get("action_type")
+            if a_type == "screenshot":
+                removed_screenshots = True
+                continue
+            changed.append(action)
+            if a_type == "click":
+                auto_id = action.get("auto_id")
+                if not auto_id:
+                    continue
+                auto_id_str = str(auto_id)
+                if self._has_assert_following(actions, idx, auto_id_str):
+                    continue
+                expected = action.get("text") or action.get("value")
+                if not expected:
+                    lookup = getattr(self.player, "_automation_lookup", {}).get(auto_id_str)
+                    if lookup:
+                        expected = lookup[1]
+                if not expected:
+                    expected = auto_id_str
+                changed.append(
+                    {
+                        "action_type": "assert.property",
+                        "delay": 0.0,
+                        "auto_id": auto_id_str,
+                        "control_type": action.get("control_type"),
+                        "property": "name",
+                        "expected": expected,
+                        "compare": "equals",
+                    }
+                )
+                assertions_added += 1
+        if assertions_added == 0:
+            return None
+        return changed, removed_screenshots, assertions_added
+
+    def _has_assert_following(self, actions: List[Dict[str, Any]], start_index: int, auto_id: str) -> bool:
+        for offset in (1, 2):
+            idx = start_index + offset
+            if idx >= len(actions):
+                break
+            nxt = actions[idx]
+            if nxt.get("action_type") == "assert.property" and str(nxt.get("auto_id")) == auto_id:
+                return True
+            if nxt.get("action_type") not in {"screenshot", "mouse_move", "click"}:
+                break
+        return False
+
+    def _load_automation_manifest(self) -> Dict[str, Dict[str, str]]:
+        candidates = [
+            self.paths.root / "automation_ids.json",
+            self.paths.root / "automation" / "automation_ids.json",
+            self.paths.root / "ui_testing" / "automation" / "manifest" / "automation_ids.json",
+        ]
+        for path in candidates:
+            try:
+                if path.exists():
+                    raw = json.loads(path.read_text(encoding="utf-8"))
+                    groups = raw.get("groups") if isinstance(raw, dict) else None
+                    manifest_input = groups if isinstance(groups, dict) else raw
+                    manifest: Dict[str, Dict[str, str]] = {}
+                    if isinstance(manifest_input, dict):
+                        for group, mapping in manifest_input.items():
+                            if not isinstance(mapping, dict):
+                                continue
+                            target: Dict[str, str] = {}
+                            for name, payload in mapping.items():
+                                if isinstance(payload, dict):
+                                    automation_id = payload.get("id") or payload.get("automation_id")
+                                else:
+                                    automation_id = str(payload)
+                                if automation_id:
+                                    target[str(name)] = str(automation_id)
+                            if target:
+                                manifest[str(group)] = target
+                    if manifest:
+                        return manifest
+            except Exception:
+                logging.warning("Failed to load automation manifest from %s", path)
+        return {}
 
     def open_json(self, rel: str) -> None:
         path = self.paths.scripts_dir / f"{rel}.json"
@@ -671,7 +1052,7 @@ class TestRunnerApp:
     # ------------------------------------------------------------------
     # Instructions & theme
     # ------------------------------------------------------------------
-    def show_instructions(self) -> None:
+    def show_instructions(self, _event: Optional[tk.Event] = None) -> None:
         win = tk.Toplevel(self.root)
         win.title("Instructions")
         win.geometry("820x600")
@@ -679,16 +1060,18 @@ class TestRunnerApp:
             win.iconbitmap(resource_path("assets/ui_testing.ico"))
         except Exception:
             pass
+        self._popup_over_root(win)
 
         notebook = ttk.Notebook(win, bootstyle="pills")
         notebook.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
 
         sections = [
-            ("Overview", "UI Testing Overview\n\n- Available Tests displays scripts as procedure/section/test (e.g. 4/1/1).\n- The counter badge reflects how many tests are currently selected.\n- Use the toolbar to adjust tolerance, delay, theme, and the ENFIRE normalization script.\n"),
-            ("Recording", "Recording a Test\n\n1) Click 'Record New'. Enter procedure (e.g. 4), section (e.g. 1), and a descriptive test name.\n2) While recording:\n   - Mouse clicks capture Automation IDs when available.\n   - Keyboard typing is recorded (press 'p' to capture a checkpoint).\n   - Press 'F' from anywhere to stop recording and refresh the Available Tests tree.\n3) Output lives beside the program: JSON in scripts/<proc>/<sec>/<test>.json and screenshots under images/.\n"),
-            ("Playback", "Playback & Toggles\n\n- Select tests from the tree then run them with 'Run Selected' or 'Run All'.\n- 'Ignore recorded delays' forces the default delay between steps.\n- 'Use Automation IDs' toggles UIA lookups; disable it for pure coordinate playback.\n- Default delay and tolerance spinners tune pacing and diff thresholds on the fly.\n"),
-            ("Results", "Results, Notes, and Test Plan\n\n- The Results panel lists checkpoints with pass/fail status and diff percent.\n- Passing or failing a run updates the ENFIRE XLSM (procedure.section sheets) and shows a confirmation toast.\n- Failing runs automatically create a bug draft in results/<proc>/<sec>/<test>/.\n"),
-            ("Tips", "Tips & Shortcuts\n\n- Right-click a test to open or delete its JSON.\n- Hotkeys: 'p' captures a screenshot, 'F' stops playback/recording, 'Ctrl+L' opens the logs folder.\n- Keep Windows scaling consistent to minimize screenshot drift.\n"),
+            ("Overview", "UI Testing Overview\n\n- Available Tests shows scripts as procedure/section/test (e.g. 4/1/1) with a live selection counter.\n- The toolbar keeps high-frequency buttons; theme, delay, tolerance, Automation ID, semantic-preference, and screenshot toggles now live under the Settings (gear) dialog.\n- Results write into a single workbook per procedure so large runs stay manageable.\n"),
+            ("Recording", "Recording a Test\n\n1) Click 'Record New'. Enter procedure (e.g. 4), section (e.g. 1), and a descriptive test name.\n2) During recording: mouse clicks capture Automation IDs when available (the recorder adds semantic assertions automatically), drags are preserved, and pressing 'p' captures a checkpoint.\n3) Press 'F' anywhere to stop recording. JSON lands in scripts/<proc>/<sec>/<test>.json and screenshots under images/.\n"),
+            ("Playback", "Playback & Settings\n\n- Select tests from the tree then run them with 'Run Selected' or 'Run All'.\n- Open the Settings dialog (gear) to adjust default delay, tolerance, theme, and the playback toggles for Automation IDs, semantic assertions, and screenshot comparisons.\n- Check 'Prefer semantic assertions' to load *.semantic.json variants when available; uncheck it to stick with the original recordings.\n- The runner brings ENFIRE to the foreground automatically before each script and (optionally) runs the configured normalize script whenever a new procedure begins.\n"),
+            ("Semantic Checks", "Semantic Checks & Helper\n\n- Recorder and the Semantic Helper insert `assert.property` steps so playback validates UI text instead of screenshots.\n- The helper keeps the originals intact and writes semantic siblings alongside them (e.g. test.json + test.semantic.json).\n- Use the Settings toggle to switch between semantic playback and the recorded script, and combine it with 'Compare screenshots' to control visual diffs.\n- Run the Semantic Helper button to retrofit existing scripts; it adds assertions wherever Automation IDs exist and snapshots stay in the original recording.\n"),
+            ("Results", "Results, Notes, and Test Plan\n\n- The Results panel lists checkpoints with pass/fail status; summary rows roll up each script.\n- The progress banner tracks playback progress and auto-scrolls to the latest entry.\n- Passing or failing a run updates the ENFIRE XLSM (procedure.section sheets) and shows a confirmation toast.\n- Failing runs automatically create a bug draft in results/<proc>/<sec>/<test>/.\n"),
+            ("Tips", "Tips & Shortcuts\n\n- Record a stand-alone normalize script and keep it current. Use 'Clear Normalize' to remove it when needed.\n- Right-click a test to open or delete its JSON. Semantic Helper output (*.semantic.json) lives beside the originals so you can toggle back any time.\n- Hotkeys: 'p' captures a screenshot, 'F' stops playback/recording, 'Ctrl+L' opens logs.\n- Keep Windows scaling consistent to minimize screenshot drift.\n"),
         ]
         for title, body in sections:
             frame = ttk.Frame(notebook, padding=12)
@@ -714,16 +1097,51 @@ class TestRunnerApp:
     # ------------------------------------------------------------------
     # Settings helpers
     # ------------------------------------------------------------------
+    def _popup_over_root(self, window: tk.Misc) -> None:
+        try:
+            self.root.update_idletasks()
+            window.update_idletasks()
+            root_x = self.root.winfo_rootx()
+            root_y = self.root.winfo_rooty()
+            root_w = self.root.winfo_width() or window.winfo_screenwidth()
+            root_h = self.root.winfo_height() or window.winfo_screenheight()
+            win_w = window.winfo_width() or window.winfo_reqwidth()
+            win_h = window.winfo_height() or window.winfo_reqheight()
+        except Exception:
+            return
+        target_x = root_x + (root_w - win_w) // 2
+        target_y = root_y + (root_h - win_h) // 2
+        if root_w > win_w:
+            min_x = root_x
+            max_x = root_x + root_w - win_w
+            target_x = max(min_x, min(target_x, max_x))
+        else:
+            target_x = root_x
+        if root_h > win_h:
+            min_y = root_y
+            max_y = root_y + root_h - win_h
+            target_y = max(min_y, min(target_y, max_y))
+        else:
+            target_y = root_y
+        try:
+            window.geometry(f"+{int(target_x)}+{int(target_y)}")
+        except Exception:
+            pass
+
     def _apply_theme(self, name: str) -> None:
         try:
             self.root.style.theme_use(name)
         except Exception as exc:
             _LOGGER.warning("Theme switch failed: %s", exc)
-        else:
-            try:
-                self.tests_panel.on_theme_changed()
-            except Exception:
-                pass
+        self.settings.theme = name
+        self._save_settings()
+        self._refresh_input_styles()
+        for panel in (self.tests_panel, self.results_panel, self.preview_panel, self.log_panel):
+            if callable(getattr(panel, "on_theme_changed", None)):
+                try:
+                    panel.on_theme_changed()
+                except Exception:
+                    pass
 
     def _apply_settings_to_variables(self) -> None:
         if self.settings.theme:
@@ -732,7 +1150,10 @@ class TestRunnerApp:
         self.tolerance_var.set(float(self.settings.tolerance))
         self.use_default_delay_var.set(bool(self.settings.ignore_recorded_delays))
         self.use_automation_ids_var.set(bool(getattr(self.settings, "use_automation_ids", True)))
+        self.use_screenshots_var.set(bool(getattr(self.settings, "use_screenshots", True)))
+        self.prefer_semantic_var.set(bool(getattr(self.settings, "prefer_semantic_scripts", True)))
         self.normalize_script = self.settings.normalize_script
+        self.target_app_regex = getattr(self.settings, "target_app_regex", getattr(self, "target_app_regex", None))
         self._update_normalize_label()
 
     def _bind_setting_traces(self) -> None:
@@ -740,11 +1161,25 @@ class TestRunnerApp:
         self.tolerance_var.trace_add("write", lambda *_: self._on_tolerance_changed())
         self.use_default_delay_var.trace_add("write", lambda *_: self._on_ignore_delays_changed())
         self.use_automation_ids_var.trace_add("write", lambda *_: self._on_use_automation_ids_changed())
+        self.use_screenshots_var.trace_add("write", lambda *_: self._on_use_screenshots_changed())
+        self.prefer_semantic_var.trace_add("write", lambda *_: self._on_prefer_semantic_changed())
 
     def _on_use_automation_ids_changed(self) -> None:
         value = bool(self.use_automation_ids_var.get())
         self.settings.use_automation_ids = value
         self.player.config.use_automation_ids = value
+        self._save_settings()
+
+    def _on_use_screenshots_changed(self) -> None:
+        value = bool(self.use_screenshots_var.get())
+        self.settings.use_screenshots = value
+        self.player.config.use_screenshots = value
+        self._save_settings()
+
+    def _on_prefer_semantic_changed(self) -> None:
+        value = bool(self.prefer_semantic_var.get())
+        self.settings.prefer_semantic_scripts = value
+        self.player.config.prefer_semantic_scripts = value
         self._save_settings()
 
     def _on_default_delay_changed(self) -> None:
@@ -833,12 +1268,46 @@ class TestRunnerApp:
             pass
         self.settings.ignore_recorded_delays = bool(self.use_default_delay_var.get())
         self.settings.use_automation_ids = bool(self.use_automation_ids_var.get())
+        self.settings.use_screenshots = bool(self.use_screenshots_var.get())
+        self.settings.prefer_semantic_scripts = bool(self.prefer_semantic_var.get())
         self.settings.normalize_script = self.normalize_script
+        try:
+            current_regex = self.target_app_regex
+        except AttributeError:
+            current_regex = getattr(self.settings, "target_app_regex", None)
+        self.settings.target_app_regex = current_regex
         self.settings.save(self.settings_path)
+
+    def _refresh_input_styles(self) -> None:
+        try:
+            style = self.root.style
+        except Exception:
+            return
+        def _get_color(style_name: str, option: str, default: str) -> str:
+            try:
+                value = style.lookup(style_name, option)
+            except Exception:
+                value = ""
+            return value or default
+        label_fg = _get_color("TLabel", "foreground", "#f0f0f0")
+        entry_bg = _get_color("TEntry", "fieldbackground", "#202020")
+        for style_name in ("TEntry", "TCombobox", "TSpinbox"):
+            try:
+                style.configure(style_name, foreground=label_fg, fieldbackground=entry_bg, insertcolor=label_fg)
+            except Exception:
+                try:
+                    style.configure(style_name, foreground=label_fg, insertcolor=label_fg)
+                except Exception:
+                    continue
+            try:
+                style.map(style_name, foreground=[("readonly", label_fg), ("disabled", _get_color(style_name, "foreground", label_fg))])
+            except Exception:
+                pass
 
 
 def run_app() -> None:
     app = TestRunnerApp()
     app.run()
+
 
 

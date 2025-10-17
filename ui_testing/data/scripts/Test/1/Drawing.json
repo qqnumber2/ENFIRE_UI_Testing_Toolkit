@@ -1,0 +1,1507 @@
+[
+  {
+    "action_type": "mouse_down",
+    "x": 1600,
+    "y": 168,
+    "text": null,
+    "screenshot": null,
+    "delay": 4.079,
+    "auto_id": "MapScaleDropDown",
+    "control_type": "ComboBox",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1600,
+    "y": 168,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.036,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1565,
+    "y": 377,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.051,
+    "auto_id": null,
+    "control_type": "ListItem",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1565,
+    "y": 377,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.058,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 94,
+    "y": 52,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.841,
+    "auto_id": "Menu",
+    "control_type": "Button",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "drag",
+    "x": 96,
+    "y": 51,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.052,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": [
+      [
+        94,
+        52
+      ],
+      [
+        96,
+        51
+      ]
+    ],
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 96,
+    "y": 51,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.001,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 85,
+    "y": 211,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.83,
+    "auto_id": null,
+    "control_type": "Button",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 85,
+    "y": 211,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.075,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 46,
+    "y": 577,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.695,
+    "auto_id": null,
+    "control_type": "Text",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 46,
+    "y": 577,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.053,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 236,
+    "y": 76,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.646,
+    "auto_id": "Create",
+    "control_type": "Button",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 236,
+    "y": 76,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.057,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 656,
+    "y": 273,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.462,
+    "auto_id": null,
+    "control_type": "Custom",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 656,
+    "y": 273,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.052,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 1110,
+    "y": 260,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.505,
+    "auto_id": null,
+    "control_type": "Custom",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 1110,
+    "y": 261,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.073,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 791,
+    "y": 168,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.437,
+    "auto_id": null,
+    "control_type": "Text",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 791,
+    "y": 168,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.058,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 438,
+    "y": 71,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.029,
+    "auto_id": "Attributes",
+    "control_type": "Button",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 438,
+    "y": 71,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.045,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 85,
+    "y": 389,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.828,
+    "auto_id": null,
+    "control_type": "ListItem",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 85,
+    "y": 389,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.048,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 654,
+    "y": 153,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.046,
+    "auto_id": null,
+    "control_type": "Text",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 654,
+    "y": 153,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.039,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 614,
+    "y": 311,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.576,
+    "auto_id": "Sketch",
+    "control_type": "Custom",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "drag",
+    "x": 582,
+    "y": 321,
+    "text": null,
+    "screenshot": null,
+    "delay": 1.478,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": [
+      [
+        614,
+        311
+      ],
+      [
+        608,
+        311
+      ],
+      [
+        602,
+        311
+      ],
+      [
+        596,
+        311
+      ],
+      [
+        590,
+        312
+      ],
+      [
+        584,
+        314
+      ],
+      [
+        578,
+        316
+      ],
+      [
+        572,
+        319
+      ],
+      [
+        567,
+        323
+      ],
+      [
+        561,
+        328
+      ],
+      [
+        556,
+        333
+      ],
+      [
+        552,
+        338
+      ],
+      [
+        547,
+        343
+      ],
+      [
+        543,
+        348
+      ],
+      [
+        540,
+        352
+      ],
+      [
+        537,
+        357
+      ],
+      [
+        534,
+        363
+      ],
+      [
+        531,
+        369
+      ],
+      [
+        528,
+        375
+      ],
+      [
+        525,
+        381
+      ],
+      [
+        521,
+        390
+      ],
+      [
+        519,
+        395
+      ],
+      [
+        516,
+        401
+      ],
+      [
+        514,
+        407
+      ],
+      [
+        512,
+        413
+      ],
+      [
+        510,
+        419
+      ],
+      [
+        508,
+        426
+      ],
+      [
+        506,
+        432
+      ],
+      [
+        504,
+        438
+      ],
+      [
+        502,
+        444
+      ],
+      [
+        502,
+        450
+      ],
+      [
+        501,
+        456
+      ],
+      [
+        501,
+        462
+      ],
+      [
+        501,
+        468
+      ],
+      [
+        501,
+        474
+      ],
+      [
+        502,
+        480
+      ],
+      [
+        505,
+        486
+      ],
+      [
+        509,
+        492
+      ],
+      [
+        513,
+        497
+      ],
+      [
+        519,
+        504
+      ],
+      [
+        525,
+        510
+      ],
+      [
+        530,
+        514
+      ],
+      [
+        536,
+        517
+      ],
+      [
+        542,
+        521
+      ],
+      [
+        548,
+        524
+      ],
+      [
+        554,
+        527
+      ],
+      [
+        560,
+        529
+      ],
+      [
+        566,
+        531
+      ],
+      [
+        574,
+        533
+      ],
+      [
+        580,
+        535
+      ],
+      [
+        586,
+        537
+      ],
+      [
+        593,
+        539
+      ],
+      [
+        601,
+        540
+      ],
+      [
+        607,
+        542
+      ],
+      [
+        613,
+        542
+      ],
+      [
+        620,
+        544
+      ],
+      [
+        626,
+        544
+      ],
+      [
+        632,
+        544
+      ],
+      [
+        638,
+        544
+      ],
+      [
+        646,
+        543
+      ],
+      [
+        652,
+        542
+      ],
+      [
+        658,
+        541
+      ],
+      [
+        664,
+        540
+      ],
+      [
+        670,
+        538
+      ],
+      [
+        676,
+        537
+      ],
+      [
+        683,
+        534
+      ],
+      [
+        690,
+        532
+      ],
+      [
+        697,
+        529
+      ],
+      [
+        703,
+        526
+      ],
+      [
+        709,
+        523
+      ],
+      [
+        715,
+        519
+      ],
+      [
+        721,
+        514
+      ],
+      [
+        726,
+        509
+      ],
+      [
+        731,
+        504
+      ],
+      [
+        735,
+        499
+      ],
+      [
+        737,
+        494
+      ],
+      [
+        741,
+        486
+      ],
+      [
+        744,
+        478
+      ],
+      [
+        747,
+        472
+      ],
+      [
+        749,
+        465
+      ],
+      [
+        751,
+        458
+      ],
+      [
+        752,
+        452
+      ],
+      [
+        753,
+        445
+      ],
+      [
+        753,
+        438
+      ],
+      [
+        753,
+        432
+      ],
+      [
+        753,
+        426
+      ],
+      [
+        753,
+        420
+      ],
+      [
+        752,
+        413
+      ],
+      [
+        750,
+        406
+      ],
+      [
+        749,
+        400
+      ],
+      [
+        746,
+        393
+      ],
+      [
+        744,
+        387
+      ],
+      [
+        741,
+        381
+      ],
+      [
+        739,
+        375
+      ],
+      [
+        735,
+        367
+      ],
+      [
+        733,
+        361
+      ],
+      [
+        730,
+        354
+      ],
+      [
+        727,
+        349
+      ],
+      [
+        723,
+        343
+      ],
+      [
+        720,
+        338
+      ],
+      [
+        715,
+        333
+      ],
+      [
+        710,
+        328
+      ],
+      [
+        705,
+        325
+      ],
+      [
+        700,
+        321
+      ],
+      [
+        695,
+        318
+      ],
+      [
+        689,
+        314
+      ],
+      [
+        683,
+        310
+      ],
+      [
+        676,
+        307
+      ],
+      [
+        670,
+        305
+      ],
+      [
+        664,
+        304
+      ],
+      [
+        658,
+        302
+      ],
+      [
+        652,
+        301
+      ],
+      [
+        645,
+        299
+      ],
+      [
+        639,
+        299
+      ],
+      [
+        633,
+        299
+      ],
+      [
+        627,
+        299
+      ],
+      [
+        621,
+        299
+      ],
+      [
+        615,
+        299
+      ],
+      [
+        608,
+        299
+      ],
+      [
+        602,
+        299
+      ],
+      [
+        596,
+        299
+      ],
+      [
+        591,
+        302
+      ],
+      [
+        588,
+        308
+      ],
+      [
+        584,
+        313
+      ],
+      [
+        583,
+        319
+      ],
+      [
+        582,
+        321
+      ]
+    ],
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 582,
+    "y": 322,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.001,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 681,
+    "y": 478,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.56,
+    "auto_id": null,
+    "control_type": "Custom",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "drag",
+    "x": 823,
+    "y": 589,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.513,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": [
+      [
+        681,
+        478
+      ],
+      [
+        681,
+        480
+      ],
+      [
+        681,
+        482
+      ],
+      [
+        683,
+        484
+      ],
+      [
+        684,
+        486
+      ],
+      [
+        686,
+        487
+      ],
+      [
+        688,
+        488
+      ],
+      [
+        689,
+        490
+      ],
+      [
+        691,
+        491
+      ],
+      [
+        693,
+        493
+      ],
+      [
+        695,
+        494
+      ],
+      [
+        698,
+        496
+      ],
+      [
+        700,
+        498
+      ],
+      [
+        702,
+        499
+      ],
+      [
+        703,
+        501
+      ],
+      [
+        706,
+        502
+      ],
+      [
+        707,
+        504
+      ],
+      [
+        709,
+        505
+      ],
+      [
+        711,
+        507
+      ],
+      [
+        713,
+        508
+      ],
+      [
+        715,
+        509
+      ],
+      [
+        716,
+        511
+      ],
+      [
+        718,
+        512
+      ],
+      [
+        720,
+        513
+      ],
+      [
+        721,
+        515
+      ],
+      [
+        723,
+        516
+      ],
+      [
+        725,
+        517
+      ],
+      [
+        727,
+        519
+      ],
+      [
+        729,
+        520
+      ],
+      [
+        731,
+        522
+      ],
+      [
+        733,
+        523
+      ],
+      [
+        735,
+        524
+      ],
+      [
+        737,
+        526
+      ],
+      [
+        739,
+        527
+      ],
+      [
+        741,
+        529
+      ],
+      [
+        743,
+        530
+      ],
+      [
+        745,
+        531
+      ],
+      [
+        747,
+        533
+      ],
+      [
+        750,
+        534
+      ],
+      [
+        751,
+        536
+      ],
+      [
+        753,
+        536
+      ],
+      [
+        755,
+        538
+      ],
+      [
+        757,
+        539
+      ],
+      [
+        759,
+        541
+      ],
+      [
+        761,
+        542
+      ],
+      [
+        763,
+        543
+      ],
+      [
+        764,
+        545
+      ],
+      [
+        766,
+        546
+      ],
+      [
+        768,
+        546
+      ],
+      [
+        769,
+        548
+      ],
+      [
+        771,
+        549
+      ],
+      [
+        773,
+        550
+      ],
+      [
+        775,
+        551
+      ],
+      [
+        776,
+        553
+      ],
+      [
+        778,
+        554
+      ],
+      [
+        780,
+        555
+      ],
+      [
+        781,
+        557
+      ],
+      [
+        783,
+        557
+      ],
+      [
+        784,
+        559
+      ],
+      [
+        786,
+        560
+      ],
+      [
+        788,
+        561
+      ],
+      [
+        789,
+        563
+      ],
+      [
+        791,
+        564
+      ],
+      [
+        793,
+        565
+      ],
+      [
+        795,
+        566
+      ],
+      [
+        796,
+        568
+      ],
+      [
+        798,
+        569
+      ],
+      [
+        800,
+        570
+      ],
+      [
+        801,
+        572
+      ],
+      [
+        803,
+        573
+      ],
+      [
+        805,
+        574
+      ],
+      [
+        807,
+        576
+      ],
+      [
+        809,
+        577
+      ],
+      [
+        811,
+        578
+      ],
+      [
+        813,
+        580
+      ],
+      [
+        814,
+        582
+      ],
+      [
+        816,
+        582
+      ],
+      [
+        818,
+        584
+      ],
+      [
+        820,
+        585
+      ],
+      [
+        821,
+        587
+      ],
+      [
+        823,
+        589
+      ]
+    ],
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 823,
+    "y": 589,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.001,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_000O.png",
+    "delay": 1.639,
+    "auto_id": null,
+    "control_type": null,
+    "button": null,
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 172,
+    "y": 81,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.964,
+    "auto_id": null,
+    "control_type": "Custom",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 172,
+    "y": 81,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.069,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_down",
+    "x": 105,
+    "y": 70,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.709,
+    "auto_id": null,
+    "control_type": "Custom",
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "mouse_up",
+    "x": 105,
+    "y": 70,
+    "text": null,
+    "screenshot": null,
+    "delay": 0.073,
+    "auto_id": null,
+    "control_type": null,
+    "button": "left",
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  },
+  {
+    "action_type": "screenshot",
+    "x": null,
+    "y": null,
+    "text": null,
+    "screenshot": "0_001O.png",
+    "delay": 1.148,
+    "auto_id": null,
+    "control_type": null,
+    "button": null,
+    "scroll_dx": null,
+    "scroll_dy": null,
+    "keys": null,
+    "key": null,
+    "path": null,
+    "items": null,
+    "explorer": null
+  }
+]
