@@ -89,6 +89,7 @@ class ActionsPanel(ttk.Frame):
         instructions_callback: Callable[[], None],
         settings_callback: Callable[[], None],
         semantic_helper_callback: Callable[[], None],
+        inspector_callback: Callable[[], None],
     ) -> None:
         super().__init__(master)
         toolbar = ttk.Frame(self, padding=(12, 10))
@@ -106,46 +107,50 @@ class ActionsPanel(ttk.Frame):
                 "label": "Record New",
                 "command": record_callback,
                 "style": "primary",
-                "icon": "⏺",
+                "icon": "REC",
                 "tooltip": "Record New (Ctrl+R)",
             },
             {
                 "label": "Stop Recording",
                 "command": stop_record_callback,
                 "style": "warning",
-                "icon": "⏹",
+                "icon": "STOP",
                 "tooltip": "Stop Recording (F)",
             },
             {
                 "label": "Run Selected",
                 "command": run_selected_callback,
                 "style": "success",
-                "icon": "⏯",
+                "icon": "RUN",
                 "tooltip": "Run Selected (Ctrl+Enter)",
             },
             {
                 "label": "Run All",
                 "command": run_all_callback,
                 "style": "success-outline",
-                "icon": "⏭",
+                "icon": "ALL",
                 "tooltip": "Run All Tests",
             },
             {
                 "label": "Instructions",
                 "command": instructions_callback,
                 "style": "info-outline",
-                "icon": "ℹ",
+                "icon": "INFO",
                 "tooltip": "Instructions",
             },
             {
                 "label": "Open Logs",
                 "command": open_logs_callback,
                 "style": "secondary-outline",
+                "icon": "LOG",
+                "tooltip": "Open Logs",
             },
             {
                 "label": "Normalize ENFIRE",
                 "command": normalize_callback,
                 "style": "secondary",
+                "icon": "NORM",
+                "tooltip": "Run normalize script",
             },
             {
                 "label": "Set Normalize Script",
@@ -161,41 +166,24 @@ class ActionsPanel(ttk.Frame):
                 "label": "Settings",
                 "command": settings_callback,
                 "style": "secondary",
-                "icon": "⚙",
+                "icon": "CFG",
                 "tooltip": "Settings",
             },
             {
                 "label": "Semantic Helper",
                 "command": semantic_helper_callback,
                 "style": "info",
-                "icon": "✨",
+                "icon": "SEM",
                 "tooltip": "Semantic Helper",
             },
+            {
+                "label": "Inspector",
+                "command": inspector_callback,
+                "style": "secondary",
+                "icon": "INS",
+                "tooltip": "Automation Inspector",
+            },
         ]
-        for spec in primary_buttons:
-            text = spec.get("icon") or spec["label"]
-            btn = ttk.Button(
-                self._button_container,
-                text=text,
-                command=spec["command"],
-                bootstyle=spec["style"],
-                width=6 if spec.get("icon") else 12,
-            )
-            tooltip_text = spec.get("tooltip")
-            if tooltip_text:
-                ToolTip(btn, tooltip_text)
-            self._button_widgets.append(btn)
-
-        self._normalize_label = ttk.Label(
-            self._button_container, textvariable=normalize_label_var, bootstyle="secondary", anchor="w"
-        )
-        self._button_widgets.append(self._normalize_label)
-        try:
-            idx = next(i for i, spec in enumerate(primary_buttons) if spec["label"] == "Set Normalize Script") + 1
-            self._button_widgets.insert(idx, self._button_widgets.pop())
-        except StopIteration:
-            pass
-
         self.after(100, self._reflow_buttons)
 
     def _on_button_container_resize(self, event: tk.Event) -> None:

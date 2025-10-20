@@ -109,6 +109,10 @@ class Player:
             self._flake_tracker = FlakeTracker(Path(config.flake_stats_path))
         self._semantic_context: Optional[SemanticContext] = None
         self._semantic_disabled = False
+        self._click_mode_counts: Dict[str, int] = {"semantic": 0, "uia": 0, "coordinate": 0}
+        self._click_mode_history: List[str] = []
+        self._drag_mode_count: int = 0
+        self._drag_mode_history: List[str] = []
         self._semantic_registry_cache = None
         self._allure_enabled = bool(getattr(config, "enable_allure", True) and attach_image is not None)
         self._state_snapshot_dir = Path(config.state_snapshot_dir) if getattr(config, "state_snapshot_dir", None) else None
@@ -245,6 +249,32 @@ class Player:
             except Exception:
                 pass
 
+    def _note_click_mode(
+        self,
+        mode: str,
+        auto_id: Optional[str],
+        control_type: Optional[str],
+        coords: Tuple[int, int],
+    ) -> None:
+        if mode not in self._click_mode_counts:
+            self._click_mode_counts[mode] = 0
+        self._click_mode_counts[mode] += 1
+        detail = mode
+        if mode in {"semantic", "uia"}:
+            if auto_id:
+                detail += f":{auto_id}"
+            if control_type:
+                detail += f"[{control_type}]"
+        else:
+            detail += f":({coords[0]},{coords[1]})"
+            if auto_id and not _is_generic_automation_id(auto_id):
+                detail += f" from {auto_id}"
+        self._click_mode_history.append(detail)
+
+    def _note_drag_mode(self, button: str, point_count: int) -> None:
+        self._drag_mode_count += 1
+        self._drag_mode_history.append(f"{button}:{point_count}pts")
+
     def _attach_flake_stats_artifact(self) -> None:
         if not self._allure_enabled or attach_file is None:
             return
@@ -285,6 +315,9 @@ class Player:
 
         results: List[Dict[str, Any]] = []
         self._click_mode_counts = {"semantic": 0, "uia": 0, "coordinate": 0}
+        self._click_mode_history = []
+        self._drag_mode_count = 0
+        self._drag_mode_history = []
         self._current_script = script_name
         try:
             assert_count = 0
@@ -348,6 +381,7 @@ class Player:
                         logger.debug("AutomationId %s not found in manifest; falling back to coordinates.", auto_id)
                         use_uia = False
 
+                    click_handled = False
                     if use_uia:
                         session = self._semantic_session()
                         if session is not None:
@@ -358,48 +392,51 @@ class Player:
                                     f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
                                 )
                                 target.click_input()
-                                self._click_mode_counts["semantic"] += 1
+                                self._note_click_mode("semantic", auto_id, ctrl_type, (x, y))
                                 time.sleep(0.005)
                                 i += 1
+                                click_handled = True
                                 continue
                             except Exception as exc:
                                 logger.debug("Semantic session click failed: %s", exc)
-                        try:
-                            desk = Desktop(backend="uia")
-                            target = None
-                            if self.config.app_title_regex:
-                                try:
-                                    appwin = desk.window(title_re=self.config.app_title_regex)
-                                    query: Dict[str, Any] = {"auto_id": auto_id}
+                        if not click_handled:
+                            try:
+                                desk = Desktop(backend="uia")
+                                target = None
+                                if self.config.app_title_regex:
+                                    try:
+                                        appwin = desk.window(title_re=self.config.app_title_regex)
+                                        query: Dict[str, Any] = {"auto_id": auto_id}
+                                        if ctrl_type:
+                                            query["control_type"] = ctrl_type
+                                        target = appwin.child_window(**query).wrapper_object()
+                                    except Exception:
+                                        target = None
+                                if target is None:
+                                    query2: Dict[str, Any] = {"auto_id": auto_id}
                                     if ctrl_type:
-                                        query["control_type"] = ctrl_type
-                                    target = appwin.child_window(**query).wrapper_object()
-                                except Exception:
-                                    target = None
-                            if target is None:
-                                query2: Dict[str, Any] = {"auto_id": auto_id}
-                                if ctrl_type:
-                                    query2["control_type"] = ctrl_type
-                                target = desk.window(**query2).wrapper_object()
-                            logger.info(
-                                f"Playback(UIA): click auto_id='{auto_id}'"
-                                f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
-                            )
-                            target.click_input()
-                            self._click_mode_counts["uia"] += 1
-                            time.sleep(0.005)
-                            i += 1
-                            continue
-                        except Exception as e:
-                            logger.warning(
-                                f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
-                            )
+                                        query2["control_type"] = ctrl_type
+                                    target = desk.window(**query2).wrapper_object()
+                                logger.info(
+                                    f"Playback(UIA): click auto_id='{auto_id}'"
+                                    f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
+                                )
+                                target.click_input()
+                                self._note_click_mode("uia", auto_id, ctrl_type, (x, y))
+                                time.sleep(0.005)
+                                i += 1
+                                click_handled = True
+                                continue
+                            except Exception as e:
+                                logger.warning(
+                                    f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
+                                )
 
                     fallback_note = "" if auto_id else " [coordinate fallback]"
                     logger.info(f"Playback: click at ({x}, {y}){fallback_note}")
 
                     pyautogui.click(x, y, _pause=False)
-                    self._click_mode_counts["coordinate"] += 1
+                    self._note_click_mode("coordinate", auto_id, ctrl_type, (x, y))
         
                 elif a_type == "mouse_down":
                     x = int(action.get("x", 0))
@@ -511,9 +548,10 @@ class Player:
         
                     if len(coords) > 1:
                         logger.debug(f"Playback: drag path ({len(coords)} points) [{button}]")
-        
+
                         self._play_drag_path(coords, button)
-        
+                        self._note_drag_mode(button, len(coords))
+
                     else:
                         logger.debug("Playback: drag skipped (insufficient path points)")
         
@@ -732,6 +770,14 @@ class Player:
                 f"{self._click_mode_counts.get('uia', 0)}/"
                 f"{self._click_mode_counts.get('coordinate', 0)}"
             )
+            if self._click_mode_counts.get("coordinate", 0):
+                note_parts.append(
+                    f"Coordinates used for {self._click_mode_counts.get('coordinate', 0)} click(s)."
+                )
+            else:
+                note_parts.append("All clicks resolved via AutomationIds (semantic/UIA).")
+            if self._drag_mode_count:
+                note_parts.append(f"Drags replayed: {self._drag_mode_count} (coordinate path)")
             if validation_total == 0:
                 summary_status = "warn"
                 note_parts.append("No semantic assertions or screenshot checkpoints executed.")
@@ -754,7 +800,12 @@ class Player:
                 "screenshots": screenshot_count,
             }
             results.append(summary_entry)
-        
+
+            if self._click_mode_history:
+                logger.info("Click playback modes: %s", "; ".join(self._click_mode_history))
+            if self._drag_mode_history:
+                logger.info("Drag playback details: %s", "; ".join(self._drag_mode_history))
+
             self._run_state_snapshot_checks()
         finally:
             self._current_script = None

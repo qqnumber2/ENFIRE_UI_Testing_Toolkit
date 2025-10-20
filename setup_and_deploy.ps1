@@ -322,6 +322,7 @@ Daily Workflow
 --------------
 - **Record New** captures AutomationIds, coordinates, keystrokes, and screenshots. Press `p` for checkpoints, `F` (or the Stop button) to finish.
 - **Run Selected / Run All** replays tests and logs whether semantic automation, UIA search, or coordinates were used.
+- **Automation Inspector** reveals the AutomationId/control type/name under the mouse pointer so you can confirm manifest coverage before recording.
 - **Settings** lets you toggle automation modes, screenshot comparisons, normalize scripts, SSIM thresholds, and themes.
 - Results flow into `data/results`, `data/logs`, and `results_summary.xlsx`. Failed screenshots produce bug drafts with cropped evidence.
 

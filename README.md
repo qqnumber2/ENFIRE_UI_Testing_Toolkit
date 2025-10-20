@@ -201,9 +201,16 @@ README.md             # You are here
    - Run Selected / Run All (queue execution).
    - Normalize (run, choose, clear).
    - Semantic Helper (retrofit selected scripts).
+   - **Automation Inspector** (new): opens a live overlay that displays AutomationId, control type, name, framework, and manifest group/name for the element under the mouse pointer—perfect for discovering new AutomationId opportunities in ENFIRE.
    - Instructions / Settings / Logs quick links.
-3. **Toggles** (toolbar + Settings dialog):
-   - Ignore recorded delays, use automation IDs, compare screenshots, prefer semantic scripts, SSIM threshold, automation backend (UIA/Appium), theme selection.
+3. **Playback Toggles & Backends** (toolbar + Settings dialog):
+   - **Ignore Recorded Delays** – replace every recorded delay with the default pacing value. Disable this to replay human think-time exactly as captured.
+   - **Use Automation IDs** – enable semantic navigation. When checked, the player resolves controls via the manifest/pywinauto session before falling back to coordinates.
+   - **Prefer Semantic Assertions** – load `*.semantic.json` variants that include assert.property steps; uncheck to stick with the original coordinate-only recordings.
+   - **Compare Screenshots** – toggle visual diffs. Pair with semantic playback to mix assertions and image validation as needed.
+   - **Use SSIM** – switch screenshot comparisons to Structural Similarity (SSIM) instead of raw pixel diff. Combined with the **SSIM Threshold** slider (0.0–1.0) this handles minor rendering drift; 1.0 requires identical images.
+   - **Automation Backend** – choose **UIA** (pywinauto + Microsoft UI Automation, default) or **Appium** (WinAppDriver/Appium Server). UIA is lightweight and works when ENFIRE exposes AutomationIds locally. Appium is useful for remote sessions or when the test rig connects to a dedicated WinAppDriver instance.
+   - Theme, normalize script, and other environment toggles live in the same dialog.
 4. **Available Tests Tree**: organised as procedure/section/test; right-click nodes to open, reveal on disk, or delete scripts/images/results.
 5. **Results Panel**: live view of checkpoints; summary row includes counts and semantic/UIA/coordinate distribution.
 6. **Preview Panel**: displays baseline/test/diff/highlight images for screenshot checkpoints.
@@ -255,6 +262,9 @@ README.md             # You are here
 - **Checkpoint**: Individual validation step (assertion or screenshot) recorded in the Results grid and Excel summary.
 - **State snapshot**: CSV export validated by Great Expectations to confirm non-UI state (if configured).
 - **Flake Tracker**: JSON statistics per script/action stored at the configured `flake_stats_path` (defaults to `data/flake_stats.json`).
+- **UIA**: Microsoft’s UI Automation framework; pywinauto’s UIA backend is used for in-process semantic control resolution.
+- **Appium**: Cross-platform automation server (WinAppDriver flavour) used when tests must drive ENFIRE through a remote or sandboxed session. Configure server URL and capabilities in Settings.
+- **SSIM (Structural Similarity Index Measure)**: Image metric that captures perceived visual differences (luminance/contrast/structure) rather than pixel identity. Thresholds closer to 1.0 are stricter.
 
 For ENFIRE-specific AutomationId definitions, refer to the upstream `MapControlIds.cs`, `AppBarIds.cs`, and related files within the ENFIRE repository (mirrored under `external/enfire/...`). Those constants feed the manifest used by this toolkit.
 

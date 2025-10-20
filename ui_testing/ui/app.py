@@ -169,6 +169,7 @@ class TestRunnerApp:
 
         self._current_result_row: Optional[Dict[str, str]] = None
         self._resize_job: Optional[str] = None
+        self._inspector_window: Optional[Any] = None
 
         self.root.protocol("WM_DELETE_WINDOW", self._on_window_close)
 
@@ -202,6 +203,7 @@ class TestRunnerApp:
             instructions_callback=self.show_instructions,
             settings_callback=self.open_settings_dialog,
             semantic_helper_callback=self.semantic_upgrade_selected_scripts,
+            inspector_callback=self.open_automation_inspector,
         )
         self.actions_panel.pack(side=tk.TOP, fill=tk.X)
 
@@ -884,6 +886,43 @@ class TestRunnerApp:
         except Exception:
             messagebox.showinfo("Open Logs", str(target), parent=self.root)
 
+    def open_automation_inspector(self) -> None:
+        existing = getattr(self, "_inspector_window", None)
+        if existing is not None:
+            if getattr(existing, "is_open", False):
+                existing.focus()
+                return
+            self._inspector_window = None
+        try:
+            from ui_testing.ui.inspector import AutomationInspector
+        except Exception as exc:  # pragma: no cover - UI only
+            messagebox.showwarning(
+                "Automation Inspector",
+                f"Automation inspector unavailable:\n{exc}",
+                parent=self.root,
+            )
+            return
+        manifest = getattr(self.player, "automation_manifest", {}) or {}
+        lookup = getattr(self.player, "_automation_lookup", {})
+        try:
+            self._inspector_window = AutomationInspector(
+                self.root,
+                manifest,
+                lookup,
+                on_close=lambda: setattr(self, "_inspector_window", None),
+            )
+        except RuntimeError as exc:
+            messagebox.showwarning("Automation Inspector", str(exc), parent=self.root)
+            self._inspector_window = None
+        except Exception as exc:  # pragma: no cover - UI only
+            _LOGGER.exception("Failed to open automation inspector: %s", exc)
+            messagebox.showerror(
+                "Automation Inspector",
+                f"Failed to open Automation Inspector:\n{exc}",
+                parent=self.root,
+            )
+            self._inspector_window = None
+
     def open_settings_dialog(self, _event: Optional[tk.Event] = None) -> None:
         dialog = SettingsDialog(
             self.root,
@@ -1086,7 +1125,7 @@ class TestRunnerApp:
                 "Overview & Layout",
                 "UI Testing Overview\n\n"
                 "- The window is split into four panes: Available Tests (tree), Results (grid + summary banner), Preview (image diff), and Log (live journal).\n"
-                "- Toolbar buttons control high-frequency actions: Record/Stop, Run Selected/Run All, Normalize helpers, Semantic Helper, Settings, open logs, and documentation.\n"
+                "- Toolbar buttons control high-frequency actions: Record/Stop, Run Selected/Run All, Normalize helpers, Semantic Helper, Automation Inspector, Settings, open logs, and documentation.\n"
                 "- Status indicators show the active script, remaining queue, and semantic/screenshot configuration so you always know which validation modes are enabled.\n"
                 "- Every run writes to results_summary.xlsx and creates per-script folders under data/results for downstream analysis."
             ),
@@ -1123,7 +1162,9 @@ class TestRunnerApp:
             (
                 "Settings & Shortcuts",
                 "Customization guide\n\n"
-                "- Settings (gear) exposes theme selection, default delay, tolerance, automation toggles, semantic preference, screenshot handling, SSIM threshold, automation backend, and normalize script path.\n"
+                "- Settings (gear) exposes theme selection, default delay, tolerance, automation toggles, semantic preference, screenshot handling, SSIM threshold, automation backend (UIA/Appium), and normalize script path.\n"
+                "- Playback toggles behave as follows: Ignore Recorded Delays enforces the default pacing; Use Automation IDs enables semantic/UIA navigation; Prefer Semantic Assertions swaps to *.semantic.json scripted assertions; Compare Screenshots controls visual checkpoints; Use SSIM + SSIM Threshold configure structural similarity sensitivity (1.0 is strictest).\n"
+                "- The Automation Inspector window polls the cursor position and reports AutomationId, control type, name, framework, bounding rectangle, and manifest group/name for the element under the pointer.\n"
                 "- Hotkeys: 'p' screenshot, 'F' stop recording/playback, 'Ctrl+L' open logs, 'Ctrl+R' start recording, 'Ctrl+Enter' run selected, 'Ctrl+Shift+S' toggle screenshots, 'Ctrl+Shift+A' toggle automation IDs.\n"
                 "- Right-click a tree node to open the JSON, jump to the images, or delete artifacts. Logs are timestamped under data/logs/ui_testing.log for long-term auditing."
             ),
