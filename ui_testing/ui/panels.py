@@ -107,49 +107,49 @@ class ActionsPanel(ttk.Frame):
                 "label": "Record New",
                 "command": record_callback,
                 "style": "primary",
-                "icon": "REC",
+                "icon": "⏺",
                 "tooltip": "Record New (Ctrl+R)",
             },
             {
                 "label": "Stop Recording",
                 "command": stop_record_callback,
                 "style": "warning",
-                "icon": "STOP",
+                "icon": "⏹",
                 "tooltip": "Stop Recording (F)",
             },
             {
                 "label": "Run Selected",
                 "command": run_selected_callback,
                 "style": "success",
-                "icon": "RUN",
+                "icon": "▶",
                 "tooltip": "Run Selected (Ctrl+Enter)",
             },
             {
                 "label": "Run All",
                 "command": run_all_callback,
                 "style": "success-outline",
-                "icon": "ALL",
+                "icon": "⏯",
                 "tooltip": "Run All Tests",
             },
             {
                 "label": "Instructions",
                 "command": instructions_callback,
                 "style": "info-outline",
-                "icon": "INFO",
+                "icon": "ℹ",
                 "tooltip": "Instructions",
             },
             {
                 "label": "Open Logs",
                 "command": open_logs_callback,
                 "style": "secondary-outline",
-                "icon": "LOG",
+                "icon": "🗒",
                 "tooltip": "Open Logs",
             },
             {
                 "label": "Normalize ENFIRE",
                 "command": normalize_callback,
                 "style": "secondary",
-                "icon": "NORM",
+                "icon": "⟳",
                 "tooltip": "Run normalize script",
             },
             {
@@ -166,24 +166,54 @@ class ActionsPanel(ttk.Frame):
                 "label": "Settings",
                 "command": settings_callback,
                 "style": "secondary",
-                "icon": "CFG",
+                "icon": "⚙",
                 "tooltip": "Settings",
             },
             {
                 "label": "Semantic Helper",
                 "command": semantic_helper_callback,
                 "style": "info",
-                "icon": "SEM",
+                "icon": "Σ",
                 "tooltip": "Semantic Helper",
             },
             {
                 "label": "Inspector",
                 "command": inspector_callback,
                 "style": "secondary",
-                "icon": "INS",
+                "icon": "🔍",
                 "tooltip": "Automation Inspector",
             },
         ]
+        for spec in primary_buttons:
+            text = spec.get("icon") or spec["label"]
+            btn = ttk.Button(
+                self._button_container,
+                text=text,
+                command=spec["command"],
+                bootstyle=spec.get("style", "secondary"),
+                width=4 if spec.get("icon") else 12,
+            )
+            tooltip_text = spec.get("tooltip")
+            if tooltip_text:
+                ToolTip(btn, tooltip_text)
+            self._button_widgets.append(btn)
+
+        self._normalize_label = ttk.Label(
+            self._button_container,
+            textvariable=normalize_label_var,
+            bootstyle="secondary",
+            anchor="w",
+            padding=(8, 2),
+        )
+        self._button_widgets.append(self._normalize_label)
+        try:
+            idx = next(
+                i for i, spec in enumerate(primary_buttons) if spec["label"] == "Set Normalize Script"
+            ) + 1
+            self._button_widgets.insert(idx, self._button_widgets.pop())
+        except StopIteration:
+            pass
+
         self.after(100, self._reflow_buttons)
 
     def _on_button_container_resize(self, event: tk.Event) -> None:
