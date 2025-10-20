@@ -786,13 +786,19 @@ class ResultsPanel(ttk.Frame):
                 summary_level = "fail"
             elif tag == "warn" and summary_level != "fail":
                 summary_level = "warn"
-            try:
-                diff_val = float(diffp)
-                diff_str = f"{diff_val:.3f}"
-            except Exception:
-                diff_str = ""
+            metrics = r.get("metrics")
+            diff_str = ""
+            if metrics:
+                diff_str = str(metrics)
+            else:
+                try:
+                    diff_val = float(diffp)
+                    diff_str = f"{diff_val:.3f}"
+                except Exception:
+                    diff_str = ""
             if note:
-                diff_str = note
+                diff_str = f"{diff_str} | {note}" if diff_str else note
+            diff_str = diff_str.strip(" |")
             try:
                 idx_display = int(idx) + 1
             except Exception:

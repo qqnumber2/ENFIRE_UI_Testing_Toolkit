@@ -719,29 +719,44 @@ class Player:
         
                     orig_path = img_dir / orig_name
         
-                    passed, diff_pct, diff_path, highlight_path = self._compare_and_highlight(orig_path, test_path)
+                    (
+                        passed,
+                        diff_pct,
+                        diff_path,
+                        highlight_path,
+                        ssim_score,
+                        ssim_threshold_value,
+                    ) = self._compare_and_highlight(orig_path, test_path)
                     identifier = f"screenshot:{shot_idx}"
-        
+
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
+                    metrics_parts = [f"Δ {float(diff_pct):.3f}%"]
+                    if ssim_score is not None:
+                        metrics_parts.append(f"SSIM {ssim_score:.4f}")
+
                     result = {
-        
+
                         "index": shot_idx,
-        
+
                         "original": str(orig_path),
         
                         "test": str(test_path),
         
                         "diff_percent": round(float(diff_pct), 3),
-        
+                        "pixel_diff_percent": round(float(diff_pct), 3),
+                        "metrics": " | ".join(metrics_parts),
+                        "ssim_score": round(float(ssim_score), 4) if ssim_score is not None else None,
+                        "ssim_threshold": float(ssim_threshold_value) if ssim_threshold_value is not None else None,
+
                         "status": "pass" if passed else "fail",
-        
+
                         "timestamp": timestamp,
-        
+
                     }
-        
+
                     logger.info(f"Result: screenshot #{shot_idx} -> {'PASS' if passed else 'FAIL'}")
-        
+
                     results.append(result)
                     if result["status"] != "pass":
                         self._record_failure(identifier)
@@ -903,9 +918,7 @@ class Player:
     def _compare_exact(self, orig_path: Path, test_path: Path) -> bool:
         """Backward-compat entry; now delegates to tolerance-based compare."""
 
-        is_pass, _pct = self._compare_and_highlight(orig_path, test_path)
-
-        is_pass, _pct, _d, _h = self._compare_and_highlight(orig_path, test_path)
+        is_pass, *_ = self._compare_and_highlight(orig_path, test_path)
         return is_pass
     def _bounding_boxes_from_mask(self, mask: np.ndarray, cell: int = 12,
 
@@ -1038,13 +1051,15 @@ class Player:
 
         return boxes
 
-    def _compare_and_highlight(self, orig_path: Path, test_path: Path) -> tuple[bool, float, Optional[Path], Optional[Path]]:
-        """Return (pass flag, diff percent, diff image path, highlight image path)."""
+    def _compare_and_highlight(
+        self, orig_path: Path, test_path: Path
+    ) -> tuple[bool, float, Optional[Path], Optional[Path], Optional[float], Optional[float]]:
+        """Return (pass flag, pixel diff %, diff image path, highlight image path, SSIM score, SSIM threshold)."""
 
         try:
             if not orig_path.exists() or not test_path.exists():
                 logger.error(f"Missing image(s): {orig_path} | {test_path}")
-                return False, 100.0, None, None
+                return False, 100.0, None, None, None, None
 
             o = Image.open(orig_path).convert("RGBA")
             t = Image.open(test_path).convert("RGBA")
@@ -1054,19 +1069,20 @@ class Player:
             diff_path: Optional[Path] = None
             highlight_path: Optional[Path] = None
 
+            ssim_score: Optional[float] = None
+            ssim_threshold_value: Optional[float] = None
+            ssim_pass = True
             use_ssim = bool(getattr(self.config, "use_ssim", False)) and compare_with_ssim is not None
             if use_ssim:
                 ssim_threshold = float(getattr(self.config, "ssim_threshold", 0.99))
+                ssim_threshold_value = ssim_threshold
                 try:
                     ssim_pass, ssim_score = compare_with_ssim(o, t, ssim_threshold)
-                    if ssim_pass:
-                        diff_pct_ssim = max(0.0, (1.0 - ssim_score) * 100.0)
-                        logger.debug("SSIM %.4f >= threshold %.4f; treating as pass.", ssim_score, ssim_threshold)
-                        return True, diff_pct_ssim, None, None
-                    else:
-                        logger.debug("SSIM %.4f below threshold %.4f; falling back to pixel diff.", ssim_score, ssim_threshold)
+                    logger.debug("SSIM score %.4f (threshold %.4f)", ssim_score, ssim_threshold)
                 except Exception as exc:
                     logger.debug("SSIM comparison failed: %s", exc)
+                    ssim_pass = True
+                    ssim_score = None
 
             a = np.asarray(o, dtype=np.int16)
             b = np.asarray(t, dtype=np.int16)
@@ -1113,12 +1129,13 @@ class Player:
                     pass
 
             tol = float(getattr(self.config, "diff_tolerance_percent", getattr(self.config, "diff_tolerance", 0.0)))
-            is_pass = diff_percent <= tol
-            return is_pass, diff_percent, diff_path, highlight_path
+            pixel_pass = diff_percent <= tol
+            is_pass = pixel_pass and (ssim_pass if use_ssim else True)
+            return is_pass, diff_percent, diff_path, highlight_path, ssim_score, ssim_threshold_value
 
         except Exception as e:
             logger.exception(f"Compare failed for {orig_path} vs {test_path}: {e}")
-            return False, 100.0, None, None
+            return False, 100.0, None, None, None, None
 
     def _make_highlight_image(self, base_img: Image.Image, mask: np.ndarray) -> Image.Image:
         """Return base_img with semi-transparent red overlay where mask is True, and a union bbox outline."""
