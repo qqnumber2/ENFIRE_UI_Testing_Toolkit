@@ -35,7 +35,43 @@ except Exception:
         from .explorer import ExplorerController
     except Exception:
         ExplorerController = None  # type: ignore
+try:
+    from ui_testing.automation.driver import PywinautoUnavailableError, AutomationSession
+    from ui_testing.automation.semantic import SemanticContext, get_semantic_context
+except Exception:
+    AutomationSession = None  # type: ignore
+    PywinautoUnavailableError = RuntimeError  # type: ignore
+    SemanticContext = None  # type: ignore
+
+    def get_semantic_context(*args, **kwargs):  # type: ignore
+        raise PywinautoUnavailableError("Semantic context unavailable")
+try:
+    from ui_testing.automation.vision.ssim import compare_with_ssim
+except Exception:
+    compare_with_ssim = None  # type: ignore
+try:
+    from ui_testing.automation.flake_tracker import FlakeTracker
+except Exception:
+    FlakeTracker = None  # type: ignore
+try:
+    from ui_testing.automation.reporting.allure_helpers import attach_file, attach_image
+except Exception:
+    attach_image = None  # type: ignore
+    attach_file = None  # type: ignore
+try:
+    from ui_testing.automation.state_snapshots import validate_exports
+except Exception:
+    validate_exports = None  # type: ignore
 logger = logging.getLogger(__name__)
+
+_GENERIC_AUTOMATION_IDS = {"", "window", "pane", "mainwindowcontrol"}
+
+
+def _is_generic_automation_id(value: Optional[str]) -> bool:
+    if not value:
+        return True
+    lowered = str(value).strip().lower()
+    return lowered in _GENERIC_AUTOMATION_IDS
 
 @dataclass
 class PlayerConfig:
@@ -52,6 +88,14 @@ class PlayerConfig:
     use_screenshots: bool = True
     prefer_semantic_scripts: bool = True
     automation_manifest: Optional[Dict[str, Dict[str, str]]] = None
+    use_ssim: bool = False
+    ssim_threshold: float = 0.99
+    automation_backend: str = "uia"
+    appium_server_url: Optional[str] = None
+    appium_capabilities: Optional[Dict[str, Any]] = None
+    enable_allure: bool = True
+    flake_stats_path: Optional[Path] = None
+    state_snapshot_dir: Optional[Path] = None
 
 
 class Player:
@@ -60,6 +104,16 @@ class Player:
         self.update_automation_manifest(config.automation_manifest or {})
 
         self._stop_event = threading.Event()
+        self._flake_tracker = None
+        if FlakeTracker is not None and getattr(config, "flake_stats_path", None):
+            self._flake_tracker = FlakeTracker(Path(config.flake_stats_path))
+        self._semantic_context: Optional[SemanticContext] = None
+        self._semantic_disabled = False
+        self._semantic_registry_cache = None
+        self._allure_enabled = bool(getattr(config, "enable_allure", True) and attach_image is not None)
+        self._state_snapshot_dir = Path(config.state_snapshot_dir) if getattr(config, "state_snapshot_dir", None) else None
+        self._current_script: Optional[str] = None
+        self._click_mode_counts: Dict[str, int] = {"semantic": 0, "uia": 0, "coordinate": 0}
 
         # Lazy Explorer automation helper (wired by upcoming feature work)
 
@@ -85,6 +139,142 @@ class Player:
         except Exception:
             pass
 
+    def _semantic_session(self) -> Optional[AutomationSession]:
+        if not getattr(self.config, "prefer_semantic_scripts", True):
+            return None
+        if not getattr(self.config, "use_automation_ids", True):
+            return None
+        if SemanticContext is None or AutomationSession is None:
+            return None
+        if self._semantic_disabled:
+            return None
+        try:
+            if self._semantic_context is None:
+                self._semantic_context = get_semantic_context(
+                    backend=getattr(self.config, "automation_backend", "uia"),
+                    appium_server_url=getattr(self.config, "appium_server_url", None),
+                    appium_capabilities=getattr(self.config, "appium_capabilities", None) or None,
+                )
+                self._semantic_registry_cache = None
+            return self._semantic_context.session
+        except PywinautoUnavailableError:
+            logger.debug("Semantic automation unavailable (pywinauto missing). Disabling.")
+        except Exception as exc:
+            logger.debug("Semantic session attach failed: %s", exc)
+        self._semantic_disabled = True
+        self._semantic_context = None
+        self._semantic_registry_cache = None
+        return None
+
+    def _semantic_registry(self):
+        if self._semantic_disabled or SemanticContext is None:
+            return None
+        if self._semantic_registry_cache is not None:
+            return self._semantic_registry_cache
+        ctx = self._semantic_context
+        if ctx is None:
+            try:
+                ctx = get_semantic_context(
+                    backend=getattr(self.config, "automation_backend", "uia"),
+                    appium_server_url=getattr(self.config, "appium_server_url", None),
+                    appium_capabilities=getattr(self.config, "appium_capabilities", None) or None,
+                )
+                self._semantic_context = ctx
+            except Exception as exc:
+                logger.debug("Unable to resolve semantic context for templates: %s", exc)
+                return None
+        try:
+            registry = ctx.registry
+        except Exception as exc:
+            logger.debug("Semantic registry unavailable: %s", exc)
+            self._semantic_disabled = True
+            self._semantic_context = None
+            self._semantic_registry_cache = None
+            return None
+        self._semantic_registry_cache = registry
+        return registry
+
+    def _run_semantic_template(self, semantic_meta: Dict[str, Any], expected: Any) -> None:
+        group = semantic_meta.get("group")
+        name = semantic_meta.get("name")
+        if not group or not name:
+            return
+        ctx = self._semantic_context
+        if ctx is None:
+            try:
+                ctx = get_semantic_context(
+                    backend=getattr(self.config, "automation_backend", "uia"),
+                    appium_server_url=getattr(self.config, "appium_server_url", None),
+                    appium_capabilities=getattr(self.config, "appium_capabilities", None) or None,
+                )
+                self._semantic_context = ctx
+            except Exception as exc:
+                logger.debug("Unable to resolve semantic context for templates: %s", exc)
+                return
+        screen = ctx.resolve_screen_for_group(group)
+        if screen is None:
+            logger.warning("Semantic template skipped: no screen mapped for %s.%s", group, name)
+            return
+        expected_str = "" if expected is None else str(expected)
+        identifier = f"semantic:{group}.{name}"
+        try:
+            handled = False
+            if group == "BridgeIds" and name == "BridgeMlcResults":
+                screen.assert_mlc(expected_str)
+                handled = True
+            elif group == "TerrainIds" and name == "TerrainName":
+                screen.assert_name(expected_str)
+                handled = True
+            if not handled:
+                logger.debug("Semantic template has no explicit handler for %s.%s", group, name)
+        except AssertionError as exc:
+            message = f"Semantic template assertion failed for {identifier}: {exc}"
+            logger.warning(message)
+            self._record_failure(identifier)
+            raise AssertionError(message) from exc
+        except Exception as exc:
+            message = f"Semantic template execution failed for {identifier}: {exc}"
+            logger.warning(message)
+            self._record_failure(identifier)
+            raise AssertionError(message) from exc
+
+    def _record_failure(self, identifier: str) -> None:
+        if self._flake_tracker and self._current_script:
+            try:
+                self._flake_tracker.record_failure(self._current_script, identifier)
+            except Exception:
+                pass
+
+    def _attach_flake_stats_artifact(self) -> None:
+        if not self._allure_enabled or attach_file is None:
+            return
+        if not self._flake_tracker:
+            return
+        path = getattr(self._flake_tracker, "path", None)
+        if not path:
+            return
+        try:
+            path_obj = Path(path)
+        except Exception:
+            return
+        if not path_obj.exists():
+            return
+        try:
+            attach_file("flake-stats.json", path_obj, attachment_type="application/json")
+        except Exception:
+            pass
+
+    def _run_state_snapshot_checks(self) -> None:
+        if self._state_snapshot_dir and validate_exports is not None:
+            try:
+                validate_exports(self._state_snapshot_dir)
+            except AssertionError as exc:
+                logger.warning("State snapshot validation failed: %s", exc)
+                self._record_failure("state_snapshot")
+                raise
+            except Exception as exc:
+                logger.debug("State snapshot validation skipped: %s", exc)
+
     def play(self, script_name: str) -> List[Dict[str, Any]]:
         """Returns per-checkpoint results and writes an Excel summary per run."""
 
@@ -94,451 +284,484 @@ class Player:
             actions: List[Dict[str, Any]] = json.load(f)
 
         results: List[Dict[str, Any]] = []
-        assert_count = 0
-        screenshot_count = 0
-
-        shot_idx = 0
-
-        base_code = dotted_code_from_test_name(Path(script_name).name)
-
-        total_actions = len(actions)
-
-        i = 0
-
-        while i < total_actions:
-            action = actions[i]
-
-            a_type = action.get("action_type")
-
-            pre = self._compute_action_delay(a_type, action)
-
-            if pre > 0:
-                remaining = pre
-
-                while remaining > 0 and not self.should_stop():
-                    chunk = min(0.1, remaining)
-
-                    time.sleep(chunk)
-
-                    remaining -= chunk
-
-            if self.should_stop():
-                break
-
-            if a_type and str(a_type).startswith("explorer."):
-                self._play_explorer_action(action)
-
-                i += 1
-
-                continue
-
-            if a_type == "click":
-                x, y = int(action["x"]), int(action["y"])
-
-                auto_id: Optional[str]   = action.get("auto_id")
-
-                ctrl_type: Optional[str] = action.get("control_type")
-
-                if not self._in_primary_monitor(x, y):
-                    logger.info(f"Playback: click skipped outside primary monitor at ({x}, {y})")
-
+        self._click_mode_counts = {"semantic": 0, "uia": 0, "coordinate": 0}
+        self._current_script = script_name
+        try:
+            assert_count = 0
+            screenshot_count = 0
+        
+            shot_idx = 0
+        
+            base_code = dotted_code_from_test_name(Path(script_name).name)
+        
+            total_actions = len(actions)
+        
+            i = 0
+        
+            while i < total_actions:
+                action = actions[i]
+        
+                a_type = action.get("action_type")
+        
+                pre = self._compute_action_delay(a_type, action)
+        
+                if pre > 0:
+                    remaining = pre
+        
+                    while remaining > 0 and not self.should_stop():
+                        chunk = min(0.1, remaining)
+        
+                        time.sleep(chunk)
+        
+                        remaining -= chunk
+        
+                if self.should_stop():
+                    break
+        
+                if a_type and str(a_type).startswith("explorer."):
+                    self._play_explorer_action(action)
+        
                     i += 1
-
+        
                     continue
+        
+                if a_type == "click":
+                    x, y = int(action["x"]), int(action["y"])
 
-                if auto_id and getattr(self.config, "use_automation_ids", True) and Desktop is not None:
-                    if self._automation_lookup and str(auto_id) not in self._automation_lookup:
-                        logger.debug("AutomationId %s not found in manifest", auto_id)
-                    try:
-                        desk = Desktop(backend="uia")
+                    auto_id: Optional[str] = action.get("auto_id")
+                    ctrl_type: Optional[str] = action.get("control_type")
 
-                        target = None
-
-                        if self.config.app_title_regex:
-                            try:
-                                appwin = desk.window(title_re=self.config.app_title_regex)
-
-                                query: Dict[str, Any] = {"auto_id": auto_id}
-
-                                if ctrl_type:
-                                    query["control_type"] = ctrl_type
-
-                                target = appwin.child_window(**query).wrapper_object()
-
-                            except Exception:
-                                target = None
-
-                        if target is None:
-                            query2: Dict[str, Any] = {"auto_id": auto_id}
-
-                            if ctrl_type:
-                                query2["control_type"] = ctrl_type
-
-                            target = desk.window(**query2).wrapper_object()
-
-                        logger.info(f"Playback(UIA): click auto_id='{auto_id}'"
-
-                                    f"{' ctrl=' + ctrl_type if ctrl_type else ''}")
-
-                        target.click_input()
-
-                        time.sleep(0.005)
+                    if not self._in_primary_monitor(x, y):
+                        logger.info(f"Playback: click skipped outside primary monitor at ({x}, {y})")
 
                         i += 1
 
                         continue
 
-                    except Exception as e:
-                        logger.warning(
+                    use_uia = (
+                        auto_id
+                        and not _is_generic_automation_id(auto_id)
+                        and getattr(self.config, "use_automation_ids", True)
+                        and Desktop is not None
+                    )
+                    if use_uia and self._automation_lookup and str(auto_id) not in self._automation_lookup:
+                        logger.debug("AutomationId %s not found in manifest; falling back to coordinates.", auto_id)
+                        use_uia = False
 
-                            f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
+                    if use_uia:
+                        session = self._semantic_session()
+                        if session is not None:
+                            try:
+                                target = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+                                logger.info(
+                                    f"Playback(Semantic): click auto_id='{auto_id}'"
+                                    f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
+                                )
+                                target.click_input()
+                                self._click_mode_counts["semantic"] += 1
+                                time.sleep(0.005)
+                                i += 1
+                                continue
+                            except Exception as exc:
+                                logger.debug("Semantic session click failed: %s", exc)
+                        try:
+                            desk = Desktop(backend="uia")
+                            target = None
+                            if self.config.app_title_regex:
+                                try:
+                                    appwin = desk.window(title_re=self.config.app_title_regex)
+                                    query: Dict[str, Any] = {"auto_id": auto_id}
+                                    if ctrl_type:
+                                        query["control_type"] = ctrl_type
+                                    target = appwin.child_window(**query).wrapper_object()
+                                except Exception:
+                                    target = None
+                            if target is None:
+                                query2: Dict[str, Any] = {"auto_id": auto_id}
+                                if ctrl_type:
+                                    query2["control_type"] = ctrl_type
+                                target = desk.window(**query2).wrapper_object()
+                            logger.info(
+                                f"Playback(UIA): click auto_id='{auto_id}'"
+                                f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
+                            )
+                            target.click_input()
+                            self._click_mode_counts["uia"] += 1
+                            time.sleep(0.005)
+                            i += 1
+                            continue
+                        except Exception as e:
+                            logger.warning(
+                                f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
+                            )
 
-                        )
+                    fallback_note = "" if auto_id else " [coordinate fallback]"
+                    logger.info(f"Playback: click at ({x}, {y}){fallback_note}")
 
-                fallback_note = "" if auto_id else " [coordinate fallback]"
-                logger.info(f"Playback: click at ({x}, {y}){fallback_note}")
-
-                pyautogui.click(x, y, _pause=False)
-
-            elif a_type == "mouse_down":
-                x = int(action.get("x", 0))
-
-                y = int(action.get("y", 0))
-
-                button = str(action.get("button") or "left").lower()
-
-                logger.debug(f"Playback: mouse_down({button}) at ({x}, {y})")
-
-                try:
-                    pyautogui.mouseDown(x=x, y=y, button=button, _pause=False)
-
-                except Exception as exc:
-                    logger.warning(f"mouse_down failed at ({x}, {y}): {exc}")
-
-            elif a_type == "mouse_move":
-                button = action.get("button")
-
-                try:
-                    duration_val = action.get("move_duration")
-
-                    move_duration = max(0.0, float(duration_val)) if duration_val is not None else 0.0
-
-                except Exception:
-                    move_duration = 0.0
-
-                if button:
-                    final_x = int(action.get("x", 0))
-
-                    final_y = int(action.get("y", 0))
-
-                    j = i + 1
-
-                    while j < total_actions:
-                        next_action = actions[j]
-
-                        if next_action.get("action_type") != "mouse_move" or next_action.get("button") != button:
-                            break
-
-                        final_x = int(next_action.get("x", final_x))
-
-                        final_y = int(next_action.get("y", final_y))
-
-                        j += 1
-
-                    duration = move_duration if move_duration > 0 else 0.02
-
-                    duration = min(duration, 0.08)
-
-                    logger.debug(f"Playback: drag -> ({final_x}, {final_y}) [{button}]")
-
+                    pyautogui.click(x, y, _pause=False)
+                    self._click_mode_counts["coordinate"] += 1
+        
+                elif a_type == "mouse_down":
+                    x = int(action.get("x", 0))
+        
+                    y = int(action.get("y", 0))
+        
+                    button = str(action.get("button") or "left").lower()
+        
+                    logger.debug(f"Playback: mouse_down({button}) at ({x}, {y})")
+        
                     try:
-                        pyautogui.moveTo(final_x, final_y, duration=duration, _pause=False)
-
+                        pyautogui.mouseDown(x=x, y=y, button=button, _pause=False)
+        
                     except Exception as exc:
-                        logger.warning(f"drag move failed to ({final_x}, {final_y}): {exc}")
-
-                    i = j
-
-                    continue
-
-                x = int(action.get("x", 0))
-
-                y = int(action.get("y", 0))
-
-                try:
-                    if move_duration > 0:
-                        pyautogui.moveTo(x, y, duration=move_duration, _pause=False)
-
-                    else:
-                        pyautogui.moveTo(x, y, _pause=False)
-
-                except Exception as exc:
-                    logger.warning(f"mouse_move failed to ({x}, {y}): {exc}")
-
-            elif a_type == "mouse_up":
-                x = int(action.get("x", 0))
-
-                y = int(action.get("y", 0))
-
-                button = str(action.get("button") or "left").lower()
-
-                logger.debug(f"Playback: mouse_up({button}) at ({x}, {y})")
-
-                try:
-                    pyautogui.mouseUp(x=x, y=y, button=button, _pause=False)
-
-                except Exception as exc:
-                    logger.warning(f"mouse_up failed at ({x}, {y}): {exc}")
-
-            elif a_type == "drag":
-                raw_path = action.get("path") or []
-
-                button = str(action.get("button") or "left").lower()
-
-                coords: List[Tuple[int, int]] = []
-
-                for point in raw_path:
+                        logger.warning(f"mouse_down failed at ({x}, {y}): {exc}")
+        
+                elif a_type == "mouse_move":
+                    button = action.get("button")
+        
                     try:
-                        px, py = int(point[0]), int(point[1])
-
+                        duration_val = action.get("move_duration")
+        
+                        move_duration = max(0.0, float(duration_val)) if duration_val is not None else 0.0
+        
                     except Exception:
+                        move_duration = 0.0
+        
+                    if button:
+                        final_x = int(action.get("x", 0))
+        
+                        final_y = int(action.get("y", 0))
+        
+                        j = i + 1
+        
+                        while j < total_actions:
+                            next_action = actions[j]
+        
+                            if next_action.get("action_type") != "mouse_move" or next_action.get("button") != button:
+                                break
+        
+                            final_x = int(next_action.get("x", final_x))
+        
+                            final_y = int(next_action.get("y", final_y))
+        
+                            j += 1
+        
+                        duration = move_duration if move_duration > 0 else 0.02
+        
+                        duration = min(duration, 0.08)
+        
+                        logger.debug(f"Playback: drag -> ({final_x}, {final_y}) [{button}]")
+        
+                        try:
+                            pyautogui.moveTo(final_x, final_y, duration=duration, _pause=False)
+        
+                        except Exception as exc:
+                            logger.warning(f"drag move failed to ({final_x}, {final_y}): {exc}")
+        
+                        i = j
+        
                         continue
-
-                    coords.append((px, py))
-
-                coords = [pt for pt in coords if self._in_primary_monitor(pt[0], pt[1])]
-
-                if len(coords) > 1:
-                    logger.debug(f"Playback: drag path ({len(coords)} points) [{button}]")
-
-                    self._play_drag_path(coords, button)
-
-                else:
-                    logger.debug("Playback: drag skipped (insufficient path points)")
-
-            elif a_type == "key":
-                key_name = action.get("key")
-
-                if key_name:
-                    logger.info(f"Playback: key {key_name}")
-
+        
+                    x = int(action.get("x", 0))
+        
+                    y = int(action.get("y", 0))
+        
                     try:
-                        pyautogui.press(key_name)
-
+                        if move_duration > 0:
+                            pyautogui.moveTo(x, y, duration=move_duration, _pause=False)
+        
+                        else:
+                            pyautogui.moveTo(x, y, _pause=False)
+        
                     except Exception as exc:
-                        logger.warning(f"key press failed ({key_name}): {exc}")
-
-            elif a_type == "hotkey":
-                keys = action.get("keys")
-
-                if not keys:
-                    i += 1
-
-                    continue
-
-                if not isinstance(keys, list):
+                        logger.warning(f"mouse_move failed to ({x}, {y}): {exc}")
+        
+                elif a_type == "mouse_up":
+                    x = int(action.get("x", 0))
+        
+                    y = int(action.get("y", 0))
+        
+                    button = str(action.get("button") or "left").lower()
+        
+                    logger.debug(f"Playback: mouse_up({button}) at ({x}, {y})")
+        
                     try:
-                        keys = list(keys)
-
-                    except Exception:
-                        keys = [str(keys)]
-
-                str_keys = [str(k).lower() for k in keys]
-
-                label = ' + '.join(str_keys)
-
-                logger.info(f"Playback: hotkey {label}")
-
-                try:
-                    pyautogui.hotkey(*str_keys)
-
-                except Exception as exc:
-                    logger.warning(f"hotkey failed ({label}): {exc}")
-
-            elif a_type == "scroll":
-                x = action.get("x")
-
-                y = action.get("y")
-
-                dx = int(action.get("scroll_dx", 0) or 0)
-
-                dy = int(action.get("scroll_dy", 0) or 0)
-
-                if dx or dy:
-                    if x is not None and y is not None:
+                        pyautogui.mouseUp(x=x, y=y, button=button, _pause=False)
+        
+                    except Exception as exc:
+                        logger.warning(f"mouse_up failed at ({x}, {y}): {exc}")
+        
+                elif a_type == "drag":
+                    raw_path = action.get("path") or []
+        
+                    button = str(action.get("button") or "left").lower()
+        
+                    coords: List[Tuple[int, int]] = []
+        
+                    for point in raw_path:
                         try:
-                            cur = pyautogui.position()
-
-                            cx = int(getattr(cur, 'x', cur[0]))
-
-                            cy = int(getattr(cur, 'y', cur[1]))
-
+                            px, py = int(point[0]), int(point[1])
+        
                         except Exception:
-                            cx = cy = None
-
+                            continue
+        
+                        coords.append((px, py))
+        
+                    coords = [pt for pt in coords if self._in_primary_monitor(pt[0], pt[1])]
+        
+                    if len(coords) > 1:
+                        logger.debug(f"Playback: drag path ({len(coords)} points) [{button}]")
+        
+                        self._play_drag_path(coords, button)
+        
+                    else:
+                        logger.debug("Playback: drag skipped (insufficient path points)")
+        
+                elif a_type == "key":
+                    key_name = action.get("key")
+        
+                    if key_name:
+                        logger.info(f"Playback: key {key_name}")
+        
                         try:
-                            if cx != int(x) or cy != int(y):
-                                pyautogui.moveTo(int(x), int(y), duration=0)
-
+                            pyautogui.press(key_name)
+        
+                        except Exception as exc:
+                            logger.warning(f"key press failed ({key_name}): {exc}")
+        
+                elif a_type == "hotkey":
+                    keys = action.get("keys")
+        
+                    if not keys:
+                        i += 1
+        
+                        continue
+        
+                    if not isinstance(keys, list):
+                        try:
+                            keys = list(keys)
+        
+                        except Exception:
+                            keys = [str(keys)]
+        
+                    str_keys = [str(k).lower() for k in keys]
+        
+                    label = ' + '.join(str_keys)
+        
+                    logger.info(f"Playback: hotkey {label}")
+        
+                    try:
+                        pyautogui.hotkey(*str_keys)
+        
+                    except Exception as exc:
+                        logger.warning(f"hotkey failed ({label}): {exc}")
+        
+                elif a_type == "scroll":
+                    x = action.get("x")
+        
+                    y = action.get("y")
+        
+                    dx = int(action.get("scroll_dx", 0) or 0)
+        
+                    dy = int(action.get("scroll_dy", 0) or 0)
+        
+                    if dx or dy:
+                        if x is not None and y is not None:
+                            try:
+                                cur = pyautogui.position()
+        
+                                cx = int(getattr(cur, 'x', cur[0]))
+        
+                                cy = int(getattr(cur, 'y', cur[1]))
+        
+                            except Exception:
+                                cx = cy = None
+        
+                            try:
+                                if cx != int(x) or cy != int(y):
+                                    pyautogui.moveTo(int(x), int(y), duration=0)
+        
+                            except Exception:
+                                pass
+        
+                            xi = int(x)
+        
+                            yi = int(y)
+        
+                        else:
+                            xi = yi = None
+        
+                        if xi is not None and yi is not None and not self._in_primary_monitor(xi, yi):
+                            logger.info(f"Playback: scroll ignored outside primary monitor at ({xi}, {yi})")
+        
+                            i += 1
+        
+                            continue
+        
+                        logger.info(f"Playback: scroll at ({xi if xi is not None else '?'}, {yi if yi is not None else '?'}) dx={dx}, dy={dy}")
+        
+                        try:
+                            if dy:
+                                pyautogui.scroll(dy, x=xi, y=yi)
+        
+                            if dx:
+                                if hasattr(pyautogui, 'hscroll'):
+                                    pyautogui.hscroll(dx, x=xi, y=yi)
+        
+                                else:
+                                    logger.debug("Horizontal scroll not supported on this platform")
+        
+                            time.sleep(0.005)
+        
+                        except Exception as exc:
+                            logger.warning(f"scroll failed at ({xi if xi is not None else '?'}, {yi if yi is not None else '?'}):: {exc}")
+        
+                elif a_type == "type":
+                    text = action.get("text", "")
+        
+                    safe_preview = text.replace("\n", "<ENTER>")
+        
+                    logger.info(f"Playback: type '{safe_preview}'")
+        
+                    pyautogui.typewrite(text, interval=0.02)
+        
+                elif a_type == "assert.property":
+                    if not getattr(self.config, "prefer_semantic_scripts", True):
+                        logger.debug("Playback: semantic assertion skipped (semantic checks disabled).")
+                    elif not getattr(self.config, "use_automation_ids", True):
+                        logger.debug("Playback: semantic assertion skipped (automation IDs disabled).")
+                    elif Desktop is None:
+                        logger.debug("Playback: semantic assertion skipped (UI Automation backend unavailable).")
+                    else:
+                        before_len = len(results)
+                        self._handle_assert_property(action, results)
+                        if len(results) > before_len:
+                            assert_count += 1
+                elif a_type == "screenshot":
+                    if not getattr(self.config, "use_screenshots", True):
+                        logger.info("Playback: screenshot checkpoint skipped (screenshots disabled)")
+                        i += 1
+                        continue
+                    prev_pos = None
+        
+                    try:
+                        pos = pyautogui.position()
+        
+                        if hasattr(pos, "x") and hasattr(pos, "y"):
+                            prev_pos = (int(pos.x), int(pos.y))
+        
+                        else:
+                            prev_pos = (int(pos[0]), int(pos[1]))
+        
+                    except Exception:
+                        prev_pos = None
+        
+                    logger.info(f"Playback: screenshot #{shot_idx}")
+                    time.sleep(0.5)
+                    test_img = self._capture_screenshot_primary()
+        
+                    if prev_pos is not None:
+                        try:
+                            pyautogui.moveTo(prev_pos[0], prev_pos[1], duration=0)
+        
                         except Exception:
                             pass
-
-                        xi = int(x)
-
-                        yi = int(y)
-
-                    else:
-                        xi = yi = None
-
-                    if xi is not None and yi is not None and not self._in_primary_monitor(xi, yi):
-                        logger.info(f"Playback: scroll ignored outside primary monitor at ({xi}, {yi})")
-
-                        i += 1
-
-                        continue
-
-                    logger.info(f"Playback: scroll at ({xi if xi is not None else '?'}, {yi if yi is not None else '?'}) dx={dx}, dy={dy}")
-
-                    try:
-                        if dy:
-                            pyautogui.scroll(dy, x=xi, y=yi)
-
-                        if dx:
-                            if hasattr(pyautogui, 'hscroll'):
-                                pyautogui.hscroll(dx, x=xi, y=yi)
-
-                            else:
-                                logger.debug("Horizontal scroll not supported on this platform")
-
-                        time.sleep(0.005)
-
-                    except Exception as exc:
-                        logger.warning(f"scroll failed at ({xi if xi is not None else '?'}, {yi if yi is not None else '?'}):: {exc}")
-
-            elif a_type == "type":
-                text = action.get("text", "")
-
-                safe_preview = text.replace("\n", "<ENTER>")
-
-                logger.info(f"Playback: type '{safe_preview}'")
-
-                pyautogui.typewrite(text, interval=0.02)
-
-            elif a_type == "assert.property":
-                if not getattr(self.config, "prefer_semantic_scripts", True):
-                    logger.debug("Playback: semantic assertion skipped (semantic checks disabled).")
-                elif not getattr(self.config, "use_automation_ids", True):
-                    logger.debug("Playback: semantic assertion skipped (automation IDs disabled).")
-                elif Desktop is None:
-                    logger.debug("Playback: semantic assertion skipped (UI Automation backend unavailable).")
-                else:
-                    before_len = len(results)
-                    self._handle_assert_property(action, results)
-                    if len(results) > before_len:
-                        assert_count += 1
-            elif a_type == "screenshot":
-                if not getattr(self.config, "use_screenshots", True):
-                    logger.info("Playback: screenshot checkpoint skipped (screenshots disabled)")
-                    i += 1
-                    continue
-                prev_pos = None
-
-                try:
-                    pos = pyautogui.position()
-
-                    if hasattr(pos, "x") and hasattr(pos, "y"):
-                        prev_pos = (int(pos.x), int(pos.y))
-
-                    else:
-                        prev_pos = (int(pos[0]), int(pos[1]))
-
-                except Exception:
-                    prev_pos = None
-
-                logger.info(f"Playback: screenshot #{shot_idx}")
-                time.sleep(0.5)
-                test_img = self._capture_screenshot_primary()
-
-                if prev_pos is not None:
-                    try:
-                        pyautogui.moveTo(prev_pos[0], prev_pos[1], duration=0)
-
-                    except Exception:
-                        pass
-
-                img_dir = self.config.images_dir / script_name
-
-                img_dir.mkdir(parents=True, exist_ok=True)
-
-                test_name = ensure_png_name(0, shot_idx, "T")
-
-                test_path = img_dir / test_name
-
-                test_img.save(test_path)
-
-                orig_name = ensure_png_name(0, shot_idx, "O")
-
-                orig_path = img_dir / orig_name
-
-                passed, diff_pct = self._compare_and_highlight(orig_path, test_path)
-
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-                result = {
-
-                    "index": shot_idx,
-
-                    "original": str(orig_path),
-
-                    "test": str(test_path),
-
-                    "diff_percent": round(float(diff_pct), 3),
-
-                    "status": "pass" if passed else "fail",
-
-                    "timestamp": timestamp,
-
-                }
-
-                logger.info(f"Result: screenshot #{shot_idx} -> {'PASS' if passed else 'FAIL'}")
-
-                results.append(result)
-
-                shot_idx += 1
-                screenshot_count += 1
-
-            i += 1
-
-        summary_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        validation_fail = any(r.get("status") == "fail" for r in results)
-        validation_total = assert_count + screenshot_count
-        note_parts = [f"Asserts: {assert_count}", f"Screenshots: {screenshot_count}"]
-        if validation_total == 0:
-            summary_status = "warn"
-            note_parts.append("No semantic assertions or screenshot checkpoints executed.")
-            logger.warning("Playback summary [%s]: no validations executed (asserts=0, screenshots=0).", script_name)
-        elif validation_fail:
-            summary_status = "fail"
-            note_parts.append("At least one validation failed.")
-        else:
-            summary_status = "pass"
-            note_parts.append("All validations passed.")
-        summary_entry = {
-            "index": "summary",
-            "timestamp": summary_timestamp,
-            "original": "",
-            "test": "",
-            "diff_percent": "",
-            "status": summary_status,
-            "note": " | ".join(note_parts),
-            "assertions": assert_count,
-            "screenshots": screenshot_count,
-        }
-        results.append(summary_entry)
-
+        
+                    img_dir = self.config.images_dir / script_name
+        
+                    img_dir.mkdir(parents=True, exist_ok=True)
+        
+                    test_name = ensure_png_name(0, shot_idx, "T")
+        
+                    test_path = img_dir / test_name
+        
+                    test_img.save(test_path)
+        
+                    orig_name = ensure_png_name(0, shot_idx, "O")
+        
+                    orig_path = img_dir / orig_name
+        
+                    passed, diff_pct, diff_path, highlight_path = self._compare_and_highlight(orig_path, test_path)
+                    identifier = f"screenshot:{shot_idx}"
+        
+                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+                    result = {
+        
+                        "index": shot_idx,
+        
+                        "original": str(orig_path),
+        
+                        "test": str(test_path),
+        
+                        "diff_percent": round(float(diff_pct), 3),
+        
+                        "status": "pass" if passed else "fail",
+        
+                        "timestamp": timestamp,
+        
+                    }
+        
+                    logger.info(f"Result: screenshot #{shot_idx} -> {'PASS' if passed else 'FAIL'}")
+        
+                    results.append(result)
+                    if result["status"] != "pass":
+                        self._record_failure(identifier)
+                        if self._allure_enabled and attach_image is not None:
+                            if test_path.exists():
+                                attach_image("Screenshot (test)", test_path)
+                            if orig_path.exists():
+                                attach_image("Screenshot (original)", orig_path)
+                            if diff_path and diff_path.exists():
+                                attach_image("Diff (D)", diff_path)
+                            if highlight_path and highlight_path.exists():
+                                attach_image("Diff (H)", highlight_path)
+        
+                    shot_idx += 1
+                    screenshot_count += 1
+        
+                i += 1
+        
+            summary_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            validation_fail = any(r.get("status") == "fail" for r in results)
+            validation_total = assert_count + screenshot_count
+            note_parts = [f"Asserts: {assert_count}", f"Screenshots: {screenshot_count}"]
+            note_parts.append(
+                "Clicks semantic/UIA/coords: "
+                f"{self._click_mode_counts.get('semantic', 0)}/"
+                f"{self._click_mode_counts.get('uia', 0)}/"
+                f"{self._click_mode_counts.get('coordinate', 0)}"
+            )
+            if validation_total == 0:
+                summary_status = "warn"
+                note_parts.append("No semantic assertions or screenshot checkpoints executed.")
+                logger.warning("Playback summary [%s]: no validations executed (asserts=0, screenshots=0).", script_name)
+            elif validation_fail:
+                summary_status = "fail"
+                note_parts.append("At least one validation failed.")
+            else:
+                summary_status = "pass"
+                note_parts.append("All validations passed.")
+            summary_entry = {
+                "index": "summary",
+                "timestamp": summary_timestamp,
+                "original": "",
+                "test": "",
+                "diff_percent": "",
+                "status": summary_status,
+                "note": " | ".join(note_parts),
+                "assertions": assert_count,
+                "screenshots": screenshot_count,
+            }
+            results.append(summary_entry)
+        
+            self._run_state_snapshot_checks()
+        finally:
+            self._current_script = None
         # Write Excel after this test
 
         self._write_excel_results(script_name, results)
+        self._attach_flake_stats_artifact()
 
         return results
 
@@ -547,15 +770,18 @@ class Player:
             return
         if not getattr(self.config, "use_automation_ids", True):
             return
-        if Desktop is None:
-            return
-        auto_id = action.get("auto_id")
+        semantic_meta = action.get("semantic") or {}
+        auto_id = action.get("auto_id") or semantic_meta.get("automation_id")
         if not auto_id:
             logger.warning("assert.property skipped (missing auto_id)")
             return
-        ctrl_type = action.get("control_type")
+        if _is_generic_automation_id(auto_id):
+            logger.debug("assert.property skipped for generic auto_id=%s", auto_id)
+            return
+        ctrl_type = action.get("control_type") or semantic_meta.get("control_type")
         if self._automation_lookup and str(auto_id) not in self._automation_lookup:
             logger.debug("AutomationId %s not defined in manifest", auto_id)
+            return
         prop_name = (
             action.get("property")
             or action.get("property_name")
@@ -564,21 +790,42 @@ class Player:
         )
         comparator = str(action.get("compare") or action.get("comparison") or "equals").strip().lower()
         expected = action.get("expected")
-        element = self._resolve_element_by_auto_id(str(auto_id), ctrl_type)
+        element = None
+        session = self._semantic_session()
+        if session is not None:
+            try:
+                element = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+            except Exception as exc:
+                logger.debug("Semantic resolve failed for %s: %s", auto_id, exc)
+        if element is None and Desktop is not None:
+            element = self._resolve_element_by_auto_id(str(auto_id), ctrl_type)
         if element is None:
             logger.warning("assert.property failed: element auto_id='%s' not found", auto_id)
-            self._record_assert_result(results, str(auto_id), prop_name, expected, None, False, "not found")
+            self._record_assert_result(results, str(auto_id), prop_name, expected, None, False, "not found", semantic_meta if semantic_meta else None)
             return
         actual = self._read_element_property(element, prop_name)
         passed, note = self._compare_property(actual, expected, comparator)
+        try:
+            self._run_semantic_template(semantic_meta, expected)
+        except AssertionError as exc:
+            passed = False
+            note = str(exc)
+        except Exception as exc:
+            logger.debug("Semantic template ignored: %s", exc)
+        extra = ""
+        group = semantic_meta.get("group")
+        name = semantic_meta.get("name")
+        if group and name:
+            extra = f" [{group}.{name}]"
         logger.info(
-            "Assert property: auto_id='%s' property='%s' comparator='%s' -> %s",
+            "Assert property: auto_id='%s'%s property='%s' comparator='%s' -> %s",
             auto_id,
+            extra,
             prop_name,
             comparator,
             "PASS" if passed else "FAIL",
         )
-        self._record_assert_result(results, str(auto_id), prop_name, expected, actual, passed, note)
+        self._record_assert_result(results, str(auto_id), prop_name, expected, actual, passed, note, semantic_meta if semantic_meta else None)
 
     def _capture_screenshot_primary(self) -> Image.Image:
         prev_failsafe = pyautogui.FAILSAFE
@@ -607,8 +854,8 @@ class Player:
 
         is_pass, _pct = self._compare_and_highlight(orig_path, test_path)
 
+        is_pass, _pct, _d, _h = self._compare_and_highlight(orig_path, test_path)
         return is_pass
-
     def _bounding_boxes_from_mask(self, mask: np.ndarray, cell: int = 12,
 
                                 min_area: int = 60, pad: int = 3) -> list[tuple[int,int,int,int]]:
@@ -740,116 +987,87 @@ class Player:
 
         return boxes
 
-    def _compare_and_highlight(self, orig_path: Path, test_path: Path) -> tuple[bool, float]:
-        """Return (is_pass, diff_percent). PASS ? diff_percent <= diff_tolerance_percent.
-
-        Also saves:
-        - D image (...D.png): black & white absolute difference (all channels)
-
-        - H image (...H.png): semi-transparent red overlay + red bounding boxes (one per region)
-
-        """
+    def _compare_and_highlight(self, orig_path: Path, test_path: Path) -> tuple[bool, float, Optional[Path], Optional[Path]]:
+        """Return (pass flag, diff percent, diff image path, highlight image path)."""
 
         try:
             if not orig_path.exists() or not test_path.exists():
                 logger.error(f"Missing image(s): {orig_path} | {test_path}")
-
-                return False, 100.0
+                return False, 100.0, None, None
 
             o = Image.open(orig_path).convert("RGBA")
-
             t = Image.open(test_path).convert("RGBA")
-
             if o.size != t.size:
                 t = t.resize(o.size, Image.LANCZOS)
 
+            diff_path: Optional[Path] = None
+            highlight_path: Optional[Path] = None
+
+            use_ssim = bool(getattr(self.config, "use_ssim", False)) and compare_with_ssim is not None
+            if use_ssim:
+                ssim_threshold = float(getattr(self.config, "ssim_threshold", 0.99))
+                try:
+                    ssim_pass, ssim_score = compare_with_ssim(o, t, ssim_threshold)
+                    if ssim_pass:
+                        diff_pct_ssim = max(0.0, (1.0 - ssim_score) * 100.0)
+                        logger.debug("SSIM %.4f >= threshold %.4f; treating as pass.", ssim_score, ssim_threshold)
+                        return True, diff_pct_ssim, None, None
+                    else:
+                        logger.debug("SSIM %.4f below threshold %.4f; falling back to pixel diff.", ssim_score, ssim_threshold)
+                except Exception as exc:
+                    logger.debug("SSIM comparison failed: %s", exc)
+
             a = np.asarray(o, dtype=np.int16)
-
             b = np.asarray(t, dtype=np.int16)
-
             absdiff = np.abs(a - b)
-
-            diff_mask = np.any(absdiff > 0, axis=2)      # H×W bool
-
+            diff_mask = np.any(absdiff > 0, axis=2)
             total = diff_mask.size
-
             num_diff = int(diff_mask.sum())
-
             diff_percent = (num_diff / total) * 100.0
 
-            # ----- Save D (black & white difference) -----
-
-            perpix = absdiff[..., :3].max(axis=2)  # ignore alpha for D
-
+            # Save D image (black & white difference)
+            perpix = absdiff[..., :3].max(axis=2)
             if perpix.max() > 0:
                 perpix = (perpix.astype(np.float32) / perpix.max()) * 255.0
-
             d_img = Image.fromarray(perpix.astype(np.uint8), mode="L")
-
             stem = test_path.stem
-
             d_name = (stem[:-1] + "D") if stem and stem[-1] in ("T", "O") else (stem + "_D")
-
-            d_path = test_path.with_name(d_name + ".png")
-
+            d_path_candidate = test_path.with_name(d_name + ".png")
             try:
-                d_img.save(d_path)
-
+                d_img.save(d_path_candidate)
+                diff_path = d_path_candidate
             except Exception:
                 pass
 
-            # ----- Save H (semi-transparent red + MULTI boxes) -----
-
+            # Save H image (overlay)
             if num_diff > 0:
                 overlay = np.zeros_like(a)
-
-                overlay[..., 0] = 255  # red
-
+                overlay[..., 0] = 255
                 overlay[..., 3] = np.where(diff_mask, 96, 0)
-
                 hi = Image.alpha_composite(o, Image.fromarray(overlay.astype(np.uint8)))
-
-                # draw multiple rectangles
-
                 boxes = self._bounding_boxes_from_mask(diff_mask, cell=12, min_area=60, pad=3)
-
                 arr = np.array(hi)
-
                 for (x0, y0, x1, y1) in boxes:
-                    # 3px outline
-
                     arr[y0:y0+3, x0:x1+1] = [255, 0, 0, 255]
-
                     arr[y1-2:y1+1, x0:x1+1] = [255, 0, 0, 255]
-
                     arr[y0:y1+1, x0:x0+3] = [255, 0, 0, 255]
-
                     arr[y0:y1+1, x1-2:x1+1] = [255, 0, 0, 255]
-
                 hi = Image.fromarray(arr, mode="RGBA")
-
                 h_name = (stem[:-1] + "H") if stem and stem[-1] in ("T", "O") else (stem + "_H")
-
+                h_path_candidate = test_path.with_name(h_name + ".png")
                 try:
-                    hi.save(test_path.with_name(h_name + ".png"))
-
+                    hi.save(h_path_candidate)
+                    highlight_path = h_path_candidate
                 except Exception:
                     pass
 
-            # ----- PASS/FAIL based on tolerance -----
-
-            tol = float(getattr(self.config, "diff_tolerance_percent",
-
-                                getattr(self.config, "diff_tolerance", 0.0)))
-
-            is_pass = (diff_percent <= tol)
-
-            return is_pass, diff_percent
+            tol = float(getattr(self.config, "diff_tolerance_percent", getattr(self.config, "diff_tolerance", 0.0)))
+            is_pass = diff_percent <= tol
+            return is_pass, diff_percent, diff_path, highlight_path
 
         except Exception as e:
             logger.exception(f"Compare failed for {orig_path} vs {test_path}: {e}")
-
-            return False, 100.0
+            return False, 100.0, None, None
 
     def _make_highlight_image(self, base_img: Image.Image, mask: np.ndarray) -> Image.Image:
         """Return base_img with semi-transparent red overlay where mask is True, and a union bbox outline."""
@@ -1142,6 +1360,15 @@ class Player:
             wb.save(out_path)
 
             logger.info(f"Excel results saved: {out_path}")
+            if self._allure_enabled and attach_file is not None:
+                try:
+                    attach_file(
+                        "results_summary.xlsx",
+                        out_path,
+                        attachment_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    )
+                except Exception:
+                    pass
 
         except Exception as e:
             logger.warning(f"Failed to save Excel results: {e}")
@@ -1268,6 +1495,12 @@ class Player:
         return Action(**filtered)
 
     def _resolve_element_by_auto_id(self, auto_id: str, ctrl_type: Optional[str] = None):
+        session = self._semantic_session()
+        if session is not None:
+            try:
+                return session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+            except Exception as exc:
+                logger.debug("Semantic resolve failed: %s", exc)
         if Desktop is None:
             return None
         try:
@@ -1348,6 +1581,7 @@ class Player:
         actual: Any,
         passed: bool,
         note: str,
+        semantic_meta: Optional[Dict[str, Any]] = None,
     ) -> None:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         result = {
@@ -1362,6 +1596,10 @@ class Player:
         }
         if note:
             result["note"] = note
+        if semantic_meta:
+            result["semantic"] = semantic_meta
         results.append(result)
+        if not passed:
+            self._record_failure(result["index"])
 
 

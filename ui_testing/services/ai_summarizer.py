@@ -34,6 +34,8 @@ class BugNote:
 
 
 def _load_rgba(p: Path) -> np.ndarray:
+    if not p.is_file():
+        raise FileNotFoundError(f"Expected image file missing: {p}")
     im = Image.open(p).convert("RGBA")
     return np.asarray(im, dtype=np.int16)
 
@@ -280,7 +282,8 @@ def write_run_bug_report(paths, script_rel: str, results: List[Dict[str, str]]) 
 
         orig = Path(worst.get("original", ""))
         test = Path(worst.get("test", ""))
-        if not orig.exists() or not test.exists():
+        if not orig.is_file() or not test.is_file():
+            logging.debug("Bug draft skipped; evidence files missing (orig=%s, test=%s)", orig, test)
             return None
 
         o = _load_rgba(orig)

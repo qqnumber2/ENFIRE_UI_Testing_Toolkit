@@ -1,0 +1,2 @@
+"""Semantic automation test package."""
+

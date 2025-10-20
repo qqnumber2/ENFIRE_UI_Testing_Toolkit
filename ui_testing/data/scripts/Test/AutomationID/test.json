@@ -1,0 +1,189 @@
+[
+  {
+    "action_type": "click",
+    "x": 105,
+    "y": 52,
+    "delay": 2.272,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "click",
+    "x": 128,
+    "y": 193,
+    "delay": 2.208,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "click",
+    "x": 75,
+    "y": 199,
+    "delay": 3.312,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "click",
+    "x": 242,
+    "y": 51,
+    "delay": 2.618,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "click",
+    "x": 704,
+    "y": 370,
+    "delay": 2.413,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "click",
+    "x": 1186,
+    "y": 366,
+    "delay": 0.553,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "screenshot",
+    "screenshot": "0_000O.png",
+    "delay": 4.16
+  },
+  {
+    "action_type": "click",
+    "x": 809,
+    "y": 156,
+    "delay": 0.764,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "button": "left",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  },
+  {
+    "action_type": "assert.property",
+    "delay": 0.0,
+    "auto_id": "Window",
+    "control_type": "Window",
+    "property_name": "name",
+    "expected": "ENFIRE",
+    "compare": "equals",
+    "semantic": {
+      "automation_id": "Window",
+      "control_type": "Window"
+    }
+  }
+]

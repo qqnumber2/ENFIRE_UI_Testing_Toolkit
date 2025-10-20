@@ -31,6 +31,7 @@ from ui_testing.app.environment import Paths, build_default_paths, resource_path
 from ui_testing.ui.dialogs import NewRecordingDialog, RecordingRequest
 from ui_testing.ui.background import VideoBackground
 from ui_testing.automation.player import Player, PlayerConfig
+from ui_testing.automation.semantic import reset_semantic_context
 from ui_testing.automation.recorder import Recorder, RecorderConfig
 from ui_testing.services.ai_summarizer import write_run_bug_report, BugNote
 from ui_testing.app.settings import AppSettings
@@ -85,6 +86,9 @@ class TestRunnerApp:
         self.use_automation_ids_var = tk.BooleanVar(master=self.root, value=True)
         self.use_screenshots_var = tk.BooleanVar(master=self.root, value=True)
         self.prefer_semantic_var = tk.BooleanVar(master=self.root, value=True)
+        self.use_ssim_var = tk.BooleanVar(master=self.root, value=False)
+        self.ssim_threshold_var = tk.DoubleVar(master=self.root, value=0.99)
+        self.automation_backend_var = tk.StringVar(master=self.root, value="uia")
         self.normalize_label_var = tk.StringVar(master=self.root, value="Normalize: Not set")
         self._theme_choices = sorted(set(self.root.style.theme_names()))
 
@@ -137,6 +141,14 @@ class TestRunnerApp:
                 use_automation_ids=bool(self.use_automation_ids_var.get()),
                 use_screenshots=bool(self.use_screenshots_var.get()),
                 prefer_semantic_scripts=bool(self.prefer_semantic_var.get()),
+                use_ssim=bool(self.use_ssim_var.get()),
+                ssim_threshold=float(self.ssim_threshold_var.get()),
+                automation_backend=str(self.automation_backend_var.get()).lower(),
+                appium_server_url=getattr(self.settings, "appium_server_url", None),
+                appium_capabilities=getattr(self.settings, "appium_capabilities", None) or None,
+                enable_allure=True,
+                flake_stats_path=self.paths.data_root / "flake_stats.json",
+                state_snapshot_dir=self.paths.data_root / "snapshots",
                 automation_manifest=self.automation_manifest or None,
             )
         )
@@ -883,6 +895,10 @@ class TestRunnerApp:
             use_automation_ids_var=self.use_automation_ids_var,
             use_screenshots_var=self.use_screenshots_var,
             prefer_semantic_var=self.prefer_semantic_var,
+            use_ssim_var=self.use_ssim_var,
+            ssim_threshold_var=self.ssim_threshold_var,
+            backend_var=self.automation_backend_var,
+            backend_choices=["uia", "appium"],
             theme_change_callback=self._on_theme_change,
         )
         self._popup_over_root(dialog)
@@ -1066,12 +1082,58 @@ class TestRunnerApp:
         notebook.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
 
         sections = [
-            ("Overview", "UI Testing Overview\n\n- Available Tests shows scripts as procedure/section/test (e.g. 4/1/1) with a live selection counter.\n- The toolbar keeps high-frequency buttons; theme, delay, tolerance, Automation ID, semantic-preference, and screenshot toggles now live under the Settings (gear) dialog.\n- Results write into a single workbook per procedure so large runs stay manageable.\n"),
-            ("Recording", "Recording a Test\n\n1) Click 'Record New'. Enter procedure (e.g. 4), section (e.g. 1), and a descriptive test name.\n2) During recording: mouse clicks capture Automation IDs when available (the recorder adds semantic assertions automatically), drags are preserved, and pressing 'p' captures a checkpoint.\n3) Press 'F' anywhere to stop recording. JSON lands in scripts/<proc>/<sec>/<test>.json and screenshots under images/.\n"),
-            ("Playback", "Playback & Settings\n\n- Select tests from the tree then run them with 'Run Selected' or 'Run All'.\n- Open the Settings dialog (gear) to adjust default delay, tolerance, theme, and the playback toggles for Automation IDs, semantic assertions, and screenshot comparisons.\n- Check 'Prefer semantic assertions' to load *.semantic.json variants when available; uncheck it to stick with the original recordings.\n- The runner brings ENFIRE to the foreground automatically before each script and (optionally) runs the configured normalize script whenever a new procedure begins.\n"),
-            ("Semantic Checks", "Semantic Checks & Helper\n\n- Recorder and the Semantic Helper insert `assert.property` steps so playback validates UI text instead of screenshots.\n- The helper keeps the originals intact and writes semantic siblings alongside them (e.g. test.json + test.semantic.json).\n- Use the Settings toggle to switch between semantic playback and the recorded script, and combine it with 'Compare screenshots' to control visual diffs.\n- Run the Semantic Helper button to retrofit existing scripts; it adds assertions wherever Automation IDs exist and snapshots stay in the original recording.\n"),
-            ("Results", "Results, Notes, and Test Plan\n\n- The Results panel lists checkpoints with pass/fail status; summary rows roll up each script.\n- The progress banner tracks playback progress and auto-scrolls to the latest entry.\n- Passing or failing a run updates the ENFIRE XLSM (procedure.section sheets) and shows a confirmation toast.\n- Failing runs automatically create a bug draft in results/<proc>/<sec>/<test>/.\n"),
-            ("Tips", "Tips & Shortcuts\n\n- Record a stand-alone normalize script and keep it current. Use 'Clear Normalize' to remove it when needed.\n- Right-click a test to open or delete its JSON. Semantic Helper output (*.semantic.json) lives beside the originals so you can toggle back any time.\n- Hotkeys: 'p' captures a screenshot, 'F' stops playback/recording, 'Ctrl+L' opens logs.\n- Keep Windows scaling consistent to minimize screenshot drift.\n"),
+            (
+                "Overview & Layout",
+                "UI Testing Overview\n\n"
+                "- The window is split into four panes: Available Tests (tree), Results (grid + summary banner), Preview (image diff), and Log (live journal).\n"
+                "- Toolbar buttons control high-frequency actions: Record/Stop, Run Selected/Run All, Normalize helpers, Semantic Helper, Settings, open logs, and documentation.\n"
+                "- Status indicators show the active script, remaining queue, and semantic/screenshot configuration so you always know which validation modes are enabled.\n"
+                "- Every run writes to results_summary.xlsx and creates per-script folders under data/results for downstream analysis."
+            ),
+            (
+                "Recording Sessions",
+                "Recording a Test\n\n"
+                "1) Click 'Record New'. Enter the procedure, section, and a descriptive test name (these drive folder structure and workbook sheets).\n"
+                "2) During capture the recorder stores raw cursor coordinates, AutomationIds (when available), semantic metadata (group/name), and keystrokes. Press 'p' for a screenshot checkpoint; press 'F' (or the toolbar Stop button) to finish.\n"
+                "3) The recorder automatically filters out generic AutomationIds ('Window', 'Pane', etc.) and falls back to coordinates when a control is not described by the manifest, ensuring the JSON reflects actionable selectors.\n"
+                "4) Output lands in data/scripts/<proc>/<sec>/<test>.json with matching images under data/images/... Screenshot names use the 0_000O/0_000T convention for quick diffing."
+            ),
+            (
+                "Playback & Validation",
+                "Running Scripts\n\n"
+                "- Select one or more tests in the tree (Ctrl/Shift click supported) and use 'Run Selected' or 'Run All'.\n"
+                "- The player resolves clicks in this order: semantic session (manifest-backed AutomationId), UIA window search, then raw coordinates. Summary rows include semantic/UIA/coordinate counts so you can confirm how each run navigated the UI.\n"
+                "- Toggle 'Prefer semantic assertions' to load *.semantic.json variants. Toggle 'Use Automation IDs' or 'Compare screenshots' to influence which validation channels are active.\n"
+                "- A normalize script (optional) is invoked automatically whenever a new procedure starts; use the Normalize buttons to set, clear, or execute that helper."
+            ),
+            (
+                "Semantic Automation",
+                "Semantic Checks & Helper\n\n"
+                "- The Semantic Helper upgrades legacy scripts by inserting assert.property steps based on the automation manifest. Upgrades create side-by-side *.semantic.json files so you can switch between image- and AutomationId-driven playback without losing history.\n"
+                "- During recording, controls are cross-referenced against the manifest. If an AutomationId exists, the recorder captures group/name metadata so playback can target the same widget even if window chrome shifts.\n"
+                "- During playback, failed semantic lookups automatically fall back to coordinates and log warnings. Use the log search box to filter for 'Playback(Semantic)' entries when auditing runs."
+            ),
+            (
+                "Results & Reporting",
+                "Output Artefacts\n\n"
+                "- The Results panel lists each checkpoint with status, including semantic assertions, screenshot comparisons, and summary lines. Icons surface failures immediately; double-click to jump in the tree.\n"
+                "- Failed runs trigger AI-assisted bug drafts under data/results/<script>/bugdraft_*.md with cropped evidence, heuristics, and recommendations. Diff/crop images are stored alongside the markdown.\n"
+                "- results_summary.xlsx is pruned and rewritten per script to avoid duplicate history and is also attached to Allure (when enabled) for CI review. Flake statistics are recorded per assertion when the optional tracker is configured."
+            ),
+            (
+                "Settings & Shortcuts",
+                "Customization guide\n\n"
+                "- Settings (gear) exposes theme selection, default delay, tolerance, automation toggles, semantic preference, screenshot handling, SSIM threshold, automation backend, and normalize script path.\n"
+                "- Hotkeys: 'p' screenshot, 'F' stop recording/playback, 'Ctrl+L' open logs, 'Ctrl+R' start recording, 'Ctrl+Enter' run selected, 'Ctrl+Shift+S' toggle screenshots, 'Ctrl+Shift+A' toggle automation IDs.\n"
+                "- Right-click a tree node to open the JSON, jump to the images, or delete artifacts. Logs are timestamped under data/logs/ui_testing.log for long-term auditing."
+            ),
+            (
+                "Packaging & Maintenance",
+                "Shipping the Toolkit\n\n"
+                "- Run setup_and_deploy.ps1 whenever dependencies or scripts change. The build script recreates the virtual environment as needed, installs pinned wheels, runs compileall + pytest -m semantic, builds the PyInstaller bundle, and generates package/installer zips.\n"
+                "- The generated README.txt in the Package folder explains offline deployment steps. Use Install_UI_Testing.bat on target machines for a zero-config install that drops a desktop shortcut.\n"
+                "- Keep automation_ids.json in sync with upstream ENFIRE builds (see automation/export tooling). When manifest entries change, re-run the Semantic Helper to refresh recordings."
+            ),
         ]
         for title, body in sections:
             frame = ttk.Frame(notebook, padding=12)
@@ -1151,6 +1213,9 @@ class TestRunnerApp:
         self.use_default_delay_var.set(bool(self.settings.ignore_recorded_delays))
         self.use_automation_ids_var.set(bool(getattr(self.settings, "use_automation_ids", True)))
         self.use_screenshots_var.set(bool(getattr(self.settings, "use_screenshots", True)))
+        self.use_ssim_var.set(bool(getattr(self.settings, "use_ssim", False)))
+        self.ssim_threshold_var.set(float(getattr(self.settings, "ssim_threshold", 0.99)))
+        self.automation_backend_var.set(str(getattr(self.settings, "automation_backend", "uia")))
         self.prefer_semantic_var.set(bool(getattr(self.settings, "prefer_semantic_scripts", True)))
         self.normalize_script = self.settings.normalize_script
         self.target_app_regex = getattr(self.settings, "target_app_regex", getattr(self, "target_app_regex", None))
@@ -1162,6 +1227,9 @@ class TestRunnerApp:
         self.use_default_delay_var.trace_add("write", lambda *_: self._on_ignore_delays_changed())
         self.use_automation_ids_var.trace_add("write", lambda *_: self._on_use_automation_ids_changed())
         self.use_screenshots_var.trace_add("write", lambda *_: self._on_use_screenshots_changed())
+        self.use_ssim_var.trace_add("write", lambda *_: self._on_use_ssim_changed())
+        self.ssim_threshold_var.trace_add("write", lambda *_: self._on_ssim_threshold_changed())
+        self.automation_backend_var.trace_add("write", lambda *_: self._on_backend_changed())
         self.prefer_semantic_var.trace_add("write", lambda *_: self._on_prefer_semantic_changed())
 
     def _on_use_automation_ids_changed(self) -> None:
@@ -1180,6 +1248,31 @@ class TestRunnerApp:
         value = bool(self.prefer_semantic_var.get())
         self.settings.prefer_semantic_scripts = value
         self.player.config.prefer_semantic_scripts = value
+        self._save_settings()
+
+    def _on_use_ssim_changed(self) -> None:
+        value = bool(self.use_ssim_var.get())
+        self.settings.use_ssim = value
+        self.player.config.use_ssim = value
+        self._save_settings()
+
+    def _on_ssim_threshold_changed(self) -> None:
+        try:
+            threshold = float(self.ssim_threshold_var.get())
+        except tk.TclError:
+            return
+        self.settings.ssim_threshold = threshold
+        self.player.config.ssim_threshold = threshold
+        self._save_settings()
+
+    def _on_backend_changed(self) -> None:
+        backend = str(self.automation_backend_var.get()).lower()
+        self.settings.automation_backend = backend
+        self.player.config.automation_backend = backend
+        reset_semantic_context()
+        self.player._semantic_context = None
+        self.player._semantic_disabled = False
+        self.player._semantic_registry_cache = None
         self._save_settings()
 
     def _on_default_delay_changed(self) -> None:
@@ -1269,6 +1362,12 @@ class TestRunnerApp:
         self.settings.ignore_recorded_delays = bool(self.use_default_delay_var.get())
         self.settings.use_automation_ids = bool(self.use_automation_ids_var.get())
         self.settings.use_screenshots = bool(self.use_screenshots_var.get())
+        self.settings.use_ssim = bool(self.use_ssim_var.get())
+        try:
+            self.settings.ssim_threshold = float(self.ssim_threshold_var.get())
+        except tk.TclError:
+            pass
+        self.settings.automation_backend = str(self.automation_backend_var.get()).lower()
         self.settings.prefer_semantic_scripts = bool(self.prefer_semantic_var.get())
         self.settings.normalize_script = self.normalize_script
         try:

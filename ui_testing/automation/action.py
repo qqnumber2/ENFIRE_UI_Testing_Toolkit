@@ -25,6 +25,7 @@ class Action:
     property_name: Optional[str] = None
     expected: Optional[Any] = None
     compare: Optional[str] = None
+    semantic: Optional[Dict[str, Any]] = None
 
 
 

@@ -89,6 +89,61 @@ if ($Offline) {
   & "$Pip" install -r "$Req" | Out-Host
 }
 
+Write-Host "Running bytecode compilation (compileall)..." -ForegroundColor Yellow
+& "$Py" "-m" "compileall" "ui_testing" | Out-Host
+if ($LASTEXITCODE -ne 0) { throw "compileall failed; aborting build." }
+
+Write-Host "Running semantic pytest suite..." -ForegroundColor Yellow
+& "$Py" "-m" "pytest" "ui_testing/tests" "-m" "semantic" "--maxfail=1" | Out-Host
+if ($LASTEXITCODE -ne 0) { throw "pytest -m semantic failed; aborting build." }
+
+function Ensure-Appium {
+  if (Get-Command appium -ErrorAction SilentlyContinue) {
+    Write-Host "Appium already installed." -ForegroundColor Green
+    return
+  }
+  if ($Offline) {
+    Write-Warning "Appium not installed (offline mode). Install manually or rerun setup online."
+    return
+  }
+  if (Get-Command npm -ErrorAction SilentlyContinue) {
+    Write-Host "Installing Appium via npm..." -ForegroundColor Yellow
+    try {
+      npm install -g appium | Out-Host
+      Write-Host "Appium installation attempted; verify with 'appium --version'." -ForegroundColor Green
+    } catch {
+      Write-Warning "Failed to install Appium via npm. $_"
+    }
+  } else {
+    Write-Warning "npm not found; unable to install Appium automatically. Install Node.js + Appium manually."
+  }
+}
+
+function Ensure-WinAppDriver {
+  if (Get-Command WinAppDriver.exe -ErrorAction SilentlyContinue) {
+    Write-Host "WinAppDriver already available." -ForegroundColor Green
+    return
+  }
+  if ($Offline) {
+    Write-Warning "WinAppDriver not installed (offline mode). Install manually from Microsoft."
+    return
+  }
+  if (Get-Command winget -ErrorAction SilentlyContinue) {
+    Write-Host "Installing WinAppDriver via winget..." -ForegroundColor Yellow
+    try {
+      winget install --id=Microsoft.WinAppDriver -e --source winget | Out-Host
+      Write-Host "WinAppDriver installation attempted; verify by running WinAppDriver.exe." -ForegroundColor Green
+    } catch {
+      Write-Warning "Failed to install WinAppDriver via winget. $_"
+    }
+  } else {
+    Write-Warning "winget not found; install WinAppDriver manually from https://github.com/microsoft/WinAppDriver/releases."
+  }
+}
+
+Ensure-Appium
+Ensure-WinAppDriver
+
 # Ensure PyInstaller exists even if requirements missed it
 & "$Py" -c "import PyInstaller" 2>$null
 if ($LASTEXITCODE -ne 0) {
@@ -243,15 +298,38 @@ UI Testing Package
 
 Contents
 --------
-- {0}            : application files and assets
-- ui_settings.json : default UI configuration
-- ENFIRE *.xlsm    : latest ENFIRE workbook (if provided)
-- results/         : empty folder ready for playback output
+- {0}\           : application files, automation manifest, and bundled dependencies
+- ui_settings.json : default playback configuration (theme, timings, toggles)
+- ENFIRE *.xlsm    : optional reference workbook for PASS/FAIL updates
+- results\         : empty folder for bug drafts, diff images, and Excel exports
+- logs\            : ui_testing.log persists run history per workstation
 
-How to deploy (offline):
-1. Copy the '{0}-Package' folder (or unzip '{0}-Package.zip') to the target machine.
-2. Option A (manual): run '{1}.exe' directly from inside the package folder.
-   Option B (recommended): run 'Install_UI_Testing.bat' from the '{0}-Installer' folder (or the matching zip).
+Before You Start
+----------------
+1. Ensure ENFIRE is installed on the target machine and that you can launch it manually.
+2. Verify that the Windows account has permission to write to `%USERPROFILE%` (the installer copies files to the Desktop).
+3. Optional but recommended: close any background automation tools that may conflict with global hotkeys (`p` / `F`).
+
+Install & Launch
+----------------
+1. Copy the `{0}-Package` folder (or unzip `{0}-Package.zip`) to the target machine.
+2. Recommended: run `Install_UI_Testing.bat` from the `{0}-Installer` folder (or the matching zip).  
+   This creates `%USERPROFILE%\Desktop\UI_Testing`, copies the package, and drops a desktop shortcut.
+   Manual alternative: run `{1}.exe` directly from inside `{0}-Package`.
+3. Launch UI Testing via the desktop shortcut (or `{1}.exe`). Open the **Instructions** button in the toolbar for a full tour of the GUI.
+
+Daily Workflow
+--------------
+- **Record New** captures AutomationIds, coordinates, keystrokes, and screenshots. Press `p` for checkpoints, `F` (or the Stop button) to finish.
+- **Run Selected / Run All** replays tests and logs whether semantic automation, UIA search, or coordinates were used.
+- **Settings** lets you toggle automation modes, screenshot comparisons, normalize scripts, SSIM thresholds, and themes.
+- Results flow into `data/results`, `data/logs`, and `results_summary.xlsx`. Failed screenshots produce bug drafts with cropped evidence.
+
+Support
+-------
+- Logs: `%USERPROFILE%\Desktop\UI_Testing\data\logs\ui_testing.log`
+- Scripts & images: `%USERPROFILE%\Desktop\UI_Testing\data\scripts` / `data\images`
+- Packaging verification: each installer is built with `compileall` + `pytest -m semantic` preflight checks.
 "@ -f $AppName, $AppName
 Set-Content (Join-Path $PackageRoot "README.txt") -Value $readmeText -Encoding UTF8
 

@@ -1,0 +1,17 @@
+{
+  "5/1/1": {
+    "screenshot:0": 1,
+    "screenshot:1": 1,
+    "screenshot:2": 1
+  },
+  "Test/10182025/1": {
+    "screenshot:0": 1,
+    "screenshot:1": 1
+  },
+  "Test/AutomationID/New_Features_10182025": {
+    "screenshot:0": 1
+  },
+  "Test/AutomationID/test": {
+    "screenshot:0": 2
+  }
+}

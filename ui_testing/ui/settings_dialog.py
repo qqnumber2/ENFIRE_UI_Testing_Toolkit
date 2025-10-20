@@ -18,6 +18,10 @@ class SettingsDialog(ttk.Toplevel):
         use_automation_ids_var: tk.BooleanVar,
         use_screenshots_var: tk.BooleanVar,
         prefer_semantic_var: tk.BooleanVar,
+        use_ssim_var: tk.BooleanVar,
+        ssim_threshold_var: tk.DoubleVar,
+        backend_var: tk.StringVar,
+        backend_choices: list[str],
         theme_change_callback,
     ) -> None:
         super().__init__(master=master)
@@ -33,6 +37,10 @@ class SettingsDialog(ttk.Toplevel):
         self._use_default_delay_var = use_default_delay_var
         self._use_automation_ids_var = use_automation_ids_var
         self._use_screenshots_var = use_screenshots_var
+        self._use_ssim_var = use_ssim_var
+        self._ssim_threshold_var = ssim_threshold_var
+        self._backend_var = backend_var
+        self._backend_choices = backend_choices
         self._prefer_semantic_var = prefer_semantic_var
         self._theme_change_callback = theme_change_callback
 
@@ -102,6 +110,37 @@ class SettingsDialog(ttk.Toplevel):
             variable=self._use_screenshots_var,
             bootstyle="round-toggle",
         ).pack(anchor="w", pady=4)
+        ttk.Checkbutton(
+            toggle_frame,
+            text="Use SSIM image compare",
+            variable=self._use_ssim_var,
+            bootstyle="round-toggle",
+        ).pack(anchor="w", pady=4)
+        ssim_frame = ttk.Frame(toggle_frame)
+        ssim_frame.pack(fill=tk.X, expand=False, pady=(0, 4))
+        ttk.Label(ssim_frame, text="SSIM threshold").pack(side=tk.LEFT)
+        self._ssim_spin = ttk.Spinbox(
+            ssim_frame,
+            from_=0.90,
+            to=1.0,
+            increment=0.01,
+            textvariable=self._ssim_threshold_var,
+            width=6,
+        )
+        self._ssim_spin.pack(side=tk.LEFT, padx=(12, 0))
+        self._use_ssim_var.trace_add("write", lambda *_: self._update_ssim_state())
+        self._update_ssim_state()
+
+        backend_frame = ttk.Labelframe(body, text="Automation Backend", padding=12)
+        backend_frame.pack(fill=tk.X, expand=False, pady=(12, 0))
+        self._backend_combo = ttk.Combobox(
+            backend_frame,
+            state="readonly",
+            values=self._backend_choices,
+            textvariable=self._backend_var,
+            width=18,
+        )
+        self._backend_combo.pack(fill=tk.X)
 
         button_row = ttk.Frame(body)
         button_row.pack(fill=tk.X, expand=False, pady=(16, 0))
@@ -109,6 +148,13 @@ class SettingsDialog(ttk.Toplevel):
 
         self.protocol("WM_DELETE_WINDOW", self._on_close)
         self._theme_combo.focus_set()
+
+    def _update_ssim_state(self) -> None:
+        state = "normal" if bool(self._use_ssim_var.get()) else "disabled"
+        try:
+            self._ssim_spin.configure(state=state)
+        except Exception:
+            pass
 
     def _on_theme_selected(self, _event: tk.Event) -> None:
         if callable(self._theme_change_callback):

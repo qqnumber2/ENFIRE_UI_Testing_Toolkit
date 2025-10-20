@@ -12,6 +12,14 @@ from pynput.keyboard import Key, KeyCode
 import pyautogui
 from PIL import Image
 import win32gui
+try:
+    from pynput._util import win32 as pynput_win32  # type: ignore
+except Exception:
+    pynput_win32 = None  # type: ignore
+try:
+    from ui_testing.automation.driver import AutomationSession  # type: ignore
+except Exception:
+    AutomationSession = None  # type: ignore
 
 # EXE-safe imports
 try:
@@ -36,7 +44,90 @@ try:
 except Exception:
     win32com_client = None  # type: ignore
 
+try:
+    from ui_testing.automation.semantic import SemanticContext, get_semantic_context
+    from ui_testing.automation.semantic.registry import AutomationRegistry, ControlEntry
+except Exception:
+    SemanticContext = None  # type: ignore
+    AutomationRegistry = None  # type: ignore
+    ControlEntry = None  # type: ignore
+
+    def _semantic_registry(self) -> Optional[AutomationRegistry]:
+        if self._semantic_disabled or SemanticContext is None or AutomationRegistry is None:
+            return None
+        try:
+            if self._semantic_context is None:
+                self._semantic_context = get_semantic_context()
+            if self._semantic_registry_cache is None:
+                self._semantic_registry_cache = self._semantic_context.registry
+            return self._semantic_registry_cache
+        except Exception as exc:
+            logger.debug("Semantic registry unavailable: %s", exc)
+            self._semantic_disabled = True
+            self._semantic_context = None
+            self._semantic_registry_cache = None
+            return None
+
+    def _make_semantic_metadata(self, auto_id: Optional[str], ctrl_type: Optional[str]) -> Optional[Dict[str, Any]]:
+        if not auto_id or _is_generic_automation_id(auto_id):
+            return None
+        payload: Dict[str, Any] = {"automation_id": str(auto_id)}
+        if ctrl_type:
+            payload["control_type"] = str(ctrl_type)
+        registry = self._semantic_registry()
+        if registry is None:
+            return payload
+        entry = registry.get(str(auto_id))
+        if entry is None:
+            logger.debug("Semantic metadata skipped; AutomationId '%s' not in manifest.", auto_id)
+            return None
+        payload["group"] = entry.group
+        payload["name"] = entry.name
+        if entry.control_type and "control_type" not in payload:
+            payload["control_type"] = entry.control_type
+        if entry.description:
+            payload["description"] = entry.description
+        return payload
+
+    def get_semantic_context(*args, **kwargs):  # type: ignore
+        raise RuntimeError("Semantic automation context unavailable")
+
 logger = logging.getLogger(__name__)
+
+_GENERIC_AUTOMATION_IDS = {"", "window", "pane", "mainwindowcontrol"}
+
+
+def _is_generic_automation_id(value: Optional[str]) -> bool:
+    if not value:
+        return True
+    lowered = str(value).strip().lower()
+    return lowered in _GENERIC_AUTOMATION_IDS
+
+
+def _guard_pynput_handler() -> None:
+    if pynput_win32 is None:
+        return
+    handler = getattr(pynput_win32.ListenerMixin, "_handler", None)
+    if handler is None:
+        return
+    if getattr(handler, "_ui_testing_patched", False):
+        return
+
+    def _safe_handler(self, code, msg, lpdata):
+        try:
+            return handler(self, code, msg, lpdata)
+        except NotImplementedError:
+            try:
+                logger.debug("Pynput handler ignored NotImplementedError (msg=%s).", msg)
+            except Exception:
+                pass
+            return False
+
+    _safe_handler._ui_testing_patched = True  # type: ignore[attr-defined]
+    pynput_win32.ListenerMixin._handler = _safe_handler
+
+
+_guard_pynput_handler()
 
 @dataclass
 class RecorderConfig:
@@ -69,10 +160,15 @@ class Recorder:
         self._modifiers: Set[str] = set()
         self._primary_bounds = self._init_primary_bounds()
         self._last_explorer_click: Optional[Tuple[str, str, float]] = None
+        self._semantic_context: Optional[SemanticContext] = None
+        self._semantic_registry_cache: Optional[AutomationRegistry] = None
+        self._semantic_disabled = False
+        self._manifest_rect_cache: Dict[str, Tuple[int, int, int, int]] = {}
 
     def start(self) -> None:
         self.running = True
         logger.info("Recorder started. Press 'p' to take a screenshot. Use GUI Stop to finish.")
+        self._manifest_rect_cache.clear()
         self._mouse_listener = mouse.Listener(
             on_click=self._on_click,
             on_move=self._on_move,
@@ -193,6 +289,43 @@ class Recorder:
         self.actions.append(Action(action_type='type', text=text, delay=self._elapsed()))
         logger.info(f"Recorded: type '{text.replace(chr(10), '<ENTER>')}'")
 
+    def _semantic_registry(self) -> Optional[AutomationRegistry]:
+        if self._semantic_disabled or SemanticContext is None or AutomationRegistry is None:
+            return None
+        try:
+            if self._semantic_context is None:
+                self._semantic_context = get_semantic_context()
+            if self._semantic_registry_cache is None:
+                self._semantic_registry_cache = self._semantic_context.registry
+            return self._semantic_registry_cache
+        except Exception as exc:
+            logger.debug("Semantic registry unavailable: %s", exc)
+            self._semantic_disabled = True
+            self._semantic_context = None
+            self._semantic_registry_cache = None
+            return None
+
+    def _make_semantic_metadata(self, auto_id: Optional[str], ctrl_type: Optional[str]) -> Optional[Dict[str, Any]]:
+        if not auto_id:
+            return None
+        payload: Dict[str, Any] = {"automation_id": str(auto_id)}
+        if ctrl_type:
+            payload["control_type"] = str(ctrl_type)
+        registry = self._semantic_registry()
+        if registry is None:
+            return payload
+        entry = registry.get(str(auto_id))
+        if entry is None:
+            logger.debug("Semantic metadata skipped; AutomationId '%s' not in manifest.", auto_id)
+            return None
+        payload["group"] = entry.group
+        payload["name"] = entry.name
+        if entry.control_type and "control_type" not in payload:
+            payload["control_type"] = entry.control_type
+        if entry.description:
+            payload["description"] = entry.description
+        return payload
+
     def _resolve_automation_target(self, x: int, y: int) -> Tuple[Optional[Any], Optional[str], Optional[str]]:
         if Desktop is None:
             return None, None, None
@@ -214,13 +347,17 @@ class Recorder:
                 break
             auto_id = getattr(info, "automation_id", None) or None
             ctrl_type = getattr(info, "control_type", None) or ctrl_type_hint
-            if auto_id:
+            if auto_id and not _is_generic_automation_id(auto_id):
                 if element is not None and current is not element:
                     try:
                         logger.debug("Resolved AutomationId '%s' via ancestor (depth=%d)", auto_id, depth)
                     except Exception:
                         pass
                 return current, auto_id, ctrl_type
+            else:
+                if auto_id:
+                    logger.debug("Ignoring generic AutomationId '%s' (depth=%d)", auto_id, depth)
+                auto_id = None
             ctrl_type_hint = ctrl_type
             try:
                 current = current.parent()
@@ -228,6 +365,67 @@ class Recorder:
                 current = None
             depth += 1
         return element, None, ctrl_type_hint
+
+    def _resolve_manifest_entry_at_point(
+        self, x: int, y: int
+    ) -> Tuple[Optional["ControlEntry"], Optional[Any]]:
+        if self._semantic_disabled or SemanticContext is None or AutomationSession is None:
+            return None, None
+        registry = self._semantic_registry()
+        if registry is None:
+            return None, None
+        ctx = self._semantic_context
+        if ctx is None:
+            return None, None
+        try:
+            session = ctx.session
+        except Exception:
+            return None, None
+        best_entry: Optional["ControlEntry"] = None
+        best_wrapper: Optional[Any] = None
+        best_area: Optional[int] = None
+        try:
+            entries = registry.all().values()
+        except Exception:
+            return None, None
+        for entry in entries:
+            auto_id = getattr(entry, "automation_id", None)
+            if not auto_id or _is_generic_automation_id(auto_id):
+                continue
+            rect = self._manifest_rect_cache.get(auto_id)
+            wrapper = None
+            if rect is None:
+                try:
+                    wrapper = session.resolve_control(
+                        automation_id=auto_id,
+                        control_type=getattr(entry, "control_type", None),
+                    )
+                    rect_obj = wrapper.rectangle()
+                    rect = (
+                        int(rect_obj.left),
+                        int(rect_obj.top),
+                        int(rect_obj.right),
+                        int(rect_obj.bottom),
+                    )
+                    self._manifest_rect_cache[auto_id] = rect
+                except Exception:
+                    continue
+            left, top, right, bottom = rect
+            if left <= x <= right and top <= y <= bottom:
+                area = max(1, (right - left) * (bottom - top))
+                if best_entry is None or area < (best_area or area):
+                    if wrapper is None:
+                        try:
+                            wrapper = session.resolve_control(
+                                automation_id=auto_id,
+                                control_type=getattr(entry, "control_type", None),
+                            )
+                        except Exception:
+                            wrapper = None
+                    best_entry = entry
+                    best_wrapper = wrapper
+                    best_area = area
+        return best_entry, best_wrapper
 
 
     def _on_click(self, x: int, y: int, button, pressed: bool) -> None:
@@ -250,11 +448,29 @@ class Recorder:
 
             self._commit_text_buffer()
 
-            auto_id = None
-            ctrl_type = None
-            target_elem = None
+            auto_id: Optional[str] = None
+            ctrl_type: Optional[str] = None
+            target_elem: Optional[Any] = None
             if Desktop is not None:
                 target_elem, auto_id, ctrl_type = self._resolve_automation_target(x, y)
+            manifest_wrapper: Optional[Any] = None
+            if auto_id is None or _is_generic_automation_id(auto_id):
+                entry, wrapper = self._resolve_manifest_entry_at_point(int(x), int(y))
+                if entry is not None:
+                    auto_id = getattr(entry, "automation_id", auto_id)
+                    ctrl_type = getattr(entry, "control_type", ctrl_type)
+                    manifest_wrapper = wrapper
+            if target_elem is None and manifest_wrapper is not None:
+                target_elem = manifest_wrapper
+
+            semantic_meta = self._make_semantic_metadata(auto_id, ctrl_type)
+            resolved_auto_id: Optional[str] = None
+            resolved_ctrl_type: Optional[str] = ctrl_type
+            if semantic_meta:
+                resolved_auto_id = str(semantic_meta.get("automation_id") or "")
+                if not resolved_auto_id:
+                    resolved_auto_id = None
+                resolved_ctrl_type = semantic_meta.get("control_type", resolved_ctrl_type)
 
             action = Action(
                 action_type='mouse_down',
@@ -263,10 +479,13 @@ class Recorder:
                 delay=self._elapsed(),
                 button=btn_name,
             )
-            if auto_id:
-                action.auto_id = auto_id
-            if ctrl_type:
-                action.control_type = ctrl_type
+
+            if semantic_meta:
+                if resolved_auto_id:
+                    action.auto_id = resolved_auto_id
+                if resolved_ctrl_type:
+                    action.control_type = resolved_ctrl_type
+                action.semantic = semantic_meta
 
             self.actions.append(action)
             self._pressed_buttons[btn_name] = {
@@ -274,12 +493,15 @@ class Recorder:
                 "last_move_time": time.perf_counter(),
                 "path_points": [(int(x), int(y))],
                 "start_time": time.perf_counter(),
-                "auto_id": auto_id,
-                "control_type": ctrl_type,
+                "auto_id": resolved_auto_id,
+                "control_type": resolved_ctrl_type,
+                "semantic": semantic_meta,
                 "down_index": len(self.actions) - 1,
                 "down_delay": action.delay,
             }
-            meta = f" [auto_id={auto_id}, ctrl={ctrl_type}]" if auto_id or ctrl_type else ""
+            meta = ""
+            if resolved_auto_id or resolved_ctrl_type:
+                meta = f" [auto_id={resolved_auto_id}, ctrl={resolved_ctrl_type}]"
             logger.info(f"Recorded: mouse_down({btn_name}) at ({x}, {y}){meta}")
 
             if target_elem is not None and auto_id:
@@ -287,6 +509,7 @@ class Recorder:
             return
 
         state = self._pressed_buttons.pop(btn_name, None)
+        semantic_meta = state.get("semantic") if state else None
         in_gui = self._point_on_gui(x, y)
         if state is None and in_gui:
             logger.info("Ignored: release on recorder GUI")
@@ -323,6 +546,8 @@ class Recorder:
                 down_index = state.get("down_index")
                 auto_id = state.get("auto_id")
                 ctrl_type = state.get("control_type")
+                if semantic_meta is None:
+                    semantic_meta = self._make_semantic_metadata(auto_id, ctrl_type)
                 down_delay = state.get("down_delay")
                 if down_index is not None and 0 <= down_index < len(self.actions):
                     down_action = self.actions[down_index]
@@ -332,6 +557,8 @@ class Recorder:
                     down_action.button = btn_name
                     down_action.auto_id = auto_id
                     down_action.control_type = ctrl_type
+                    if semantic_meta:
+                        down_action.semantic = semantic_meta
                     if down_delay is not None:
                         down_action.delay = down_delay
                 else:
@@ -346,6 +573,8 @@ class Recorder:
                         click_action.auto_id = auto_id
                     if ctrl_type:
                         click_action.control_type = ctrl_type
+                    if semantic_meta:
+                        click_action.semantic = semantic_meta
                     self.actions.append(click_action)
                 meta = f" [auto_id={auto_id}, ctrl={ctrl_type}]" if auto_id or ctrl_type else ""
                 logger.info(f"Recorded: click({btn_name}) at ({x}, {y}){meta}")
@@ -378,18 +607,26 @@ class Recorder:
                 and getattr(last, "property_name", "name") == prop_name
             ):
                 return
+        semantic_meta = self._make_semantic_metadata(auto_id, ctrl_type)
+        if semantic_meta is None:
+            logger.debug("Skipped assert.property for auto_id=%s (not in manifest).", auto_id)
+            return
         action = Action(
             action_type="assert.property",
             delay=0.0,
-            auto_id=auto_id,
-            control_type=ctrl_type,
+            auto_id=str(semantic_meta.get("automation_id") or auto_id),
+            control_type=semantic_meta.get("control_type", ctrl_type),
             property_name=prop_name,
             expected=expected,
             compare="equals",
         )
+        action.semantic = semantic_meta
         self.actions.append(action)
         logger.debug(
-            "Recorded: assert.property auto_id=%s property=%s expected=%s", auto_id, prop_name, expected
+            "Recorded: assert.property auto_id=%s property=%s expected=%s",
+            action.auto_id,
+            prop_name,
+            expected,
         )
 
     def _extract_element_property(self, element: Any) -> Optional[Tuple[str, str]]:

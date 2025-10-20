@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
 
 
 @dataclass
@@ -16,6 +16,11 @@ class AppSettings:
     use_automation_ids: bool = True
     use_screenshots: bool = True
     prefer_semantic_scripts: bool = True
+    use_ssim: bool = False
+    ssim_threshold: float = 0.99
+    automation_backend: str = "uia"
+    appium_server_url: Optional[str] = None
+    appium_capabilities: Optional[Dict[str, Any]] = None
     normalize_script: Optional[str] = None
     window_geometry: Optional[str] = None
     window_state: Optional[str] = None
@@ -37,6 +42,11 @@ class AppSettings:
             use_automation_ids=bool(data.get("use_automation_ids", cls.use_automation_ids)),
             use_screenshots=bool(data.get("use_screenshots", cls.use_screenshots)),
             prefer_semantic_scripts=bool(data.get("prefer_semantic_scripts", cls.prefer_semantic_scripts)),
+            use_ssim=bool(data.get("use_ssim", cls.use_ssim)),
+            ssim_threshold=float(data.get("ssim_threshold", cls.ssim_threshold)),
+            automation_backend=str(data.get("automation_backend", cls.automation_backend)).lower(),
+            appium_server_url=data.get("appium_server_url"),
+            appium_capabilities=data.get("appium_capabilities") if isinstance(data.get("appium_capabilities"), dict) else None,
             normalize_script=data.get("normalize_script"),
             window_geometry=data.get("window_geometry"),
             window_state=data.get("window_state"),
