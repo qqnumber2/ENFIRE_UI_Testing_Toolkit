@@ -137,6 +137,11 @@
         public const string AngleUnits = "AngleUnits";
 
         /// <summary>
+        ///   Angle units dropdown selector.
+        /// </summary>
+        public const string AngleUnitsSelector = "AngleUnitsSelector";
+
+        /// <summary>
         ///   Looks up a localized string similar to DistanceUnits.
         /// </summary>
         public const string DistanceUnits = "DistanceUnits";
@@ -162,6 +167,11 @@
         public const string TimeZone = "TimeZone";
 
         /// <summary>
+        ///   Time zone dropdown selector.
+        /// </summary>
+        public const string TimeZoneSelector = "TimeZoneSelector";
+
+        /// <summary>
         ///   Looks up a localized string similar to ReportPath.
         /// </summary>
         public const string ReportPath = "ReportPath";
@@ -175,6 +185,11 @@
         ///   Looks up a localized string similar to PdfReport.
         /// </summary>
         public const string PdfReport = "PdfReport";
+
+        /// <summary>
+        ///   Button used to browse for a report save location.
+        /// </summary>
+        public const string SelectReportPath = "SelectReportPath";
 
         // for the file/common/soldier section
         /// <summary>

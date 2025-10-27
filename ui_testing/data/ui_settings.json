@@ -6,7 +6,7 @@
   "use_automation_ids": true,
   "use_screenshots": true,
   "prefer_semantic_scripts": true,
-  "use_ssim": false,
+  "use_ssim": true,
   "ssim_threshold": 0.99,
   "automation_backend": "uia",
   "appium_server_url": null,
@@ -14,5 +14,5 @@
   "normalize_script": null,
   "window_geometry": null,
   "window_state": "zoomed",
-  "target_app_regex": ".*ENFIRE.*"
+  "target_app_regex": "ENFIRE"
 }

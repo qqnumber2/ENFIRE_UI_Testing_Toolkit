@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import os
 import subprocess
-from collections import OrderedDict
+from collections import deque, OrderedDict
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Sequence
 from datetime import datetime
@@ -1047,6 +1047,7 @@ class PreviewPanel(ttk.Frame):
         for lbl in self.preview_labels.values():
             lbl.configure(image="")
             lbl.image = None
+        self._current_preview_paths = {key: None for key in self._current_preview_paths}
 
     def bind_open_handlers(self, open_handler: Callable[[str], None]) -> None:
         for key, label in self.preview_labels.items():
@@ -1061,19 +1062,25 @@ class PreviewPanel(ttk.Frame):
         stem = test_path.stem
         diff_name = (stem[:-1] + "D") if stem and stem[-1] in ("T", "O") else (stem + "_D")
         hi_name = (stem[:-1] + "H") if stem and stem[-1] in ("T", "O") else (stem + "_H")
-        thumbs["D"] = self._load_thumb(test_path.with_name(diff_name + test_path.suffix), maxw, maxh)
-        thumbs["H"] = self._load_thumb(test_path.with_name(hi_name + test_path.suffix), maxw, maxh)
+        diff_path = test_path.with_name(diff_name + test_path.suffix)
+        hi_path = test_path.with_name(hi_name + test_path.suffix)
+        thumbs["D"] = self._load_thumb(diff_path, maxw, maxh)
+        thumbs["H"] = self._load_thumb(hi_path, maxw, maxh)
 
         for key, image in thumbs.items():
             label = self.preview_labels[key]
-            label.configure(image=image)
-            label.image = image
+            if image is None:
+                label.configure(image="")
+                label.image = None
+            else:
+                label.configure(image=image)
+                label.image = image
 
         self._current_preview_paths = {
-            "O": orig_path,
-            "T": test_path,
-            "D": test_path.with_name(diff_name + test_path.suffix),
-            "H": test_path.with_name(hi_name + test_path.suffix),
+            "O": orig_path if orig_path.exists() else None,
+            "T": test_path if test_path.exists() else None,
+            "D": diff_path if diff_path.exists() else None,
+            "H": hi_path if hi_path.exists() else None,
         }
 
     def current_paths(self) -> Dict[str, Optional[Path]]:
@@ -1124,38 +1131,83 @@ class LogPanel(ttk.Frame):
         card = ttk.Labelframe(self, text="Log", padding=8)
         card.pack(fill=tk.BOTH, expand=True, pady=(12, 0))
 
-        self.text = scrolledtext.ScrolledText(card, height=6, wrap="word")
-        self.text.pack(fill=tk.BOTH, expand=True)
-        self.text.configure(state="disabled")
+        self._notebook = ttk.Notebook(card, bootstyle="pills")
+        self._notebook.pack(fill=tk.BOTH, expand=True)
+
+        self._tabs: Dict[str, tk.Text] = {}
+        for label in ("All", "Info", "Warnings", "Errors"):
+            frame = ttk.Frame(self._notebook)
+            self._notebook.add(frame, text=label)
+            text_widget = scrolledtext.ScrolledText(frame, height=6, wrap="word")
+            text_widget.pack(fill=tk.BOTH, expand=True)
+            text_widget.configure(state="disabled")
+            self._tabs[label] = text_widget
+
+        self._log_entries: deque[tuple[str, str]] = deque(maxlen=5000)
+        self._handler: Optional[logging.Handler] = None
 
     def attach_logger(self) -> None:
+        panel = self
+
         class TkHandler(logging.Handler):
-            def __init__(self, widget: tk.Text):
+            def __init__(self) -> None:
                 super().__init__()
-                self.widget = widget
                 self.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 
             def emit(self, record: logging.LogRecord) -> None:
-                msg = self.format(record)
-
-                def append() -> None:
-                    try:
-                        self.widget.configure(state="normal")
-                        self.widget.insert("end", msg + "\n")
-                        self.widget.see("end")
-                        if int(self.widget.index('end-1c').split('.')[0]) > 2000:
-                            self.widget.delete("1.0", "1000.0")
-                        self.widget.configure(state="disabled")
-                    except Exception:
-                        pass
-
                 try:
-                    self.widget.after(0, append)
+                    msg = self.format(record)
+                    panel._receive_log(record.levelname, msg)
                 except Exception:
                     pass
 
-        handler = TkHandler(self.text)
+        handler = TkHandler()
         logging.getLogger().addHandler(handler)
+        self._handler = handler
+
+    def _receive_log(self, level: str, message: str) -> None:
+        level = level.upper()
+        entry = (level, message)
+        self._log_entries.append(entry)
+        self._route_to_tabs(level, message)
+
+    def _route_to_tabs(self, level: str, message: str) -> None:
+        targets: List[str] = ["All"]
+        if level == "INFO":
+            targets.append("Info")
+        elif level == "WARNING":
+            targets.append("Warnings")
+        elif level in {"ERROR", "CRITICAL"}:
+            targets.append("Errors")
+        elif level == "DEBUG":
+            # keep debug noise in All tab only
+            pass
+        else:
+            # unknown level -> All tab
+            pass
+
+        for tab in targets:
+            widget = self._tabs.get(tab)
+            if widget is None:
+                continue
+            self._append_line(widget, message)
+
+    def _append_line(self, widget: tk.Text, message: str) -> None:
+        def append() -> None:
+            try:
+                widget.configure(state="normal")
+                widget.insert("end", message + "\n")
+                widget.see("end")
+                if int(widget.index("end-1c").split(".")[0]) > 1000:
+                    widget.delete("1.0", "200.0")
+                widget.configure(state="disabled")
+            except Exception:
+                pass
+
+        try:
+            widget.after(0, append)
+        except Exception:
+            pass
 
     def on_theme_changed(self) -> None:
         pass

@@ -7,6 +7,7 @@ import logging
 import os
 import threading
 import time
+import warnings
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -48,6 +49,8 @@ from ui_testing.ui.panels import (
 from ui_testing.ui.settings_dialog import SettingsDialog
 
 _LOGGER = logging.getLogger(__name__)
+warnings.filterwarnings("ignore", message="Cannot parse header or footer.*", category=UserWarning, module="openpyxl")
+warnings.filterwarnings("ignore", message="wmf image format is not supported.*", category=UserWarning, module="openpyxl")
 
 
 class _NullBackground:
@@ -101,7 +104,7 @@ class TestRunnerApp:
         self.normalize_script: Optional[str] = self.settings.normalize_script
         self._apply_settings_to_variables()
         self.paths.tolerance = float(self.tolerance_var.get())
-        self.automation_manifest: Dict[str, Dict[str, str]] = self._load_automation_manifest()
+        self.automation_manifest: Dict[str, Dict[str, Dict[str, Any]]] = self._load_automation_manifest()
 
         if self.paths.test_plan:
             _LOGGER.info("Detected test plan: %s", self.paths.test_plan)
@@ -129,6 +132,9 @@ class TestRunnerApp:
         self._player_running = False
         self._hotkey_listener = None
 
+        default_regex = getattr(self.settings, "target_app_regex", getattr(AppSettings, "target_app_regex", ""))
+        self._app_regex_var = tk.StringVar(master=self.root, value=str(default_regex or ""))
+
         self.player = Player(
             PlayerConfig(
                 scripts_dir=self.paths.scripts_dir,
@@ -145,6 +151,7 @@ class TestRunnerApp:
                 use_ssim=bool(self.use_ssim_var.get()),
                 ssim_threshold=float(self.ssim_threshold_var.get()),
                 automation_backend=str(self.automation_backend_var.get()).lower(),
+                app_title_regex=str(self.target_app_regex) if getattr(self, "target_app_regex", None) else None,
                 appium_server_url=getattr(self.settings, "appium_server_url", None),
                 appium_capabilities=getattr(self.settings, "appium_capabilities", None) or None,
                 enable_allure=True,
@@ -330,6 +337,8 @@ class TestRunnerApp:
         scripts_dir = self.paths.scripts_dir
         if scripts_dir.exists():
             for json_file in sorted(scripts_dir.rglob("*.json")):
+                if json_file.name.endswith(".semantic.json"):
+                    continue
                 rel = json_file.relative_to(scripts_dir).with_suffix("")
                 if not rel.parts:
                     continue
@@ -944,6 +953,7 @@ class TestRunnerApp:
             backend_var=self.automation_backend_var,
             backend_choices=["uia", "appium"],
             theme_change_callback=self._on_theme_change,
+            app_regex_var=self._app_regex_var,
         )
         self._popup_over_root(dialog)
 
@@ -968,34 +978,29 @@ class TestRunnerApp:
             if upgrade is None:
                 stats_skipped.append(rel)
                 continue
-            semantic_actions, removed, inserted = upgrade
-            semantic_path = base_path.with_suffix(".semantic.json")
-            if not semantic_path.exists() or semantic_actions != actions or removed:
-                semantic_path.write_text(json.dumps(semantic_actions, indent=2), encoding="utf-8")
-                stats_updated.append(rel)
-                total_asserts_added += inserted
+            upgraded_actions, inserted = upgrade
+            if upgraded_actions != actions:
+                base_path.write_text(json.dumps(upgraded_actions, indent=2), encoding="utf-8")
+            stats_updated.append(rel)
+            total_asserts_added += inserted
         summary: List[str] = []
         if stats_updated:
-            summary.append(f"Wrote semantic variants (*.semantic.json) for {len(stats_updated)} test(s).")
-            summary.append("Use Settings -> Prefer semantic assertions to play them back.")
+            summary.append(f"Updated {len(stats_updated)} test(s) with inline semantic assertions.")
+            summary.append("Playback automatically skips assertions when Automation IDs are disabled.")
             summary.append(f"Inserted {total_asserts_added} semantic assertion(s).")
         if stats_skipped:
-            summary.append(f"Skipped {len(stats_skipped)} script(s) without Automation IDs to upgrade.")
+            summary.append(f"Skipped {len(stats_skipped)} script(s) without additional Automation IDs to upgrade.")
         if not summary:
             summary.append("Scripts already contain semantic checks.")
         messagebox.showinfo("Semantic Helper", "\n".join(summary), parent=self.root)
 
-    def _upgrade_script_actions(self, actions: Any) -> Optional[tuple[List[Dict[str, Any]], bool, int]]:
+    def _upgrade_script_actions(self, actions: Any) -> Optional[tuple[List[Dict[str, Any]], int]]:
         if not isinstance(actions, list):
             return None
         changed: List[Dict[str, Any]] = []
-        removed_screenshots = False
         assertions_added = 0
         for idx, action in enumerate(actions):
             a_type = action.get("action_type")
-            if a_type == "screenshot":
-                removed_screenshots = True
-                continue
             changed.append(action)
             if a_type == "click":
                 auto_id = action.get("auto_id")
@@ -1004,28 +1009,32 @@ class TestRunnerApp:
                 auto_id_str = str(auto_id)
                 if self._has_assert_following(actions, idx, auto_id_str):
                     continue
-                expected = action.get("text") or action.get("value")
+                semantic_meta = action.get("semantic") if isinstance(action.get("semantic"), dict) else None
+                if not semantic_meta:
+                    continue
+                expected = action.get("text") or action.get("value") or semantic_meta.get("name") or semantic_meta.get("description")
+                if isinstance(expected, str):
+                    expected = expected.strip()
                 if not expected:
-                    lookup = getattr(self.player, "_automation_lookup", {}).get(auto_id_str)
-                    if lookup:
-                        expected = lookup[1]
-                if not expected:
-                    expected = auto_id_str
+                    continue
+                property_name = str(semantic_meta.get("assert_property") or "name")
+                control_type = semantic_meta.get("control_type") or action.get("control_type")
                 changed.append(
                     {
                         "action_type": "assert.property",
                         "delay": 0.0,
                         "auto_id": auto_id_str,
-                        "control_type": action.get("control_type"),
-                        "property": "name",
+                        "control_type": control_type,
+                        "property": property_name,
                         "expected": expected,
                         "compare": "equals",
+                        "semantic": semantic_meta,
                     }
                 )
                 assertions_added += 1
         if assertions_added == 0:
             return None
-        return changed, removed_screenshots, assertions_added
+        return changed, assertions_added
 
     def _has_assert_following(self, actions: List[Dict[str, Any]], start_index: int, auto_id: str) -> bool:
         for offset in (1, 2):
@@ -1039,7 +1048,7 @@ class TestRunnerApp:
                 break
         return False
 
-    def _load_automation_manifest(self) -> Dict[str, Dict[str, str]]:
+    def _load_automation_manifest(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
         candidates = [
             self.paths.root / "automation_ids.json",
             self.paths.root / "automation" / "automation_ids.json",
@@ -1051,19 +1060,26 @@ class TestRunnerApp:
                     raw = json.loads(path.read_text(encoding="utf-8"))
                     groups = raw.get("groups") if isinstance(raw, dict) else None
                     manifest_input = groups if isinstance(groups, dict) else raw
-                    manifest: Dict[str, Dict[str, str]] = {}
+                    manifest: Dict[str, Dict[str, Dict[str, Any]]] = {}
                     if isinstance(manifest_input, dict):
                         for group, mapping in manifest_input.items():
                             if not isinstance(mapping, dict):
                                 continue
-                            target: Dict[str, str] = {}
+                            target: Dict[str, Dict[str, Any]] = {}
                             for name, payload in mapping.items():
+                                metadata: Dict[str, Any]
                                 if isinstance(payload, dict):
                                     automation_id = payload.get("id") or payload.get("automation_id")
+                                    if not automation_id:
+                                        continue
+                                    metadata = dict(payload)
+                                    metadata["automation_id"] = str(automation_id)
                                 else:
                                     automation_id = str(payload)
-                                if automation_id:
-                                    target[str(name)] = str(automation_id)
+                                    if not automation_id:
+                                        continue
+                                    metadata = {"automation_id": automation_id}
+                                target[str(name)] = metadata
                             if target:
                                 manifest[str(group)] = target
                     if manifest:
@@ -1147,15 +1163,16 @@ class TestRunnerApp:
                 "Running Scripts\n\n"
                 "- Select one or more tests in the tree (Ctrl/Shift click supported) and use 'Run Selected' or 'Run All'.\n"
                 "- The player resolves clicks in this order: semantic session (manifest-backed AutomationId), UIA window search, then raw coordinates. Summary rows include semantic/UIA/coordinate counts so you can confirm how each run navigated the UI.\n"
-                "- Toggle 'Prefer semantic assertions' to load *.semantic.json variants. Toggle 'Use Automation IDs' or 'Compare screenshots' to influence which validation channels are active.\n"
+                "- Before running, confirm Settings → Target Application regex matches the ENFIRE window title (default '.*ENFIRE.*') and launch the toolkit with the same elevation as ENFIRE so UI Automation can reach the controls.\n"
+                "- Toggle 'Prefer semantic assertions' to enforce assert.property checks recorded alongside actions. Toggle 'Use Automation IDs' or 'Compare screenshots' to influence which validation channels are active.\n"
                 "- A normalize script (optional) is invoked automatically whenever a new procedure starts; use the Normalize buttons to set, clear, or execute that helper."
             ),
             (
                 "Semantic Automation",
                 "Semantic Checks & Helper\n\n"
-                "- The Semantic Helper upgrades legacy scripts by inserting assert.property steps based on the automation manifest. Upgrades create side-by-side *.semantic.json files so you can switch between image- and AutomationId-driven playback without losing history.\n"
-                "- During recording, controls are cross-referenced against the manifest. If an AutomationId exists, the recorder captures group/name metadata so playback can target the same widget even if window chrome shifts.\n"
-                "- During playback, failed semantic lookups automatically fall back to coordinates and log warnings. Use the log search box to filter for 'Playback(Semantic)' entries when auditing runs."
+                "- The Semantic Helper upgrades legacy scripts by inserting assert.property steps based on the automation manifest directly into the existing JSON. Coordinate-driven playback simply skips those assertions when Automation IDs are disabled.\n"
+                "- During recording, controls are cross-referenced against the manifest. If an AutomationId exists, the recorder captures group/name metadata and auto-generates assert.property steps so playbacks validate the same widget without manual edits.\n"
+                "- During playback, failed semantic lookups automatically fall back to coordinates and log warnings. If you see repeated fallbacks, verify elevation and the target regex."
             ),
             (
                 "Results & Reporting",
@@ -1167,9 +1184,11 @@ class TestRunnerApp:
             (
                 "Settings & Shortcuts",
                 "Customization guide\n\n"
-                "- Settings (gear) exposes theme selection, default delay, tolerance, automation toggles, semantic preference, screenshot handling, SSIM threshold, automation backend (UIA/Appium), and normalize script path.\n"
-                "- Playback toggles behave as follows: Ignore Recorded Delays enforces the default pacing; Use Automation IDs enables semantic/UIA navigation; Prefer Semantic Assertions swaps to *.semantic.json scripted assertions; Compare Screenshots controls visual checkpoints; Use SSIM + SSIM Threshold configure structural similarity sensitivity (1.0 is strictest).\n"
+                "- Settings (gear) exposes theme selection, default delay, tolerance, automation toggles, semantic preference, screenshot handling, SSIM threshold, automation backend (UIA/Appium), normalize script path, and the Target Application regex that scopes UIA searches.\n"
+                "- Playback toggles behave as follows: Ignore Recorded Delays enforces the default pacing; Use Automation IDs enables semantic/UIA navigation; Prefer Semantic Assertions toggles evaluation of the inline assert.property steps; Compare Screenshots controls visual checkpoints; Use SSIM + SSIM Threshold configure structural similarity sensitivity (1.0 is strictest).\n"
                 "- The Automation Inspector window polls the cursor position and reports AutomationId, control type, name, framework, bounding rectangle, and manifest group/name for the element under the pointer.\n"
+                "- Target Application regex defaults to '.*ENFIRE.*'. Update it if you run branded builds with different titles or leave it blank to match any ENFIRE window.\n"
+                "- The Log panel now offers All / Info / Warnings / Errors tabs so you can focus on the messages that matter while the full log continues to stream to disk.\n"
                 "- Hotkeys: 'p' screenshot, 'F' stop recording/playback, 'Ctrl+L' open logs, 'Ctrl+R' start recording, 'Ctrl+Enter' run selected, 'Ctrl+Shift+S' toggle screenshots, 'Ctrl+Shift+A' toggle automation IDs.\n"
                 "- Right-click a tree node to open the JSON, jump to the images, or delete artifacts. Logs are timestamped under data/logs/ui_testing.log for long-term auditing."
             ),
@@ -1274,6 +1293,10 @@ class TestRunnerApp:
         self.prefer_semantic_var.set(bool(getattr(self.settings, "prefer_semantic_scripts", True)))
         self.normalize_script = self.settings.normalize_script
         self.target_app_regex = getattr(self.settings, "target_app_regex", getattr(self, "target_app_regex", None))
+        try:
+            self._app_regex_var.set(str(self.target_app_regex or ""))
+        except Exception:
+            pass
         self._update_normalize_label()
 
     def _bind_setting_traces(self) -> None:
@@ -1286,6 +1309,7 @@ class TestRunnerApp:
         self.ssim_threshold_var.trace_add("write", lambda *_: self._on_ssim_threshold_changed())
         self.automation_backend_var.trace_add("write", lambda *_: self._on_backend_changed())
         self.prefer_semantic_var.trace_add("write", lambda *_: self._on_prefer_semantic_changed())
+        self._app_regex_var.trace_add("write", lambda *_: self._on_app_regex_changed())
 
     def _on_use_automation_ids_changed(self) -> None:
         value = bool(self.use_automation_ids_var.get())
@@ -1304,6 +1328,23 @@ class TestRunnerApp:
         self.settings.prefer_semantic_scripts = value
         self.player.config.prefer_semantic_scripts = value
         self._save_settings()
+
+    def _on_app_regex_changed(self) -> None:
+        raw_value = self._app_regex_var.get()
+        regex = raw_value.strip() if raw_value is not None else ""
+        self.target_app_regex = regex or None
+        self.settings.target_app_regex = self.target_app_regex
+        self.player.config.app_title_regex = self.target_app_regex
+        reset_semantic_context()
+        self.player._semantic_context = None
+        self.player._semantic_disabled = False
+        self.player._semantic_registry_cache = None
+        self.player._window_log_once = False
+        self._save_settings()
+        _LOGGER.info(
+            "Updated target app regex to %s",
+            self.target_app_regex if self.target_app_regex else "<any window>",
+        )
 
     def _on_use_ssim_changed(self) -> None:
         value = bool(self.use_ssim_var.get())

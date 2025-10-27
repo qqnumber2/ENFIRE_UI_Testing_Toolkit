@@ -79,6 +79,7 @@ class AutomationInspector:
             "class_name": tk.StringVar(value=""),
             "framework": tk.StringVar(value=""),
             "rectangle": tk.StringVar(value=""),
+            "hierarchy": tk.StringVar(value=""),
         }
         self._status_var = tk.StringVar(
             value="Move the cursor over ENFIRE controls to inspect AutomationIds."
@@ -156,6 +157,8 @@ class AutomationInspector:
         self._add_row(frame, row, "Class name", "class_name")
         row += 1
         self._add_row(frame, row, "Bounding rect", "rectangle")
+        row += 1
+        self._add_row(frame, row, "Hierarchy", "hierarchy", add_copy=True)
 
         status = ttk.Label(
             frame,
@@ -251,6 +254,7 @@ class AutomationInspector:
                 "framework": framework,
                 "class_name": class_name,
                 "rectangle": rectangle,
+                "hierarchy": self._describe_hierarchy(wrapper),
             }
         )
 
@@ -285,6 +289,34 @@ class AutomationInspector:
                 current = None
             depth += 1
         return wrapper, ""
+
+    def _describe_hierarchy(self, wrapper: Any) -> str:
+        parts: list[str] = []
+        current = wrapper
+        depth = 0
+        while current is not None and depth < 16:
+            try:
+                element = current.element_info
+            except Exception:
+                break
+            label = getattr(element, "control_type", "") or getattr(element, "class_name", "") or "Element"
+            auto_id = getattr(element, "automation_id", "") or ""
+            name = getattr(element, "name", "") or ""
+            if auto_id and not _is_generic_automation_id(auto_id):
+                descriptor = f"{label}#{auto_id}"
+            elif name:
+                descriptor = f"{label}('{name}')"
+            else:
+                descriptor = label
+            parts.append(descriptor)
+            try:
+                current = current.parent()
+            except Exception:
+                current = None
+            depth += 1
+        if not parts:
+            return ""
+        return " <- ".join(parts)
 
     def _poll(self) -> None:
         if not self._running:

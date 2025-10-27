@@ -24,6 +24,7 @@ class SettingsDialog(ttk.Toplevel):
         backend_var: tk.StringVar,
         backend_choices: list[str],
         theme_change_callback,
+        app_regex_var: tk.StringVar,
     ) -> None:
         super().__init__(master=master)
         self.title("Settings")
@@ -45,6 +46,7 @@ class SettingsDialog(ttk.Toplevel):
         self._backend_choices = backend_choices
         self._prefer_semantic_var = prefer_semantic_var
         self._theme_change_callback = theme_change_callback
+        self._app_regex_var = app_regex_var
 
         body = ttk.Frame(self, padding=16)
         body.pack(fill=tk.BOTH, expand=True)
@@ -149,6 +151,16 @@ class SettingsDialog(ttk.Toplevel):
             width=18,
         )
         self._backend_combo.pack(fill=tk.X)
+
+        target_frame = ttk.Labelframe(body, text="Target Application", padding=12)
+        target_frame.pack(fill=tk.X, expand=False, pady=(12, 0))
+        ttk.Label(target_frame, text="Title regex (UIA scope)").pack(anchor="w")
+        ttk.Entry(target_frame, textvariable=self._app_regex_var, width=36).pack(fill=tk.X, expand=True, pady=(4, 0))
+        ttk.Label(
+            target_frame,
+            text="Example: .*ENFIRE.*  (must match the ENFIRE window title when playback runs)",
+            bootstyle="secondary",
+        ).pack(anchor="w", pady=(4, 0))
 
         button_row = ttk.Frame(body)
         button_row.pack(fill=tk.X, expand=False, pady=(16, 0))

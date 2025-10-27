@@ -14,8 +14,10 @@ from PIL import Image, ImageChops
 
 try:
     from pywinauto import Desktop  # UIA selector
+    from pywinauto.findwindows import ElementNotFoundError, WindowNotFoundError  # type: ignore
 except Exception:
     Desktop = None  # type: ignore
+    ElementNotFoundError = WindowNotFoundError = None  # type: ignore
 # EXE-safe imports
 
 try:
@@ -36,12 +38,25 @@ except Exception:
     except Exception:
         ExplorerController = None  # type: ignore
 try:
-    from ui_testing.automation.driver import PywinautoUnavailableError, AutomationSession
+    from ui_testing.automation.driver import (
+        PywinautoUnavailableError,
+        AutomationSession,
+        WindowSpec,
+        DEFAULT_WINDOW_SPEC,
+    )
     from ui_testing.automation.semantic import SemanticContext, get_semantic_context
 except Exception:
     AutomationSession = None  # type: ignore
     PywinautoUnavailableError = RuntimeError  # type: ignore
     SemanticContext = None  # type: ignore
+
+    class _FallbackWindowSpec:  # pragma: no cover - fallback when pywinauto missing
+        def __init__(self, title_regex: Optional[str] = None, class_name: Optional[str] = None) -> None:
+            self.title_regex = title_regex
+            self.class_name = class_name
+
+    WindowSpec = _FallbackWindowSpec  # type: ignore
+    DEFAULT_WINDOW_SPEC = _FallbackWindowSpec()  # type: ignore
 
     def get_semantic_context(*args, **kwargs):  # type: ignore
         raise PywinautoUnavailableError("Semantic context unavailable")
@@ -87,7 +102,7 @@ class PlayerConfig:
     use_automation_ids: bool = True
     use_screenshots: bool = True
     prefer_semantic_scripts: bool = True
-    automation_manifest: Optional[Dict[str, Dict[str, str]]] = None
+    automation_manifest: Optional[Dict[str, Dict[str, Dict[str, Any]]]] = None
     use_ssim: bool = False
     ssim_threshold: float = 0.99
     automation_backend: str = "uia"
@@ -125,7 +140,8 @@ class Player:
         self._allure_enabled = bool(getattr(config, "enable_allure", True) and attach_image is not None)
         self._state_snapshot_dir = Path(config.state_snapshot_dir) if getattr(config, "state_snapshot_dir", None) else None
         self._current_script: Optional[str] = None
-        self._click_mode_counts: Dict[str, int] = {"semantic": 0, "uia": 0, "coordinate": 0}
+        self._uia_warning_logged = False
+        self._window_log_once = False
 
         # Lazy Explorer automation helper (wired by upcoming feature work)
 
@@ -134,13 +150,40 @@ class Player:
         """Return True when SSIM comparisons can run (scikit-image is installed)."""
         return self._ssim_available
 
-    def update_automation_manifest(self, manifest: Optional[Dict[str, Dict[str, str]]]) -> None:
-        self.automation_manifest: Dict[str, Dict[str, str]] = manifest or {}
-        self.config.automation_manifest = self.automation_manifest
-        self._automation_lookup: Dict[str, Tuple[str, str]] = {}
-        for group, mapping in self.automation_manifest.items():
-            for name, value in mapping.items():
-                self._automation_lookup[value] = (group, name)
+    def update_automation_manifest(
+        self, manifest: Optional[Dict[str, Dict[str, Dict[str, Any]]]]
+    ) -> None:
+        structured: Dict[str, Dict[str, Dict[str, Any]]] = {}
+        lookup: Dict[str, Tuple[str, str]] = {}
+        source = manifest or {}
+        for group, mapping in source.items():
+            if not isinstance(mapping, dict):
+                continue
+            group_key = str(group)
+            group_entries: Dict[str, Dict[str, Any]] = {}
+            for name, payload in mapping.items():
+                auto_id: Optional[str] = None
+                metadata: Dict[str, Any]
+                if isinstance(payload, dict):
+                    auto_id = payload.get("automation_id") or payload.get("id")
+                    if auto_id:
+                        metadata = dict(payload)
+                        metadata["automation_id"] = str(auto_id)
+                    else:
+                        continue
+                else:
+                    auto_id = str(payload)
+                    if not auto_id:
+                        continue
+                    metadata = {"automation_id": auto_id}
+                name_key = str(name)
+                group_entries[name_key] = metadata
+                lookup[str(auto_id)] = (group_key, name_key)
+            if group_entries:
+                structured[group_key] = group_entries
+        self.automation_manifest = structured
+        self.config.automation_manifest = structured
+        self._automation_lookup = lookup
 
 
         self._explorer_controller = None
@@ -155,6 +198,24 @@ class Player:
         except Exception:
             pass
 
+    def _semantic_context_kwargs(self) -> Dict[str, Any]:
+        kwargs: Dict[str, Any] = {
+            "backend": getattr(self.config, "automation_backend", "uia"),
+            "appium_server_url": getattr(self.config, "appium_server_url", None),
+            "appium_capabilities": getattr(self.config, "appium_capabilities", None) or None,
+        }
+        try:
+            if WindowSpec is not None:
+                spec = WindowSpec(
+                    title_regex=getattr(self.config, "app_title_regex", None)
+                    or getattr(DEFAULT_WINDOW_SPEC, "title_regex", None),
+                    class_name=getattr(DEFAULT_WINDOW_SPEC, "class_name", None),
+                )
+                kwargs["window_spec"] = spec
+        except Exception:
+            pass
+        return kwargs
+
     def _semantic_session(self) -> Optional[AutomationSession]:
         if not getattr(self.config, "prefer_semantic_scripts", True):
             return None
@@ -165,18 +226,23 @@ class Player:
         if self._semantic_disabled:
             return None
         try:
+            self._ensure_app_window()
             if self._semantic_context is None:
-                self._semantic_context = get_semantic_context(
-                    backend=getattr(self.config, "automation_backend", "uia"),
-                    appium_server_url=getattr(self.config, "appium_server_url", None),
-                    appium_capabilities=getattr(self.config, "appium_capabilities", None) or None,
-                )
+                self._semantic_context = get_semantic_context(**self._semantic_context_kwargs())
                 self._semantic_registry_cache = None
             return self._semantic_context.session
-        except PywinautoUnavailableError:
-            logger.debug("Semantic automation unavailable (pywinauto missing). Disabling.")
+        except PywinautoUnavailableError as exc:
+            logger.warning(
+                "Semantic automation unavailable: %s. Install pywinauto (pip install pywinauto) "
+                "and ensure UI Testing runs with the same elevation as ENFIRE.",
+                exc,
+            )
         except Exception as exc:
-            logger.debug("Semantic session attach failed: %s", exc)
+            logger.warning(
+                "Semantic session attach failed (%s). Verify ENFIRE is running and run UI Testing with matching privileges "
+                "(Run as administrator if ENFIRE was launched elevated).",
+                exc,
+            )
         self._semantic_disabled = True
         self._semantic_context = None
         self._semantic_registry_cache = None
@@ -190,11 +256,7 @@ class Player:
         ctx = self._semantic_context
         if ctx is None:
             try:
-                ctx = get_semantic_context(
-                    backend=getattr(self.config, "automation_backend", "uia"),
-                    appium_server_url=getattr(self.config, "appium_server_url", None),
-                    appium_capabilities=getattr(self.config, "appium_capabilities", None) or None,
-                )
+                ctx = get_semantic_context(**self._semantic_context_kwargs())
                 self._semantic_context = ctx
             except Exception as exc:
                 logger.debug("Unable to resolve semantic context for templates: %s", exc)
@@ -218,11 +280,7 @@ class Player:
         ctx = self._semantic_context
         if ctx is None:
             try:
-                ctx = get_semantic_context(
-                    backend=getattr(self.config, "automation_backend", "uia"),
-                    appium_server_url=getattr(self.config, "appium_server_url", None),
-                    appium_capabilities=getattr(self.config, "appium_capabilities", None) or None,
-                )
+                ctx = get_semantic_context(**self._semantic_context_kwargs())
                 self._semantic_context = ctx
             except Exception as exc:
                 logger.debug("Unable to resolve semantic context for templates: %s", exc)
@@ -286,6 +344,51 @@ class Player:
     def _note_drag_mode(self, button: str, point_count: int) -> None:
         self._drag_mode_count += 1
         self._drag_mode_history.append(f"{button}:{point_count}pts")
+
+    def _log_uia_hint(self, exc: Exception) -> None:
+        if self._uia_warning_logged:
+            return
+        message = str(exc)
+        matched = False
+        if ElementNotFoundError is not None and isinstance(exc, ElementNotFoundError):
+            matched = True
+        elif WindowNotFoundError is not None and isinstance(exc, WindowNotFoundError):
+            matched = True
+        elif "Access is denied" in message:
+            matched = True
+        if matched:
+            logger.info(
+                "UIA fallback to coordinates detected. If ENFIRE was launched from Visual Studio or elevated, "
+                "launch UI Testing with matching privileges (Run as administrator) so UI Automation can reach the controls."
+            )
+            self._uia_warning_logged = True
+
+    def _ensure_app_window(self) -> None:
+        if Desktop is None:
+            return
+        regex = getattr(self.config, "app_title_regex", None)
+        if not regex:
+            return
+        for _ in range(6):
+            try:
+                Desktop(backend="uia").window(title_re=regex)
+                return
+            except Exception:
+                time.sleep(0.5)
+        self._log_available_windows(regex)
+
+    def _log_available_windows(self, regex: str) -> None:
+        if self._window_log_once or Desktop is None:
+            return
+        self._window_log_once = True
+        try:
+            titles = [w.window_text() for w in Desktop(backend="uia").windows() if w.window_text()]
+        except Exception:
+            titles = []
+        if titles:
+            logger.info("UIA visible windows: %s", titles)
+        else:
+            logger.info("UIA reported no visible top-level windows when matching regex %s", regex)
 
     def _attach_flake_stats_artifact(self) -> None:
         if not self._allure_enabled or attach_file is None:
@@ -428,7 +531,19 @@ class Player:
                                     query2: Dict[str, Any] = {"auto_id": auto_id}
                                     if ctrl_type:
                                         query2["control_type"] = ctrl_type
-                                    target = desk.window(**query2).wrapper_object()
+                                    try:
+                                        target = desk.window(**query2).wrapper_object()
+                                    except Exception:
+                                        target = None
+                                    if target is None:
+                                        try:
+                                            target = desk.child_window(**query2).wrapper_object()
+                                        except Exception:
+                                            target = None
+                                if target is None:
+                                    if ElementNotFoundError is not None:
+                                        raise ElementNotFoundError(query2)
+                                    raise RuntimeError(f"Element '{auto_id}' not found via UIA")
                                 logger.info(
                                     f"Playback(UIA): click auto_id='{auto_id}'"
                                     f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
@@ -443,6 +558,8 @@ class Player:
                                 logger.warning(
                                     f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
                                 )
+                                self._log_available_windows(getattr(self.config, "app_title_regex", "") or "<unspecified>")
+                                self._log_uia_hint(e)
 
                     fallback_note = "" if auto_id else " [coordinate fallback]"
                     logger.info(f"Playback: click at ({x}, {y}){fallback_note}")
@@ -1515,21 +1632,6 @@ class Player:
 
     def _select_script_path(self, script_name: str) -> Path:
         base = self.config.scripts_dir / f"{script_name}.json"
-        try:
-            prefer_flag = getattr(self.config, "prefer_semantic_scripts", None)
-            if prefer_flag is True:
-                prefer_semantic = True
-            elif prefer_flag is False:
-                prefer_semantic = False
-            else:
-                prefer_semantic = (not getattr(self.config, "use_screenshots", True)) or getattr(self.config, "use_automation_ids", True)
-            if prefer_semantic:
-                semantic = base.with_suffix(".semantic.json")
-                if semantic.exists():
-                    logger.debug("Using semantic script for %s", script_name)
-                    return semantic
-        except Exception:
-            pass
         return base
 
     def _play_explorer_action(self, action_dict: Dict[str, Any]) -> None:
@@ -1583,6 +1685,7 @@ class Player:
                 logger.debug("Semantic resolve failed: %s", exc)
         if Desktop is None:
             return None
+        self._ensure_app_window()
         try:
             desk = Desktop(backend="uia")
         except Exception:
@@ -1598,10 +1701,11 @@ class Player:
                 except Exception:
                     pass
             return desk.window(**query).wrapper_object()
-        except Exception:
+        except Exception as exc:
             try:
                 return desk.child_window(**query).wrapper_object()
-            except Exception:
+            except Exception as inner_exc:
+                self._log_uia_hint(inner_exc)
                 return None
 
     def _read_element_property(self, element: Any, prop: str) -> Any:

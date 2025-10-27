@@ -12,7 +12,10 @@ namespace Enfire.EsriRuntime.Wpf.Utility.AutomationIds
         public const string CoordinateLabel = "MapCoordinateDisplay";
         public const string GoToToggle = "MapGoToToggle";
         public const string GoToExecute = "MapGoToExecute";
+        public const string GoToCoordinateInput = "MapGoToCoordinateInput";
         public const string ManualSetLocation = "MapManualSetLocation";
         public const string BasemapToggle = "MapBasemapToggle";
+        public const string MapViewHost = "MapViewHost";
+        public const string ReconPopupMenu = "MapReconPopupMenu";
     }
 }

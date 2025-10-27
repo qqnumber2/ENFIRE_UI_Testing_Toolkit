@@ -10,6 +10,8 @@ from typing import Any, Dict, Optional, Type, TypeVar, Union
 from ..driver import (
     AppiumSession,
     AutomationSession,
+    DEFAULT_WINDOW_SPEC,
+    WindowSpec,
     attach_appium_session,
     get_session,
     reset_session,
@@ -20,6 +22,10 @@ from .registry import AutomationRegistry
 TScreen = TypeVar("TScreen")
 
 
+def _clone_spec(spec: WindowSpec) -> WindowSpec:
+    return WindowSpec(title_regex=spec.title_regex, class_name=spec.class_name)
+
+
 @dataclass
 class SemanticContext:
     """Container that manages shared session/registry for semantic tests."""
@@ -28,6 +34,9 @@ class SemanticContext:
     backend: str = field(default_factory=lambda: os.getenv("UI_TESTING_AUTOMATION_BACKEND", "uia"))
     appium_server_url: Optional[str] = None
     appium_capabilities: Dict[str, Any] = field(default_factory=dict)
+    window_spec: WindowSpec = field(
+        default_factory=lambda: _clone_spec(DEFAULT_WINDOW_SPEC)
+    )
     _session: Optional[Union[AutomationSession, AppiumSession]] = field(default=None, init=False, repr=False)
     _registry: Optional[AutomationRegistry] = field(default=None, init=False, repr=False)
     _screen_cache: Dict[Type[Any], Any] = field(default_factory=dict, init=False, repr=False)
@@ -41,7 +50,7 @@ class SemanticContext:
                     raise RuntimeError("Appium backend selected but no server URL provided.")
                 self._session = attach_appium_session(self.appium_server_url, self.appium_capabilities)
             else:
-                self._session = get_session()
+                self._session = get_session(spec=self.window_spec)
         return self._session
 
     @property
@@ -99,10 +108,21 @@ def get_semantic_context(manifest_path: Optional[Path] = None, **kwargs: Any) ->
     """Return a global semantic context instance."""
     global _GLOBAL_CONTEXT
     effective_manifest = manifest_path or DEFAULT_MANIFEST_PATH
+    provided_spec = kwargs.pop("window_spec", None)
+    window_spec = provided_spec
+    if window_spec is None:
+        window_spec = _clone_spec(DEFAULT_WINDOW_SPEC)
+    elif isinstance(window_spec, str):
+        window_spec = WindowSpec(title_regex=window_spec)
+    elif isinstance(window_spec, WindowSpec):
+        window_spec = _clone_spec(window_spec)
+    else:
+        raise TypeError(f"Unsupported window_spec type: {type(window_spec)!r}")
     backend = kwargs.get("backend")
     if _GLOBAL_CONTEXT is None:
         _GLOBAL_CONTEXT = SemanticContext(
             manifest_path=effective_manifest,
+            window_spec=window_spec,
             **{k: v for k, v in kwargs.items() if k != "manifest_path"},
         )
     else:
@@ -111,15 +131,22 @@ def get_semantic_context(manifest_path: Optional[Path] = None, **kwargs: Any) ->
             needs_rebuild = True
         if backend and backend.lower() != _GLOBAL_CONTEXT.backend.lower():
             needs_rebuild = True
+        if window_spec and (
+            _GLOBAL_CONTEXT.window_spec.title_regex != window_spec.title_regex
+            or _GLOBAL_CONTEXT.window_spec.class_name != window_spec.class_name
+        ):
+            needs_rebuild = True
         if needs_rebuild:
             _GLOBAL_CONTEXT.reset()
             _GLOBAL_CONTEXT = SemanticContext(
                 manifest_path=effective_manifest,
+                window_spec=window_spec,
                 **{k: v for k, v in kwargs.items() if k != "manifest_path"},
             )
         else:
             if manifest_path is not None:
                 _GLOBAL_CONTEXT.manifest_path = effective_manifest
+            _GLOBAL_CONTEXT.window_spec = window_spec
     return _GLOBAL_CONTEXT
 
 

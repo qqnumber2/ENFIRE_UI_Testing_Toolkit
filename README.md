@@ -161,6 +161,16 @@ README.md             # You are here
 - **State Snapshots:** Optional hook running `ui_testing/automation/state_snapshots.validate_exports` to validate exported CSVs with Great Expectations.
 - **Semantic Assertions:** Assert the text/value/enabled state of manifest controls. Automatically suppressed for non-manifest AutomationIds to avoid false positives.
 
+### Why Semantic Assertions Matter
+
+Semantic assertions give the “future mode” its resilience. Whenever the recorder detects that a click or focus change hit a control described in `automation_ids.json`, it automatically emits an `assert.property` step alongside the action. Playback then:
+
+1. Resolves the same AutomationId through the semantic session (pywinauto) or a UIA lookup.
+2. Reads the requested property (`name`, `value`, `enabled`, etc.).
+3. Compares it to the recorded expectation and logs the result.
+
+Because the assertions bind to AutomationIds rather than coordinates, they continue to work when the UI is rearranged. You get syntactic coverage (screenshots, coordinates) and semantic coverage (control state) without hand-editing scripts.
+
 ---
 
 ## Results & Reporting
@@ -171,6 +181,12 @@ README.md             # You are here
 - **Flake statistics** capture repeated failures per script + assertion when `flake_stats_path` is configured, aiding triage of intermittent issues.
 - **Allure attachments** (optional) upload Excel summaries, screenshot artefacts, and flake stats for CI/CD visibility.
 - **Logs** live in `ui_testing/data/logs/ui_testing.log` and include semantic fallbacks, AutomationId mismatches, and packaging diagnostics.
+
+### Flake Tracking & Allure Integration
+
+- `PlayerConfig` writes flake counters to `ui_testing/data/flake_stats.json`. Every failed checkpoint increments the counter for its script/action so you can identify intermittent, non-deterministic behaviour (“flakes”). Delete the JSON to reset stats for a new release train.
+- When Allure reporting is enabled (default in packaged builds, requires the `allure-pytest` dependency/CLI), each run attaches the Excel summary, screenshot diffs/highlights, and the flake stats JSON so downstream dashboards display all evidence without remoting into the test box.
+- If you don’t use Allure, disable the toggle in Settings. Local outputs (Excel, bug drafts, logs) continue to be produced in `ui_testing/data`.
 
 ---
 
@@ -206,7 +222,7 @@ README.md             # You are here
 3. **Playback Toggles & Backends** (toolbar + Settings dialog):
    - **Ignore Recorded Delays** – replace every recorded delay with the default pacing value. Disable this to replay human think-time exactly as captured.
    - **Use Automation IDs** – enable semantic navigation. When checked, the player resolves controls via the manifest/pywinauto session before falling back to coordinates.
-   - **Prefer Semantic Assertions** – load `*.semantic.json` variants that include assert.property steps; uncheck to stick with the original coordinate-only recordings.
+   - **Prefer Semantic Assertions** – evaluate the inline assert.property steps recorded for each AutomationId; uncheck to skip semantic validation and rely on coordinates/screenshots only.
    - **Compare Screenshots** – toggle visual diffs. Pair with semantic playback to mix assertions and image validation as needed.
    - **Use SSIM** – switch screenshot comparisons to Structural Similarity (SSIM) instead of raw pixel diff. Combined with the **SSIM Threshold** slider (0.0–1.0) this handles minor rendering drift; 1.0 requires identical images.
    - **Automation Backend** – choose **UIA** (pywinauto + Microsoft UI Automation, default) or **Appium** (WinAppDriver/Appium Server). UIA is lightweight and works when ENFIRE exposes AutomationIds locally. Appium is useful for remote sessions or when the test rig connects to a dedicated WinAppDriver instance.
@@ -214,7 +230,7 @@ README.md             # You are here
 4. **Available Tests Tree**: organised as procedure/section/test; right-click nodes to open, reveal on disk, or delete scripts/images/results.
 5. **Results Panel**: live view of checkpoints; summary row includes counts and semantic/UIA/coordinate distribution.
 6. **Preview Panel**: displays baseline/test/diff/highlight images for screenshot checkpoints.
-7. **Log Panel**: tail of `ui_testing.log`. Double-click to open full file or use `Ctrl+L` for the standalone viewer.
+7. **Log Panel**: tail of `ui_testing.log` with All / Info / Warnings / Errors tabs so you can focus on the level you care about. Each tab lists only that severity; use **Open Logs** on the toolbar for the full transcript.
 8. **Instructions**: the in-app “Instructions” button opens a notebook that documents toolbar buttons, validation logic, packaging flow, and keyboard shortcuts.
 
 ---
@@ -248,6 +264,7 @@ README.md             # You are here
 
 - **AutomationIds appear as “Window”**: ensure `automation/manifest/automation_ids.json` is up to date. The recorder intentionally discards generic ids; if none remain, playback reverts to coordinates. See the log for `Semantic metadata skipped` messages.
 - **Semantic playback falls back to coordinates**: confirm `Use Automation IDs` and `Prefer semantic assertions` toggles are enabled, pywinauto is installed, and the ENFIRE window matches the regex configured in Settings.
+- **Unable to locate ENFIRE window**: double-check Settings → Target Application regex against the actual window title (use the Automation Inspector or `Get-Process ENFIRE | Select MainWindowTitle`) and run UI Testing with the same elevation as ENFIRE.
 - **Bug note generation reports missing files**: check that the underlying screenshots exist (e.g., `images/.../0_000O.png`). The summariser skips drafts when evidence is absent.
 - **Packaging fails preflight**: review the console output for compile/test errors. Fix the underlying issue before distributing the installer.
 - **Appium backend**: if switching to Appium in Settings, make sure `appium` is available on PATH and the capabilities JSON is configured (see `docs/tools/appium_capabilities.py`). The semantic context will fall back to UIA if attachment fails.
@@ -258,7 +275,7 @@ README.md             # You are here
 ## Glossary & Further Reading
 
 - **AutomationId manifest**: JSON exported from the ENFIRE codebase describing control identifiers. Located at `ui_testing/automation/manifest/automation_ids.json`.
-- **Semantic script**: `*.semantic.json` file containing the same actions as the baseline script but decorated with semantic assertions.
+- **Semantic assertions**: inline `assert.property` actions captured during recording/upgrade that validate AutomationId state when semantic playback is enabled.
 - **Checkpoint**: Individual validation step (assertion or screenshot) recorded in the Results grid and Excel summary.
 - **State snapshot**: CSV export validated by Great Expectations to confirm non-UI state (if configured).
 - **Flake Tracker**: JSON statistics per script/action stored at the configured `flake_stats_path` (defaults to `ui_testing/data/flake_stats.json`).

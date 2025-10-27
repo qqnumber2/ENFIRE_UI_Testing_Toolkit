@@ -39,7 +39,8 @@
                                        AutomationProperties.AutomationId="{x:Static automation:CommonIds.AngleUnits}"/>
                             <controls:SurfaceComboBox HorizontalAlignment="Left" ItemsSource="{Binding AngularUnits}" 
                                                       SelectedValue="{Binding SelectedAngleUnit, Mode=TwoWay}"
-                                                      VerticalAlignment="Top" Margin="0,0,15,0">
+                                                      VerticalAlignment="Top" Margin="0,0,15,0"
+                                                      AutomationProperties.AutomationId="{x:Static automation:CommonIds.AngleUnitsSelector}">
                             </controls:SurfaceComboBox>
                         </StackPanel>
                     </WrapPanel>
@@ -73,7 +74,8 @@
                                        AutomationProperties.AutomationId="{x:Static automation:CommonIds.TimeZone}"/>
                             <controls:SurfaceComboBox HorizontalAlignment="Left" ItemsSource="{Binding TimeZones}" 
                                                       SelectedValue="{Binding SelectedTimeZone, Mode=TwoWay}" 
-                                                      VerticalAlignment="Top" Margin="0,0,15,0">
+                                                      VerticalAlignment="Top" Margin="0,0,15,0"
+                                                      AutomationProperties.AutomationId="{x:Static automation:CommonIds.TimeZoneSelector}">
                             </controls:SurfaceComboBox>
                         </StackPanel>
                     </WrapPanel>
@@ -92,7 +94,8 @@
                                                     AutomationProperties.AutomationId="{x:Static automation:CommonIds.ReportPath}"
                                                     ToolTip="{Binding ReportPath}" />
                                 <Button Content="Select" Width="65" Height="45" HorizontalContentAlignment="Center"
-                                                Command="{Binding SelectReportPathCommand}" />
+                                                Command="{Binding SelectReportPathCommand}"
+                                                AutomationProperties.AutomationId="{x:Static automation:CommonIds.SelectReportPath}" />
                             </StackPanel>
                             <TextBlock HorizontalAlignment="Left" Text="Report Type" VerticalAlignment="Top" Style="{DynamicResource LabelTextBlock}" />
                             <RadioButton IsChecked="{Binding WordTruePdfFalse}" Content="Word" 

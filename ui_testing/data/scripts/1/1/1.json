@@ -1,0 +1,4709 @@
+[
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1713,
+        "y": 1745,
+        "delay": 2.199,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "button": "left",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "city",
+        "control_type": "Edit",
+        "property_name": "name",
+        "expected": "\ufffc",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "city",
+            "control_type": "Edit"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1822,
+        "y": 1377,
+        "delay": 0.917,
+        "control_type": "Pane",
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 3287,
+        "y": 724,
+        "delay": 1.022,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "mouse_down",
+        "x": 3818,
+        "y": 437,
+        "delay": 1.138,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "drag",
+        "x": 3823,
+        "y": 575,
+        "delay": 1.075,
+        "button": "left",
+        "path": [
+            [
+                3818,
+                437
+            ],
+            [
+                3818,
+                440
+            ],
+            [
+                3818,
+                441
+            ],
+            [
+                3818,
+                444
+            ],
+            [
+                3818,
+                446
+            ],
+            [
+                3818,
+                447
+            ],
+            [
+                3818,
+                450
+            ],
+            [
+                3818,
+                454
+            ],
+            [
+                3818,
+                455
+            ],
+            [
+                3818,
+                456
+            ],
+            [
+                3818,
+                461
+            ],
+            [
+                3818,
+                463
+            ],
+            [
+                3818,
+                466
+            ],
+            [
+                3818,
+                469
+            ],
+            [
+                3819,
+                470
+            ],
+            [
+                3819,
+                473
+            ],
+            [
+                3819,
+                475
+            ],
+            [
+                3819,
+                478
+            ],
+            [
+                3819,
+                479
+            ],
+            [
+                3819,
+                481
+            ],
+            [
+                3819,
+                484
+            ],
+            [
+                3819,
+                485
+            ],
+            [
+                3819,
+                486
+            ],
+            [
+                3821,
+                486
+            ],
+            [
+                3821,
+                489
+            ],
+            [
+                3821,
+                491
+            ],
+            [
+                3821,
+                492
+            ],
+            [
+                3821,
+                494
+            ],
+            [
+                3821,
+                495
+            ],
+            [
+                3821,
+                497
+            ],
+            [
+                3821,
+                500
+            ],
+            [
+                3821,
+                501
+            ],
+            [
+                3821,
+                502
+            ],
+            [
+                3821,
+                504
+            ],
+            [
+                3821,
+                507
+            ],
+            [
+                3821,
+                508
+            ],
+            [
+                3821,
+                510
+            ],
+            [
+                3821,
+                513
+            ],
+            [
+                3821,
+                514
+            ],
+            [
+                3821,
+                516
+            ],
+            [
+                3821,
+                517
+            ],
+            [
+                3821,
+                520
+            ],
+            [
+                3821,
+                521
+            ],
+            [
+                3821,
+                523
+            ],
+            [
+                3821,
+                524
+            ],
+            [
+                3821,
+                526
+            ],
+            [
+                3821,
+                529
+            ],
+            [
+                3821,
+                530
+            ],
+            [
+                3821,
+                532
+            ],
+            [
+                3821,
+                533
+            ],
+            [
+                3821,
+                536
+            ],
+            [
+                3821,
+                537
+            ],
+            [
+                3821,
+                539
+            ],
+            [
+                3821,
+                540
+            ],
+            [
+                3821,
+                542
+            ],
+            [
+                3821,
+                543
+            ],
+            [
+                3822,
+                545
+            ],
+            [
+                3822,
+                546
+            ],
+            [
+                3822,
+                547
+            ],
+            [
+                3822,
+                549
+            ],
+            [
+                3822,
+                550
+            ],
+            [
+                3822,
+                552
+            ],
+            [
+                3822,
+                553
+            ],
+            [
+                3822,
+                554
+            ],
+            [
+                3822,
+                558
+            ],
+            [
+                3822,
+                559
+            ],
+            [
+                3822,
+                560
+            ],
+            [
+                3822,
+                562
+            ],
+            [
+                3822,
+                565
+            ],
+            [
+                3822,
+                566
+            ],
+            [
+                3823,
+                568
+            ],
+            [
+                3823,
+                569
+            ],
+            [
+                3823,
+                570
+            ],
+            [
+                3823,
+                572
+            ],
+            [
+                3823,
+                573
+            ],
+            [
+                3823,
+                575
+            ]
+        ]
+    },
+    {
+        "action_type": "mouse_up",
+        "x": 3823,
+        "y": 575,
+        "delay": 0.007,
+        "button": "left"
+    },
+    {
+        "action_type": "click",
+        "x": 1413,
+        "y": 1542,
+        "delay": 1.205,
+        "auto_id": "rulesAgreementCheckbox",
+        "control_type": "CheckBox",
+        "button": "left",
+        "semantic": {
+            "automation_id": "rulesAgreementCheckbox",
+            "control_type": "CheckBox"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 1810,
+        "y": 1709,
+        "delay": 1.136,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "button": "left",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "receiveEntriesButton",
+        "control_type": "Button",
+        "property_name": "name",
+        "expected": "Receive Entries",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "receiveEntriesButton",
+            "control_type": "Button"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 2.941,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.704,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "click",
+        "x": 3190,
+        "y": 955,
+        "delay": 0.648,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "button": "left",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    },
+    {
+        "action_type": "assert.property",
+        "delay": 0.0,
+        "auto_id": "RootWebArea",
+        "control_type": "Document",
+        "property_name": "name",
+        "expected": "Win a 5-Night Luxury Escape to Thailand Inspired by 'The White Lotus'",
+        "compare": "equals",
+        "semantic": {
+            "automation_id": "RootWebArea",
+            "control_type": "Document"
+        }
+    }
+]
