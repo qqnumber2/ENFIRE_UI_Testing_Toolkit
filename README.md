@@ -111,7 +111,7 @@ ui_testing/
     semantic/         # Context, registry, screen objects
     services/         # AI summariser, test-plan integration
     vision/           # SSIM comparison helpers
-  data/
+  data/               # Primary runtime artefacts (ui_testing/data)
     scripts/          # Recorded JSON scripts (procedure/section/test folders)
     images/           # Screenshot checkpoints (O/T naming)
     results/          # Bug drafts, diff crops, Excel output
@@ -137,7 +137,7 @@ README.md             # You are here
    - Otherwise, the recorder stores raw coordinates only.
 4. Keystrokes are buffered and flushed as `type` actions; `p` captures screenshot checkpoints (cropped to hide the Windows taskbar).
 5. Companion semantic `assert.property` actions are generated for manifest-backed clicks, keeping scripts self-validating.
-6. Output is written to `data/scripts/...json`, with PNG assets under `data/images/...`.
+6. Output is written to `ui_testing/data/scripts/...json`, with PNG assets under `ui_testing/data/images/...`.
 
 ### Playback Pipeline
 
@@ -170,7 +170,7 @@ README.md             # You are here
 - **Bug drafts** (markdown + cropped PNGs) are generated for failing screenshot checkpoints. Heuristics propose likely causes and remediation tips.
 - **Flake statistics** capture repeated failures per script + assertion when `flake_stats_path` is configured, aiding triage of intermittent issues.
 - **Allure attachments** (optional) upload Excel summaries, screenshot artefacts, and flake stats for CI/CD visibility.
-- **Logs** live in `data/logs/ui_testing.log` and include semantic fallbacks, AutomationId mismatches, and packaging diagnostics.
+- **Logs** live in `ui_testing/data/logs/ui_testing.log` and include semantic fallbacks, AutomationId mismatches, and packaging diagnostics.
 
 ---
 
@@ -195,7 +195,7 @@ README.md             # You are here
 
 ## Using the GUI
 
-1. **Launch** `UI_Testing.exe` (or use the packaged shortcut). The app automatically loads the most recent settings (`ui_settings.json`) and scans `data/scripts` for available tests.
+1. **Launch** `UI_Testing.exe` (or use the packaged shortcut). The app automatically loads the most recent settings (`ui_settings.json`) and scans `ui_testing/data/scripts` for available tests.
 2. **Toolbar Controls**
    - Record New / Stop Recording (mouse/keyboard capture).
    - Run Selected / Run All (queue execution).
@@ -261,7 +261,7 @@ README.md             # You are here
 - **Semantic script**: `*.semantic.json` file containing the same actions as the baseline script but decorated with semantic assertions.
 - **Checkpoint**: Individual validation step (assertion or screenshot) recorded in the Results grid and Excel summary.
 - **State snapshot**: CSV export validated by Great Expectations to confirm non-UI state (if configured).
-- **Flake Tracker**: JSON statistics per script/action stored at the configured `flake_stats_path` (defaults to `data/flake_stats.json`).
+- **Flake Tracker**: JSON statistics per script/action stored at the configured `flake_stats_path` (defaults to `ui_testing/data/flake_stats.json`).
 - **UIA**: Microsoft’s UI Automation framework; pywinauto’s UIA backend is used for in-process semantic control resolution.
 - **Appium**: Cross-platform automation server (WinAppDriver flavour) used when tests must drive ENFIRE through a remote or sandboxed session. Configure server URL and capabilities in Settings.
 - **SSIM (Structural Similarity Index Measure)**: Image metric that captures perceived visual differences (luminance/contrast/structure) rather than pixel identity. Thresholds closer to 1.0 are stricter.

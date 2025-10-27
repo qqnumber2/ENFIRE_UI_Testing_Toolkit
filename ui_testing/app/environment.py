@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import sys
+import logging
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -42,6 +44,8 @@ def build_default_paths() -> Paths:
         logs_dir=data_root / "logs",
     )
     _ensure_dirs(paths.data_root, paths.scripts_dir, paths.images_dir, paths.results_dir, paths.logs_dir)
+    if not hasattr(sys, "_MEIPASS"):
+        _migrate_legacy_data(project_root / "data", paths.data_root)
     paths.test_plan = _find_default_test_plan(project_root)
     return paths
 
@@ -49,6 +53,43 @@ def build_default_paths() -> Paths:
 def _ensure_dirs(*directories: Path) -> None:
     for directory in directories:
         directory.mkdir(parents=True, exist_ok=True)
+
+
+def _migrate_legacy_data(legacy_root: Path, target_root: Path) -> None:
+    """Move data from the historical `<repo>/data` folder into `ui_testing/data`."""
+    if legacy_root == target_root or not legacy_root.exists():
+        return
+    try:
+        if not any(legacy_root.iterdir()):
+            return
+    except Exception:
+        return
+
+    logger = logging.getLogger(__name__)
+    moved_any = False
+    for item in legacy_root.iterdir():
+        destination = target_root / item.name
+        if destination.exists():
+            continue
+        try:
+            if item.is_dir():
+                shutil.copytree(item, destination)
+            else:
+                shutil.copy2(item, destination)
+            moved_any = True
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning("Could not migrate '%s' to '%s': %s", item, destination, exc)
+    if moved_any:
+        note_path = legacy_root / "README_LEGACY.txt"
+        try:
+            note_path.write_text(
+                "Data has been copied to ui_testing/data. This legacy folder is no longer used "
+                "and can be removed once you verify the new location.",
+                encoding="utf-8",
+            )
+        except Exception:
+            pass
+        logger.info("Legacy data copied from '%s' to '%s'. You may delete the old folder after verifying.", legacy_root, target_root)
 
 
 def _find_default_test_plan(root: Path) -> Optional[Path]:

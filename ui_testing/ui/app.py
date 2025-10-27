@@ -30,7 +30,7 @@ if str(package_root) not in sys.path:
 from ui_testing.app.environment import Paths, build_default_paths, resource_path
 from ui_testing.ui.dialogs import NewRecordingDialog, RecordingRequest
 from ui_testing.ui.background import VideoBackground
-from ui_testing.automation.player import Player, PlayerConfig
+from ui_testing.automation.player import Player, PlayerConfig, compare_with_ssim
 from ui_testing.automation.semantic import reset_semantic_context
 from ui_testing.automation.recorder import Recorder, RecorderConfig
 from ui_testing.services.ai_summarizer import write_run_bug_report, BugNote
@@ -91,6 +91,7 @@ class TestRunnerApp:
         self.automation_backend_var = tk.StringVar(master=self.root, value="uia")
         self.normalize_label_var = tk.StringVar(master=self.root, value="Normalize: Not set")
         self._theme_choices = sorted(set(self.root.style.theme_names()))
+        self._ssim_warning_shown = False
 
         # --- filesystem paths & persisted settings ---
         self.paths: Paths = build_default_paths()
@@ -153,6 +154,9 @@ class TestRunnerApp:
             )
         )
         self.player.update_automation_manifest(self.automation_manifest)
+        if not self.player.ssim_available and self.use_ssim_var.get():
+            self._show_ssim_unavailable_warning()
+            self.use_ssim_var.set(False)
 
         # --- GUI assembly ---
         self.actions_panel: ActionsPanel
@@ -936,6 +940,7 @@ class TestRunnerApp:
             prefer_semantic_var=self.prefer_semantic_var,
             use_ssim_var=self.use_ssim_var,
             ssim_threshold_var=self.ssim_threshold_var,
+            ssim_available=self.player.ssim_available,
             backend_var=self.automation_backend_var,
             backend_choices=["uia", "appium"],
             theme_change_callback=self._on_theme_change,
@@ -1254,7 +1259,16 @@ class TestRunnerApp:
         self.use_default_delay_var.set(bool(self.settings.ignore_recorded_delays))
         self.use_automation_ids_var.set(bool(getattr(self.settings, "use_automation_ids", True)))
         self.use_screenshots_var.set(bool(getattr(self.settings, "use_screenshots", True)))
-        self.use_ssim_var.set(bool(getattr(self.settings, "use_ssim", False)))
+        if compare_with_ssim is None:
+            self.use_ssim_var.set(False)
+            if getattr(self.settings, "use_ssim", False):
+                self.settings.use_ssim = False
+                try:
+                    self._save_settings()
+                except Exception:
+                    pass
+        else:
+            self.use_ssim_var.set(bool(getattr(self.settings, "use_ssim", False)))
         self.ssim_threshold_var.set(float(getattr(self.settings, "ssim_threshold", 0.99)))
         self.automation_backend_var.set(str(getattr(self.settings, "automation_backend", "uia")))
         self.prefer_semantic_var.set(bool(getattr(self.settings, "prefer_semantic_scripts", True)))
@@ -1293,6 +1307,10 @@ class TestRunnerApp:
 
     def _on_use_ssim_changed(self) -> None:
         value = bool(self.use_ssim_var.get())
+        if value and not self.player.ssim_available:
+            self._show_ssim_unavailable_warning()
+            self.use_ssim_var.set(False)
+            return
         self.settings.use_ssim = value
         self.player.config.use_ssim = value
         self._save_settings()
@@ -1305,6 +1323,19 @@ class TestRunnerApp:
         self.settings.ssim_threshold = threshold
         self.player.config.ssim_threshold = threshold
         self._save_settings()
+
+    def _show_ssim_unavailable_warning(self) -> None:
+        if self._ssim_warning_shown:
+            return
+        self._ssim_warning_shown = True
+        messagebox.showwarning(
+            "SSIM Unavailable",
+            "SSIM comparisons require the optional dependency 'scikit-image'.\n\n"
+            "Install it in your virtual environment with:\n"
+            "    pip install scikit-image\n\n"
+            "The toggle will remain off until the dependency is available.",
+            parent=self.root,
+        )
 
     def _on_backend_changed(self) -> None:
         backend = str(self.automation_backend_var.get()).lower()

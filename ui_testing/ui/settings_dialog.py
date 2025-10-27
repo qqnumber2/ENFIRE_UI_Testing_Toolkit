@@ -20,6 +20,7 @@ class SettingsDialog(ttk.Toplevel):
         prefer_semantic_var: tk.BooleanVar,
         use_ssim_var: tk.BooleanVar,
         ssim_threshold_var: tk.DoubleVar,
+        ssim_available: bool = True,
         backend_var: tk.StringVar,
         backend_choices: list[str],
         theme_change_callback,
@@ -39,6 +40,7 @@ class SettingsDialog(ttk.Toplevel):
         self._use_screenshots_var = use_screenshots_var
         self._use_ssim_var = use_ssim_var
         self._ssim_threshold_var = ssim_threshold_var
+        self._ssim_available = bool(ssim_available)
         self._backend_var = backend_var
         self._backend_choices = backend_choices
         self._prefer_semantic_var = prefer_semantic_var
@@ -110,12 +112,18 @@ class SettingsDialog(ttk.Toplevel):
             variable=self._use_screenshots_var,
             bootstyle="round-toggle",
         ).pack(anchor="w", pady=4)
-        ttk.Checkbutton(
+        ssim_label = "Use SSIM image compare"
+        if not self._ssim_available:
+            ssim_label += " (requires scikit-image)"
+        self._ssim_check = ttk.Checkbutton(
             toggle_frame,
-            text="Use SSIM image compare",
+            text=ssim_label,
             variable=self._use_ssim_var,
             bootstyle="round-toggle",
-        ).pack(anchor="w", pady=4)
+        )
+        if not self._ssim_available:
+            self._ssim_check.configure(state="disabled")
+        self._ssim_check.pack(anchor="w", pady=4)
         ssim_frame = ttk.Frame(toggle_frame)
         ssim_frame.pack(fill=tk.X, expand=False, pady=(0, 4))
         ttk.Label(ssim_frame, text="SSIM threshold").pack(side=tk.LEFT)
@@ -150,7 +158,10 @@ class SettingsDialog(ttk.Toplevel):
         self._theme_combo.focus_set()
 
     def _update_ssim_state(self) -> None:
-        state = "normal" if bool(self._use_ssim_var.get()) else "disabled"
+        if not self._ssim_available:
+            state = "disabled"
+        else:
+            state = "normal" if bool(self._use_ssim_var.get()) else "disabled"
         try:
             self._ssim_spin.configure(state=state)
         except Exception:

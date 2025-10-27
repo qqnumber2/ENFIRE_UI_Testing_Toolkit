@@ -35,6 +35,11 @@ $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $Root
 Write-Host ("Project root: {0}" -f $Root) -ForegroundColor Cyan
 
+$LegacyData = Join-Path $Root "data"
+if (Test-Path $LegacyData) {
+  Write-Warning "Legacy '.\\data' folder detected. Runtime artefacts now live under '.\\ui_testing\\data'. Review and remove the old folder to avoid packaging stale files."
+}
+
 $VenvDir   = Join-Path $Root $VenvDirRel
 $BuildDir  = Join-Path $Root $BuildDirRel
 $DistDir   = Join-Path $Root $DistDirRel
@@ -67,13 +72,19 @@ if (-not (Test-Path $VenvDir)) {
 }
 
 $Py  = Join-Path $VenvDir "Scripts\python.exe"
-$Pip = Join-Path $VenvDir "Scripts\pip.exe"
 if (-not (Test-Path $Py))  { throw "venv creation failed - missing: $Py" }
-if (-not (Test-Path $Pip)) { throw "venv creation failed - missing: $Pip" }
+
+function Invoke-Pip {
+  param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
+  & "$Py" "-m" "pip" @Args | Out-Host
+  if ($LASTEXITCODE -ne 0) {
+    throw ("pip failed for arguments: {0}" -f ($Args -join " "))
+  }
+}
 
 # Upgrade pip when online
 if (-not $Offline) {
-  try { & "$Pip" install --upgrade pip setuptools wheel | Out-Host } catch { Write-Warning "Pip upgrade failed (continuing). $_" }
+  try { Invoke-Pip install --upgrade pip setuptools wheel } catch { Write-Warning "Pip upgrade failed (continuing). $_" }
 }
 
 # -------- Install dependencies --------
@@ -83,10 +94,10 @@ if (-not (Test-Path $Req)) { throw "requirements.txt not found at: $Req" }
 if ($Offline) {
   if (-not (Test-Path $WheelsDir)) { throw "Offline mode requested, but wheels folder not found: $WheelsDir" }
   Write-Host "Installing from local wheels..." -ForegroundColor Yellow
-  & "$Pip" install --no-index --find-links="$WheelsDir" -r "$Req" | Out-Host
+  Invoke-Pip install --no-index --find-links="$WheelsDir" -r "$Req"
 } else {
   Write-Host "Installing from PyPI..." -ForegroundColor Yellow
-  & "$Pip" install -r "$Req" | Out-Host
+  Invoke-Pip install -r "$Req"
 }
 
 Write-Host "Running bytecode compilation (compileall)..." -ForegroundColor Yellow

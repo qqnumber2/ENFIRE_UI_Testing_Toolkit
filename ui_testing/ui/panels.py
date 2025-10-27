@@ -649,8 +649,8 @@ class ResultsPanel(ttk.Frame):
         )
         self._progress_bar.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-        cols = ("script", "index", "timestamp", "original", "test", "diff", "status")
-        display_cols = ("script", "index", "timestamp", "diff", "status")
+        cols = ("script", "index", "timestamp", "diff", "ssim", "status", "original", "test")
+        display_cols = ("script", "index", "timestamp", "diff", "ssim", "status")
         self.result_tree = ttk.Treeview(
             results_frame,
             columns=cols,
@@ -666,6 +666,7 @@ class ResultsPanel(ttk.Frame):
             "original": "Original",
             "test": "Test",
             "diff": "Diff (%)",
+            "ssim": "SSIM (score / threshold)",
             "status": "Status",
         }
         self._heading_labels = headings
@@ -676,7 +677,8 @@ class ResultsPanel(ttk.Frame):
             ("script", 320, "w"),
             ("index", 80, "center"),
             ("timestamp", 180, "center"),
-            ("diff", 260, "w"),
+            ("diff", 160, "center"),
+            ("ssim", 200, "center"),
             ("status", 140, "center"),
         ):
             self.result_tree.heading(
@@ -772,7 +774,6 @@ class ResultsPanel(ttk.Frame):
                 continue
             orig = r.get("original", "")
             test = r.get("test", "")
-            diffp = r.get("diff_percent", "")
             status = r.get("status", "fail")
             timestamp = r.get("timestamp", "")
             note = r.get("note", "")
@@ -787,18 +788,31 @@ class ResultsPanel(ttk.Frame):
             elif tag == "warn" and summary_level != "fail":
                 summary_level = "warn"
             metrics = r.get("metrics")
-            diff_str = ""
             if metrics:
                 diff_str = str(metrics)
             else:
-                try:
-                    diff_val = float(diffp)
-                    diff_str = f"{diff_val:.3f}"
-                except Exception:
-                    diff_str = ""
+                pixel_diff = r.get("pixel_diff_percent", r.get("diff_percent"))
+                diff_str = ""
+                if pixel_diff not in (None, ""):
+                    try:
+                        diff_str = f"{float(pixel_diff):.3f}%"
+                    except Exception:
+                        diff_str = str(pixel_diff)
+                diff_str = diff_str.strip(" |")
             if note:
-                diff_str = f"{diff_str} | {note}" if diff_str else note
-            diff_str = diff_str.strip(" |")
+                diff_str = (diff_str + " | " if diff_str else "") + str(note)
+                diff_str = diff_str.strip(" |")
+            ssim_score = r.get("ssim_score")
+            ssim_threshold = r.get("ssim_threshold")
+            if ssim_score is None:
+                ssim_str = "n/a"
+            else:
+                ssim_str = f"{float(ssim_score):.4f}"
+                if ssim_threshold is not None:
+                    try:
+                        ssim_str += f" / {float(ssim_threshold):.4f}"
+                    except Exception:
+                        ssim_str += f" / {ssim_threshold}"
             try:
                 idx_display = int(idx) + 1
             except Exception:
@@ -814,10 +828,11 @@ class ResultsPanel(ttk.Frame):
                     script_name,
                     idx_display,
                     timestamp,
+                    diff_str,
+                    ssim_str,
+                    status_display,
                     orig,
                     test,
-                    diff_str,
-                    status_display,
                 ),
                 tags=("detail", tag),
             )
@@ -843,10 +858,11 @@ class ResultsPanel(ttk.Frame):
                 script_name,
                 "",
                 "",
-                "",
-                "",
                 summary_note,
+                "",
                 summary_status,
+                "",
+                "",
             ),
             tags=summary_tags,
         )
@@ -962,14 +978,21 @@ class ResultsPanel(ttk.Frame):
             return
         item_id = selection[0]
         row = self.result_tree.item(item_id, "values")
+
+        def _value(column: str) -> str:
+            idx = self._column_indices.get(column)
+            if idx is None or idx >= len(row):
+                return ""
+            return row[idx]
+
         payload = {
-            "script": row[0] if len(row) > 0 else "",
-            "index": row[1] if len(row) > 1 else "",
-            "timestamp": row[2] if len(row) > 2 else "",
-            "original": row[3] if len(row) > 3 else "",
-            "test": row[4] if len(row) > 4 else "",
-            "diff": row[5] if len(row) > 5 else "",
-            "status": row[6] if len(row) > 6 else "",
+            "script": _value("script"),
+            "index": _value("index"),
+            "timestamp": _value("timestamp"),
+            "original": _value("original"),
+            "test": _value("test"),
+            "diff": _value("diff"),
+            "status": _value("status"),
         }
         self._on_result_select(payload)
 

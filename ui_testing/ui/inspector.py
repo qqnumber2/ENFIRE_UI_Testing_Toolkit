@@ -67,10 +67,12 @@ class AutomationInspector:
         self._window.grab_set()
         self._window.protocol("WM_DELETE_WINDOW", self.close)
         self._on_close = on_close
+        self._center_over_root()
 
         self._values: Dict[str, tk.StringVar] = {
             "coordinates": tk.StringVar(value="(0, 0)"),
             "automation_id": tk.StringVar(value=""),
+            "nearest_auto_id": tk.StringVar(value=""),
             "manifest": tk.StringVar(value=""),
             "control_type": tk.StringVar(value=""),
             "name": tk.StringVar(value=""),
@@ -120,7 +122,6 @@ class AutomationInspector:
         return index
 
     def _create_widgets(self) -> None:
-
         frame = ttk.Frame(self._window, padding=12)
         frame.pack(fill=tk.BOTH, expand=True)
 
@@ -141,6 +142,8 @@ class AutomationInspector:
         self._add_row(frame, row, "Coordinates", "coordinates")
         row += 1
         self._add_row(frame, row, "AutomationId", "automation_id", add_copy=True)
+        row += 1
+        self._add_row(frame, row, "Nearest AutomationId", "nearest_auto_id")
         row += 1
         self._add_row(frame, row, "Manifest group/name", "manifest", add_copy=True)
         row += 1
@@ -210,20 +213,39 @@ class AutomationInspector:
             wrapper = None
         if wrapper is None:
             return data
-        target_wrapper, auto_id = self._select_preferred_wrapper(wrapper)
-        element = target_wrapper.element_info if target_wrapper is not None else wrapper.element_info
+
+        element = wrapper.element_info
+        raw_auto_id = getattr(element, "automation_id", "") or ""
+        auto_id = str(raw_auto_id).strip()
+        if _is_generic_automation_id(auto_id):
+            auto_id = ""
+        _, nearest_auto_id = self._find_nearest_automation_id(wrapper)
+        nearest_auto_id = str(nearest_auto_id).strip() if nearest_auto_id else ""
+
         control_type = getattr(element, "control_type", "") or ""
         name = getattr(element, "name", "") or ""
         framework = getattr(element, "framework_id", "") or ""
         class_name = getattr(element, "class_name", "") or ""
         try:
             rect = element.rectangle
-            rectangle = f"({rect.left}, {rect.top}) → ({rect.right}, {rect.bottom})"
+            rectangle = f"({rect.left}, {rect.top}) -> ({rect.right}, {rect.bottom})"
         except Exception:
             rectangle = ""
+
+        if auto_id:
+            status_msg = "AutomationId resolved on element."
+        elif nearest_auto_id:
+            status_msg = f"No AutomationId on element; nearest parent '{nearest_auto_id}'."
+        else:
+            status_msg = "No AutomationId found in hierarchy. Consider adding one."
+        self._status_var.set(status_msg)
+
         data.update(
             {
                 "automation_id": auto_id,
+                "nearest_auto_id": (
+                    nearest_auto_id if nearest_auto_id and nearest_auto_id != auto_id else ""
+                ),
                 "control_type": control_type,
                 "name": name,
                 "framework": framework,
@@ -231,9 +253,13 @@ class AutomationInspector:
                 "rectangle": rectangle,
             }
         )
-        manifest_entry = self._manifest_entries.get(auto_id or "")
+
+        manifest_lookup_id = auto_id or nearest_auto_id or ""
+        manifest_entry = self._manifest_entries.get(manifest_lookup_id)
         if manifest_entry:
             details = f"{manifest_entry.group}.{manifest_entry.name}"
+            if manifest_lookup_id and manifest_lookup_id != auto_id:
+                details += " [nearest parent]"
             if manifest_entry.control_type and manifest_entry.control_type != control_type:
                 details += f" (manifest ctrl: {manifest_entry.control_type})"
             data["manifest"] = details
@@ -241,35 +267,24 @@ class AutomationInspector:
             data["manifest"] = "(not found in manifest)"
         return data
 
-    def _select_preferred_wrapper(self, wrapper: Any) -> Tuple[Any, str]:
-        """Return the nearest wrapper with a meaningful AutomationId."""
+    def _find_nearest_automation_id(self, wrapper: Any) -> Tuple[Any, str]:
+        """Return the closest ancestor that exposes a meaningful AutomationId."""
         current = wrapper
         depth = 0
-        fallback_match: Optional[Tuple[Any, str]] = None
-        while current is not None and depth < 12:
+        while current is not None and depth < 16:
             try:
                 element = current.element_info
             except Exception:
                 break
             auto_id = getattr(element, "automation_id", "") or ""
-            if auto_id:
-                if not _is_generic_automation_id(auto_id):
-                    return current, auto_id
-                if fallback_match is None and auto_id in self._manifest_entries:
-                    fallback_match = (current, auto_id)
+            if auto_id and not _is_generic_automation_id(auto_id):
+                return current, auto_id
             try:
                 current = current.parent()
             except Exception:
                 current = None
             depth += 1
-        if fallback_match is not None:
-            return fallback_match
-        # fall back to original even if auto_id is generic
-        try:
-            auto_id = getattr(wrapper.element_info, "automation_id", "") or ""
-        except Exception:
-            auto_id = ""
-        return wrapper, auto_id
+        return wrapper, ""
 
     def _poll(self) -> None:
         if not self._running:
@@ -299,6 +314,7 @@ class AutomationInspector:
             self._window.deiconify()
             self._window.lift()
             self._window.focus_force()
+            self._center_over_root()
         except Exception:
             pass
 
@@ -308,3 +324,18 @@ class AutomationInspector:
             return bool(self._window.winfo_exists())
         except Exception:
             return False
+
+    def _center_over_root(self) -> None:
+        try:
+            self._window.update_idletasks()
+            root_x = self._root.winfo_rootx()
+            root_y = self._root.winfo_rooty()
+            root_w = self._root.winfo_width() or self._root.winfo_reqwidth()
+            root_h = self._root.winfo_height() or self._root.winfo_reqheight()
+            win_w = self._window.winfo_width() or self._window.winfo_reqwidth()
+            win_h = self._window.winfo_height() or self._window.winfo_reqheight()
+            x = root_x + max(0, (root_w - win_w) // 2)
+            y = root_y + max(0, (root_h - win_h) // 2)
+            self._window.geometry(f"+{int(x)}+{int(y)}")
+        except Exception:
+            pass

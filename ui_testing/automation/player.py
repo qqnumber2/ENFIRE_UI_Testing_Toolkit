@@ -103,6 +103,14 @@ class Player:
         self.config = config
         self.update_automation_manifest(config.automation_manifest or {})
 
+        self._ssim_available = compare_with_ssim is not None
+        if not self._ssim_available and getattr(self.config, "use_ssim", False):
+            logger.warning(
+                "SSIM comparisons requested but scikit-image is not available. "
+                "Disabling SSIM for this session."
+            )
+            self.config.use_ssim = False
+
         self._stop_event = threading.Event()
         self._flake_tracker = None
         if FlakeTracker is not None and getattr(config, "flake_stats_path", None):
@@ -121,6 +129,10 @@ class Player:
 
         # Lazy Explorer automation helper (wired by upcoming feature work)
 
+    @property
+    def ssim_available(self) -> bool:
+        """Return True when SSIM comparisons can run (scikit-image is installed)."""
+        return self._ssim_available
 
     def update_automation_manifest(self, manifest: Optional[Dict[str, Dict[str, str]]]) -> None:
         self.automation_manifest: Dict[str, Dict[str, str]] = manifest or {}
@@ -1072,7 +1084,7 @@ class Player:
             ssim_score: Optional[float] = None
             ssim_threshold_value: Optional[float] = None
             ssim_pass = True
-            use_ssim = bool(getattr(self.config, "use_ssim", False)) and compare_with_ssim is not None
+            use_ssim = bool(getattr(self.config, "use_ssim", False)) and self._ssim_available
             if use_ssim:
                 ssim_threshold = float(getattr(self.config, "ssim_threshold", 0.99))
                 ssim_threshold_value = ssim_threshold
