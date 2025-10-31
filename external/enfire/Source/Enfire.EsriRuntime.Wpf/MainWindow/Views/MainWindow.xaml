@@ -563,7 +563,6 @@
                                         <SolidColorBrush Color="Black" Opacity="0.8" />
                                     </StackPanel.Background>
                                     <Button Grid.Row="0"
-                                        AutomationProperties.AutomationId="{x:Static automation:MapControlIds.RadialMenuButton}"
                                         Foreground="Black"
                                         Background="Black"
                                         Click="RadialMenuDisplayButton_Click"
@@ -583,12 +582,10 @@
                                                 <ColumnDefinition Width="100"/>
                                             </Grid.ColumnDefinitions>
                                             <TextBlock x:Name="DisplayScale"
-                                               AutomationProperties.AutomationId="{x:Static automation:MapControlIds.MapScaleDisplay}"
                                                Text="{Binding MapViewModel.GeoView.MapScale, StringFormat=1:{0:N0}}"
                                                Width="87" TextWrapping="NoWrap" VerticalAlignment="Center"
                                                TextAlignment="Left" Grid.Column="1"/>
                                             <Button x:Name="CustomZoom" 
-                                                AutomationProperties.AutomationId="{x:Static automation:MapControlIds.CustomZoomButton}"
                                                 Width="100" BorderBrush="Transparent" 
                                                 Grid.Column="1"
                                                 Command="{Binding MapViewModel.MapControlViewModel.CustomZoomCommand}">
@@ -596,19 +593,16 @@
                                         </Grid>
                                         <!-- Specific Map Scales Drop Down -->
                                         <ComboBox x:Name="MapScaleDropDown" ItemsSource="{Binding MapViewModel.MapControlViewModel.MapScales}"
-                                              AutomationProperties.AutomationId="{x:Static automation:MapControlIds.MapScaleCombo}"
                                               SelectedItem="{Binding MapViewModel.MapControlViewModel.SpecificMapScale, Mode=TwoWay}"
                                               IsTabStop="False" />
                                     </StackPanel>
                                     <Viewbox StretchDirection="DownOnly" Width="164" HorizontalAlignment="Right">
                                         <TextBlock x:Name="DisplayCoordinate"
-                                               AutomationProperties.AutomationId="{x:Static automation:MapControlIds.CoordinateLabel}"
                                                Text="{Binding MapViewModel.FormattedCurrentCoordinate}"
                                                VerticalAlignment="Center" TextAlignment="Right"
                                                TextWrapping="NoWrap" />
                                     </Viewbox>
                                     <ToggleButton x:Name="GoToPromptToggle" Margin="6,0,6,0" Width="40" Height="40"
-                                              AutomationProperties.AutomationId="{x:Static automation:MapControlIds.GoToToggle}"
                                               KeyboardNavigation.IsTabStop="False"
                                               Style="{DynamicResource WindowToggleButton}"
                                               IsChecked="{Binding GotoPromptOpen, Mode=TwoWay}">
@@ -639,7 +633,6 @@
 
                                     <!-- Set Location button -->
                                     <Button Margin="1,0,6,0"
-                                    AutomationProperties.AutomationId="{x:Static automation:MapControlIds.ManualSetLocation}"
                                     Width="40"
                                     Height="40"
                                     Style="{DynamicResource WindowButton}"
@@ -662,7 +655,6 @@
                                             </ResourceDictionary>
                                         </Grid.Resources>
                                         <mah:DropDownButton BorderBrush="White"
-                                                        AutomationProperties.AutomationId="{x:Static automation:MapControlIds.BasemapToggle}"
                                                         BorderThickness="0"
                                                         HorizontalContentAlignment="Center"
                                                         Height="40"
@@ -720,11 +712,11 @@
                                         </Border.Style>
 
       <xctk:WatermarkTextBox x:Name="coordsEntryBox" Text="{Binding MapViewModel.MapControlViewModel.CoordinateInput}"
-              Style="{DynamicResource LightWatermarkTextBox}" FontSize="16"
-              Width="280" Foreground="Black" HorizontalAlignment="Left"
               AutomationProperties.AutomationId="{x:Static automation:MapControlIds.GoToCoordinateInput}"
-              Watermark="Input coordinates as DD, Mgrs, Utm, Usng, Gars, Geo"
-              TextChanged="CoordsEntryBox_TextChanged">
+              Style="{DynamicResource LightWatermarkTextBox}" FontSize="16"
+                                                Width="280" Foreground="Black" HorizontalAlignment="Left"
+                                                Watermark="Input coordinates as DD, Mgrs, Utm, Usng, Gars, Geo"
+                                                TextChanged="CoordsEntryBox_TextChanged">
                                             <xctk:WatermarkTextBox.InputBindings>
                                                 <KeyBinding Command="{Binding Command, ElementName=GoToButton}" Key="Return"
                                             CommandParameter="{Binding Text, ElementName=coordsEntryBox}" />
@@ -733,7 +725,6 @@
                                     </Border>
 
                                     <Button x:Name="GoToButton" Margin="1,0,0,0" Width="40" Height="40"
-                                    AutomationProperties.AutomationId="{x:Static automation:MapControlIds.GoToExecute}"
                                     Style="{DynamicResource WindowButton}"
                                     Command="{Binding MapViewModel.MapControlViewModel.GoToCommand}"
                                     CommandParameter="{Binding Text, ElementName=coordsEntryBox}">

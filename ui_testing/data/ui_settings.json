@@ -1,11 +1,11 @@
 {
   "theme": "superhero",
   "default_delay": 0.3,
-  "tolerance": 0.4,
+  "tolerance": 0.36,
   "ignore_recorded_delays": true,
-  "use_automation_ids": true,
+  "use_automation_ids": false,
   "use_screenshots": true,
-  "prefer_semantic_scripts": true,
+  "prefer_semantic_scripts": false,
   "use_ssim": true,
   "ssim_threshold": 0.99,
   "automation_backend": "uia",
@@ -14,5 +14,7 @@
   "normalize_script": null,
   "window_geometry": null,
   "window_state": "zoomed",
-  "target_app_regex": "ENFIRE"
+  "target_app_regex": "ENFIRE",
+  "semantic_wait_timeout": 1.0,
+  "semantic_poll_interval": 0.05
 }

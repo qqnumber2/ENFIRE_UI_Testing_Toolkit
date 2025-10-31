@@ -19,6 +19,7 @@ class Action:
     scroll_dy: Optional[int] = None
     keys: Optional[List[str]] = None
     key: Optional[str] = None
+    drag_duration: Optional[float] = None
     path: Optional[List[List[int]]] = None
     items: Optional[List[str]] = None
     explorer: Optional[Dict[str, Any]] = None

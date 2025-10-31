@@ -25,6 +25,8 @@ class SettingsDialog(ttk.Toplevel):
         backend_choices: list[str],
         theme_change_callback,
         app_regex_var: tk.StringVar,
+        semantic_wait_timeout_var: tk.DoubleVar,
+        semantic_poll_interval_var: tk.DoubleVar,
     ) -> None:
         super().__init__(master=master)
         self.title("Settings")
@@ -47,6 +49,8 @@ class SettingsDialog(ttk.Toplevel):
         self._prefer_semantic_var = prefer_semantic_var
         self._theme_change_callback = theme_change_callback
         self._app_regex_var = app_regex_var
+        self._semantic_wait_timeout_var = semantic_wait_timeout_var
+        self._semantic_poll_interval_var = semantic_poll_interval_var
 
         body = ttk.Frame(self, padding=16)
         body.pack(fill=tk.BOTH, expand=True)
@@ -86,6 +90,24 @@ class SettingsDialog(ttk.Toplevel):
             textvariable=self._tolerance_var,
             width=8,
         ).grid(row=1, column=1, sticky="w", padx=(12, 0), pady=(8, 0))
+        ttk.Label(timing_frame, text="Semantic wait timeout (s)").grid(row=2, column=0, sticky="w", pady=(8, 0))
+        ttk.Spinbox(
+            timing_frame,
+            from_=0.0,
+            to=10.0,
+            increment=0.1,
+            textvariable=self._semantic_wait_timeout_var,
+            width=8,
+        ).grid(row=2, column=1, sticky="w", padx=(12, 0), pady=(8, 0))
+        ttk.Label(timing_frame, text="Semantic poll interval (s)").grid(row=3, column=0, sticky="w", pady=(8, 0))
+        ttk.Spinbox(
+            timing_frame,
+            from_=0.01,
+            to=1.0,
+            increment=0.01,
+            textvariable=self._semantic_poll_interval_var,
+            width=8,
+        ).grid(row=3, column=1, sticky="w", padx=(12, 0), pady=(8, 0))
 
         # Toggles
         toggle_frame = ttk.Labelframe(body, text="Playback Options", padding=12)

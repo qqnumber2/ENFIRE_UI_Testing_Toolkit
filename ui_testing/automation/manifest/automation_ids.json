@@ -1,2222 +1,399 @@
 {
-  "$schema": "ui_testing/automation/manifest/schema.json",
-  "generated_from": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds",
-  "groups": {
-    "AppBarIds": {
-      "AppBar": {
-        "description": "Looks up a localized string similar to AppBar.",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "AppBar"
-      },
-      "AppBarAdd": {
-        "description": "Looks up a localized string similar to Add.",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Add"
-      },
-      "AppBarAttributes": {
-        "description": "Looks up a localized string similar to Attributes.",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Attributes"
-      },
-      "AppBarBack": {
-        "description": "Looks up a localized string similar to Back.",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Back"
-      },
-      "AppBarCancel": {
-        "description": "Looks up a localized string similar to Cancel.",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Cancel"
-      },
-      "AppBarClosePopup": {
-        "description": "Looks up a localized string similar to ClosePopup.",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "ClosePopup"
-      },
-      "AppBarCopy": {
-        "description": "Looks up a localized string similar to Copy.",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Copy"
-      },
-      "AppBarCreate": {
-        "description": "Looks up a localized string similar to Create.",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Create"
-      },
-      "AppBarDelete": {
-        "description": "Looks up a localized string similar to Delete.",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Delete"
-      },
-      "AppBarDeleteSpan": {
-        "description": "Looks up a localized string similar to Delete a Span.",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "DeleteSpan"
-      },
-      "AppBarEdit": {
-        "description": "Looks up a localized string similar to Edit.",
-        "line": 61,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Edit"
-      },
-      "AppBarFile": {
-        "description": "Looks up a localized string similar to File.",
-        "line": 66,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "File"
-      },
-      "AppBarHome": {
-        "description": "Looks up a localized string similar to Home.",
-        "line": 71,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Home"
-      },
-      "AppBarImport": {
-        "description": "Looks up a localized string similar to AppBarImport.",
-        "line": 136,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "ImportPortal"
-      },
-      "AppBarMany": {
-        "description": "Looks up a localized string similar to Many.",
-        "line": 76,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Many"
-      },
-      "AppBarMedia": {
-        "description": "Looks up a localized string similar to Media.",
-        "line": 81,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Media"
-      },
-      "AppBarMenu": {
-        "description": "Looks up a localized string similar to Menu.",
-        "line": 86,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Menu"
-      },
-      "AppBarMoveDown": {
-        "description": "Looks up a localized string similar to MoveDown.",
-        "line": 91,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "MoveDown"
-      },
-      "AppBarMoveUp": {
-        "description": "Looks up a localized string similar to MoveUp.",
-        "line": 96,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "MoveUp"
-      },
-      "AppBarNext": {
-        "description": "Looks up a localized string similar to Next.",
-        "line": 101,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Next"
-      },
-      "AppBarOne": {
-        "description": "Looks up a localized string similar to One.",
-        "line": 106,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "One"
-      },
-      "AppBarRecord": {
-        "description": "Looks up a localized string similar to Record.",
-        "line": 111,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Record"
-      },
-      "AppBarReport": {
-        "description": "Looks up a localized string similar to Report.",
-        "line": 116,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Report"
-      },
-      "AppBarRoute": {
-        "description": "Looks up a localized string similar to AppBar Route.",
-        "line": 141,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Route"
-      },
-      "AppBarSave": {
-        "description": "Looks up a localized string similar to Save.",
-        "line": 121,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Save"
-      },
-      "AppBarSend": {
-        "description": "Looks up a localized string similar to Send.",
-        "line": 126,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Send"
-      },
-      "Remarks": {
-        "description": "Looks up a localized string similar to Remarks.",
-        "line": 131,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/AppBarIds.cs",
-        "automation_id": "Remarks"
-      }
-    },
-    "BridgeIds": {
-      "Abutment": {
-        "description": "Looks up a localized string similar to Abutment Size Dropdown.",
-        "line": 9,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Abutment"
-      },
-      "AddSpan": {
-        "description": "Looks up a localized string similar to Add.",
-        "line": 14,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Add"
-      },
-      "Avlb": {
-        "description": "Looks up a localized string similar to AVLB.",
-        "line": 19,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "AVLB"
-      },
-      "BridgeMlcResults": {
-        "description": "Looks up a localized string similar to Remarks.",
-        "line": 268,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MlcResults"
-      },
-      "BridgeRemarks": {
-        "description": "Looks up a localized string similar to Remarks.",
-        "line": 39,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Remarks"
-      },
-      "BridgeType": {
-        "description": "Looks up a localized string similar to BridgeType.",
-        "line": 44,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "BridgeType"
-      },
-      "BridgeTypeOther": {
-        "description": "Looks up a localized string similar to BridgeTypeOther.",
-        "line": 49,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "BridgeTypeOther"
-      },
-      "BypassDifficulty": {
-        "description": "Looks up a localized string similar to BypassDifficulty.",
-        "line": 54,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "BypassDifficulty"
-      },
-      "BypassDistance": {
-        "description": "Looks up a localized string similar to BypassDistance.",
-        "line": 64,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "BypassDistance"
-      },
-      "BypassRemarks": {
-        "description": "Looks up a localized string similar to BypassRemarks.",
-        "line": 59,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "BypassRemarks"
-      },
-      "CopySpan": {
-        "description": "Looks up a localized string similar to Copy.",
-        "line": 69,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Copy"
-      },
-      "DeckType": {
-        "description": "Looks up a localized string similar to Deck Type",
-        "line": 79,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "DeckType"
-      },
-      "DeleteSpan": {
-        "description": "Looks up a localized string similar to Delete.",
-        "line": 84,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Delete"
-      },
-      "ElevationSource": {
-        "description": "Looks up a localized string similar to ElevationSource.",
-        "line": 94,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "ElevationSource"
-      },
-      "Joint": {
-        "description": "Looks up a localized string similar to Joint Dropdown.",
-        "line": 99,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Joint"
-      },
-      "L": {
-        "description": "Looks up a localized string similar to L.",
-        "line": 104,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "L"
-      },
-      "Material": {
-        "description": "Looks up a localized string similar to Material.",
-        "line": 109,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Material"
-      },
-      "MaterialOther": {
-        "description": "Looks up a localized string similar to MaterialOther.",
-        "line": 114,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MaterialOther"
-      },
-      "MlcT1": {
-        "description": "Looks up a localized string similar to MlcT1.",
-        "line": 119,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MlcT1"
-      },
-      "MlcT2": {
-        "description": "Looks up a localized string similar to MlcT2.",
-        "line": 124,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MlcT2"
-      },
-      "MlcW1": {
-        "description": "Looks up a localized string similar to MlcW1.",
-        "line": 129,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MlcW1"
-      },
-      "MlcW2": {
-        "description": "Looks up a localized string similar to MlcW2.",
-        "line": 134,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MlcW2"
-      },
-      "MoveSpanDown": {
-        "description": "Looks up a localized string similar to MoveDown.",
-        "line": 139,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MoveDown"
-      },
-      "MoveSpanUp": {
-        "description": "Looks up a localized string similar to MoveUp.",
-        "line": 144,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "MoveUp"
-      },
-      "NL": {
-        "description": "Looks up a localized string similar to NL.",
-        "line": 154,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "NL"
-      },
-      "NS": {
-        "description": "Looks up a localized string similar to NS.",
-        "line": 159,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "NS"
-      },
-      "Nb": {
-        "description": "Looks up a localized string similar to Nb.",
-        "line": 149,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Nb"
-      },
-      "Orientation": {
-        "description": "Looks up a localized string similar to Orientation.",
-        "line": 164,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Orientation"
-      },
-      "R": {
-        "description": "Looks up a localized string similar to R.",
-        "line": 169,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "R"
-      },
-      "RoadwayWidth": {
-        "description": "Looks up a localized string similar to RoadwayWidth.",
-        "line": 174,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "RoadwayWidth"
-      },
-      "SS": {
-        "description": "Looks up a localized string similar to SS.",
-        "line": 228,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SS"
-      },
-      "Sb": {
-        "description": "Looks up a localized string similar to Sb.",
-        "line": 179,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "Sb"
-      },
-      "SerialNumber": {
-        "description": "Looks up a localized string similar to SerialNumber.",
-        "line": 184,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SerialNumber"
-      },
-      "SpanClearance": {
-        "description": "Looks up a localized string similar to SpanClearance.",
-        "line": 189,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanClearance"
-      },
-      "SpanCritical": {
-        "description": "Looks up a localized string similar to SpanCritical.",
-        "line": 194,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanCritical"
-      },
-      "SpanDamaged": {
-        "description": "Looks up a localized string similar to SpanDamaged.",
-        "line": 199,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanDamaged"
-      },
-      "SpanLength": {
-        "description": "Looks up a localized string similar to SpanLength.",
-        "line": 204,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanLength"
-      },
-      "SpanType": {
-        "description": "Looks up a localized string similar to SpanType.",
-        "line": 209,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanType"
-      },
-      "SpanTypeOther": {
-        "description": "Looks up a localized string similar to SpanTypeOther.",
-        "line": 214,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanTypeOther"
-      },
-      "SpanUnder": {
-        "description": "Looks up a localized string similar to SpanUnder.",
-        "line": 219,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanUnder"
-      },
-      "SpanWet": {
-        "description": "Looks up a localized string similar to SpanWet.",
-        "line": 223,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "SpanWet"
-      },
-      "StringerType": {
-        "description": "Looks up a localized string similar to Stringer Type.",
-        "line": 233,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "StringerType"
-      },
-      "VerticalClearance": {
-        "description": "Looks up a localized string similar to VerticalClearance.",
-        "line": 258,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "VerticalClearance"
-      },
-      "VerticalUnlimited": {
-        "description": "Looks up a localized string similar to VerticalUnlimited.",
-        "line": 263,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "VerticalUnlimited"
-      },
-      "b": {
-        "description": "Looks up a localized string similar to b.",
-        "line": 24,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "b"
-      },
-      "bd": {
-        "description": "Looks up a localized string similar to bd.",
-        "line": 29,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "bd"
-      },
-      "br": {
-        "description": "Looks up a localized string similar to br.",
-        "line": 34,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "br"
-      },
-      "cbArchRingCrack": {
-        "description": "Looks up a localized string similar to Arch Ring Crack Checkbox.",
-        "line": 317,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbArchRingCrack"
-      },
-      "cbDistortion": {
-        "description": "Looks up a localized string similar to Distortion Checkbox.",
-        "line": 282,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbDistortion"
-      },
-      "cbDroppedRingCrack": {
-        "description": "Looks up a localized string similar to Dropped Ring Crack Checkbox.",
-        "line": 322,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbDroppedRingCrack"
-      },
-      "cbInwardAbutment": {
-        "description": "Looks up a localized string similar to Inward Abutment Checkbox.",
-        "line": 327,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbInwardAbutment"
-      },
-      "cbNarrow": {
-        "description": "Looks up a localized string similar to Narrow Bridge checkbox.",
-        "line": 292,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbNarrow"
-      },
-      "cbOutwardAbutment": {
-        "description": "Looks up a localized string similar to Outward Abutment Checkbox.",
-        "line": 332,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbOutwardAbutment"
-      },
-      "cbRise": {
-        "description": "Looks up a localized string similar to the Rise Checkbox.",
-        "line": 277,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbRise"
-      },
-      "cbSagging": {
-        "description": "Looks up a localized string similar to Sagging Checkbox.",
-        "line": 287,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbSagging"
-      },
-      "cbSmallCrack": {
-        "description": "Looks up a localized string similar to Small Crack Checkbox.",
-        "line": 302,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbSmallCrack"
-      },
-      "cbThreeCracks": {
-        "description": "Looks up a localized string similar to Three or more small cracks checkbox.",
-        "line": 307,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbThreeCracks"
-      },
-      "cbVerticalAbutment": {
-        "description": "Looks up a localized string similar to Vertical Abutment Checkbox.",
-        "line": 337,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbVerticalAbutment"
-      },
-      "cbWider": {
-        "description": "Looks up a localized string similar to Wider Bridge Checkbox.",
-        "line": 297,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbWider"
-      },
-      "cbWiderCrack": {
-        "description": "Looks up a localized string similar to Large Crack Checkbox.",
-        "line": 312,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "cbWiderCrack"
-      },
-      "d": {
-        "description": "Looks up a localized string similar to d.",
-        "line": 74,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "d"
-      },
-      "df": {
-        "description": "Looks up a localized string similar to df.",
-        "line": 89,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "df"
-      },
-      "tc": {
-        "description": "Looks up a localized string similar to tc.",
-        "line": 238,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "tc"
-      },
-      "td": {
-        "description": "Looks up a localized string similar to td.",
-        "line": 243,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "td"
-      },
-      "tf": {
-        "description": "Looks up a localized string similar to tf.",
-        "line": 248,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "tf"
-      },
-      "tw": {
-        "description": "Looks up a localized string similar to tw.",
-        "line": 253,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/BridgeIds.cs",
-        "automation_id": "tw"
-      }
-    },
-    "CommonIds": {
-      "AngleUnits": {
-        "description": "Looks up a localized string similar to AngleUnits.",
-        "line": 137,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "AngleUnits"
-      },
-      "DeletePerson": {
-        "description": "Looks up a localized string similar to DeletePerson.",
-        "line": 66,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "DeletePerson"
-      },
-      "DeleteUnit": {
-        "description": "Looks up a localized string similar to DeleteUnit.",
-        "line": 76,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "DeleteUnit"
-      },
-      "DistanceUnits": {
-        "description": "Looks up a localized string similar to DistanceUnits.",
-        "line": 142,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "DistanceUnits"
-      },
-      "EditPerson": {
-        "description": "Looks up a localized string similar to EditPerson.",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "EditPerson"
-      },
-      "EditUnit": {
-        "description": "Looks up a localized string similar to EditUnit.",
-        "line": 71,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "EditUnit"
-      },
-      "ElevationSource": {
-        "description": "Looks up a localized string similar to ElevationSource.",
-        "line": 152,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "ElevationSource"
-      },
-      "GeneralTab": {
-        "description": "Looks up a localized string similar to General.",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "General"
-      },
-      "GetFromLRF": {
-        "description": "Looks up a localized string similar to LRF.",
-        "line": 126,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "LRF"
-      },
-      "GetLocation": {
-        "description": "Looks up a localized string similar to Get Location.",
-        "line": 199,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "GetLocation"
-      },
-      "LocationText": {
-        "description": "Looks up a localized string similar to Location Text.",
-        "line": 194,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "LocationText"
-      },
-      "MapCountry": {
-        "description": "Looks up a localized string similar to Country.",
-        "line": 86,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Country"
-      },
-      "MapEdition": {
-        "description": "Looks up a localized string similar to Edition.",
-        "line": 96,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Edition"
-      },
-      "MapInfoTab": {
-        "description": "Looks up a localized string similar to MapInfo.",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "MapInfo"
-      },
-      "MapName": {
-        "description": "Looks up a localized string similar to MapName.",
-        "line": 106,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "MapName"
-      },
-      "MapScale": {
-        "description": "Looks up a localized string similar to Scale.",
-        "line": 91,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Scale"
-      },
-      "MapSeries": {
-        "description": "Looks up a localized string similar to Series.",
-        "line": 81,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Series"
-      },
-      "MapSheet": {
-        "description": "Looks up a localized string similar to Sheet.",
-        "line": 101,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Sheet"
-      },
-      "MapUnits": {
-        "description": "Looks up a localized string similar to MapUnits.",
-        "line": 132,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "MapUnits"
-      },
-      "NearestTownTab": {
-        "description": "Looks up a localized string similar to NearestTown.",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "NearestTown"
-      },
-      "NewSoldier": {
-        "description": "Looks up a localized string similar to NewSoldier",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "NewSoldier"
-      },
-      "NewUnit": {
-        "description": "Looks up a localized string similar to NewUnit",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "NewUnit"
-      },
-      "PdfReport": {
-        "description": "Looks up a localized string similar to PdfReport.",
-        "line": 177,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "PdfReport"
-      },
-      "ReconName": {
-        "description": "Looks up a localized string similar to Name.",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Name"
-      },
-      "ReportPath": {
-        "description": "Looks up a localized string similar to ReportPath.",
-        "line": 167,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "ReportPath"
-      },
-      "SoldierDropDown": {
-        "description": "Looks up a localized string similar to SoldierDropDown.",
-        "line": 183,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "SoldierDropDown"
-      },
-      "SpeedUnits": {
-        "description": "Looks up a localized string similar to SpeedUnits.",
-        "line": 147,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "SpeedUnits"
-      },
-      "StandardId": {
-        "description": "Looks up a localized string similar to StdId.",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "StdId"
-      },
-      "TimeFormat": {
-        "description": "Looks up a localized string similar to TimeFormat.",
-        "line": 157,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "TimeFormat"
-      },
-      "TimeZone": {
-        "description": "Looks up a localized string similar to TimeZone.",
-        "line": 162,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "TimeZone"
-      },
-      "TownDirection": {
-        "description": "Looks up a localized string similar to Direction.",
-        "line": 116,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Direction"
-      },
-      "TownDistance": {
-        "description": "Looks up a localized string similar to Distance.",
-        "line": 121,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "Distance"
-      },
-      "TownName": {
-        "description": "Looks up a localized string similar to TownName.",
-        "line": 111,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "TownName"
-      },
-      "UnitCancel": {
-        "description": "Looks up a localized string similar to UnitCancel",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "UnitCancel"
-      },
-      "UnitCreate": {
-        "description": "Looks up a localized string similar to UnitCreate",
-        "line": 61,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "UnitCreate"
-      },
-      "UnitDropDown": {
-        "description": "Looks up a localized string similar to UnitDropDown.",
-        "line": 188,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "UnitDropDown"
-      },
-      "UnitName": {
-        "description": "Looks up a localized string similar to UnitName",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "UnitName"
-      },
-      "WordReport": {
-        "description": "Looks up a localized string similar to WordReport.",
-        "line": 172,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/CommonIds.cs",
-        "automation_id": "WordReport"
-      }
-    },
-    "EhsrIds": {
-      "CbrnDescription": {
-        "description": "Looks up a localized string similar to Description.",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Description"
-      },
-      "CbrnEffects": {
-        "description": "Looks up a localized string similar to Effects.",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Effects"
-      },
-      "CbrnNone": {
-        "description": "Looks up a localized string similar to None.",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "None"
-      },
-      "CbrnUnknown": {
-        "description": "Looks up a localized string similar to Unknown.",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Unknown"
-      },
-      "Civilian": {
-        "description": "Looks up a localized string similar to Civilian.",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Civilian"
-      },
-      "Coalition": {
-        "description": "Looks up a localized string similar to Coalition.",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Coalition"
-      },
-      "Description": {
-        "description": "Looks up a localized string similar to Description.",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Description"
-      },
-      "Equipment": {
-        "description": "Looks up a localized string similar to Equipment.",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Equipment"
-      },
-      "Facilities": {
-        "description": "Looks up a localized string similar to Facilities.",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Facilities"
-      },
-      "Method": {
-        "description": "Looks up a localized string similar to Method.",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Method"
-      },
-      "NatGuard": {
-        "description": "Looks up a localized string similar to NatGuard.",
-        "line": 61,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "NatGuard"
-      },
-      "NumberItems": {
-        "description": "Looks up a localized string similar to NumberItems.",
-        "line": 66,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "NumberItems"
-      },
-      "Other": {
-        "description": "Looks up a localized string similar to Other.",
-        "line": 71,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Other"
-      },
-      "OtherAssets": {
-        "description": "Looks up a localized string similar to OtherAssets.",
-        "line": 76,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "OtherAssets"
-      },
-      "Police": {
-        "description": "Looks up a localized string similar to Police.",
-        "line": 81,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Police"
-      },
-      "ProtectionPriority": {
-        "description": "Looks up a localized string similar to Priority.",
-        "line": 86,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Priority"
-      },
-      "ProtectionTaken": {
-        "description": "Looks up a localized string similar to Measures.",
-        "line": 91,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Measures"
-      },
-      "ReportLocation": {
-        "description": "Looks up a localized string similar to Location.",
-        "line": 96,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Location"
-      },
-      "ReportTitle": {
-        "description": "Looks up a localized string similar to Title.",
-        "line": 101,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Title"
-      },
-      "ReportType": {
-        "description": "Looks up a localized string similar to Type.",
-        "line": 106,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "Type"
-      },
-      "ThreatsDescription": {
-        "description": "Looks up a localized string similar to ThreatsDescription.",
-        "line": 111,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "ThreatDescription"
-      },
-      "USCoalition": {
-        "description": "Looks up a localized string similar to USCoalition.",
-        "line": 116,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "USCoalition"
-      },
-      "USForces": {
-        "description": "Looks up a localized string similar to USForces.",
-        "line": 121,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/EhsrIds.cs",
-        "automation_id": "USForces"
-      }
-    },
-    "ExportIds": {
-      "Browse": {
-        "description": "Looks up a localized string similar to Browse.",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "Browse"
-      },
-      "IncludeAttachments": {
-        "description": "Looks up a localized string similar to Include Attachments.",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "IncludeAttachments"
-      },
-      "IncludeReports": {
-        "description": "Looks up a localized string similar to SubRecons checkbox.",
-        "line": 66,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "IncludeReports"
-      },
-      "IncludeSubAttachments": {
-        "description": "Looks up a localized string similar to Location.",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "IncludeSubAttachments"
-      },
-      "IncludeSubReports": {
-        "description": "Looks up a localized string similar to Sub Report checkbox.",
-        "line": 61,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "IncludeSubReports"
-      },
-      "IncludeXMLFiles": {
-        "description": "Looks up a localized string similar to Include Attachments.",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "IncludeXMLFiles"
-      },
-      "Location": {
-        "description": "Looks up a localized string similar to Location.",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "Location"
-      },
-      "Open": {
-        "description": "Looks up a localized string similar to Open.",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "Open"
-      },
-      "PDFOption": {
-        "description": "Looks up a localized string similar to Word.",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "PDF"
-      },
-      "Report": {
-        "description": "Looks up a localized string similar to Report checkbox.",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "Report"
-      },
-      "SelectAll": {
-        "description": "Looks up a localized string similar to Select ALl.",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "SelectAll"
-      },
-      "WordOption": {
-        "description": "Looks up a localized string similar to Word.",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/ExportIds.cs",
-        "automation_id": "Word"
-      }
-    },
-    "FerryIds": {
-      "Beam": {
-        "description": "",
-        "line": 5,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Beam"
-      },
-      "Capacity": {
-        "description": "",
-        "line": 6,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Capacity"
-      },
-      "Class": {
-        "description": "",
-        "line": 7,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Class"
-      },
-      "ConstructionType": {
-        "description": "",
-        "line": 8,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "ConstructionType"
-      },
-      "Crossing": {
-        "description": "",
-        "line": 9,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Crossing"
-      },
-      "CrossingLength": {
-        "description": "",
-        "line": 10,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "CrossingLength"
-      },
-      "CrossingTime": {
-        "description": "",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "CrossingTime"
-      },
-      "DeadWeight": {
-        "description": "",
-        "line": 12,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "DeadWeight"
-      },
-      "Depth": {
-        "description": "",
-        "line": 13,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Depth"
-      },
-      "Draft": {
-        "description": "",
-        "line": 14,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Draft"
-      },
-      "Facilities": {
-        "description": "",
-        "line": 15,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Facilities"
-      },
-      "FerryName": {
-        "description": "",
-        "line": 29,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "FerryName"
-      },
-      "From": {
-        "description": "",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "From"
-      },
-      "GrossTons": {
-        "description": "",
-        "line": 17,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "GrossTons"
-      },
-      "HighDepth": {
-        "description": "",
-        "line": 18,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "HighDepth"
-      },
-      "HighwaySurface": {
-        "description": "",
-        "line": 19,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "HighwaySurface"
-      },
-      "HorsePower": {
-        "description": "",
-        "line": 20,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "HorsePower"
-      },
-      "HwyRoute": {
-        "description": "",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "HwyRoute"
-      },
-      "LeftDifficult": {
-        "description": "",
-        "line": 22,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "LeftDifficult"
-      },
-      "Length": {
-        "description": "",
-        "line": 23,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Length"
-      },
-      "LimitFeature": {
-        "description": "",
-        "line": 24,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "LimitFeature"
-      },
-      "LowDepth": {
-        "description": "",
-        "line": 25,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "LowDepth"
-      },
-      "MLC": {
-        "description": "",
-        "line": 27,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "MLC"
-      },
-      "MeanDepth": {
-        "description": "",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "MeanDepth"
-      },
-      "Name": {
-        "description": "",
-        "line": 28,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Name"
-      },
-      "NetTons": {
-        "description": "",
-        "line": 30,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "NetTons"
-      },
-      "NumberLanes": {
-        "description": "",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "NumberLanes"
-      },
-      "NumberUnits": {
-        "description": "",
-        "line": 32,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "NumberUnits"
-      },
-      "Passengers": {
-        "description": "",
-        "line": 33,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Passengers"
-      },
-      "PedOnly": {
-        "description": "",
-        "line": 34,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "PedOnly"
-      },
-      "PropulsionType": {
-        "description": "",
-        "line": 35,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "PropulsionType"
-      },
-      "RailroadCars": {
-        "description": "",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "RailroadCars"
-      },
-      "RailroadLine": {
-        "description": "",
-        "line": 37,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "RailroadLine"
-      },
-      "RailroadTracks": {
-        "description": "",
-        "line": 38,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "RailroadTracks"
-      },
-      "Remarks": {
-        "description": "",
-        "line": 39,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Remarks"
-      },
-      "RightDifficult": {
-        "description": "",
-        "line": 40,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "RightDifficult"
-      },
-      "SerialNumber": {
-        "description": "",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "SerialNumber"
-      },
-      "Sidings": {
-        "description": "",
-        "line": 42,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Sidings"
-      },
-      "SignatureDate": {
-        "description": "",
-        "line": 43,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "SignatureDate"
-      },
-      "To": {
-        "description": "",
-        "line": 44,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "To"
-      },
-      "TurnTime": {
-        "description": "",
-        "line": 45,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "TurnTime"
-      },
-      "Vehicles": {
-        "description": "",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Vehicles"
-      },
-      "Width": {
-        "description": "",
-        "line": 47,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FerryIds.cs",
-        "automation_id": "Width"
-      }
-    },
-    "FordIds": {
-      "BaseDate": {
-        "description": "",
-        "line": 8,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Date"
-      },
-      "BaseDepth": {
-        "description": "",
-        "line": 9,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Depth"
-      },
-      "BaseSeason": {
-        "description": "",
-        "line": 10,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Season"
-      },
-      "BaseVelocity": {
-        "description": "",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Velocity"
-      },
-      "BaseWidth": {
-        "description": "",
-        "line": 12,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Width"
-      },
-      "Bearing": {
-        "description": "",
-        "line": 13,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Bearing"
-      },
-      "BottomComposition": {
-        "description": "",
-        "line": 14,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "BottomComposition"
-      },
-      "BypassImprovementRemarks": {
-        "description": "",
-        "line": 15,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "BypassRemarks"
-      },
-      "CalculateVelocity": {
-        "description": "",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "CalculateVelocity"
-      },
-      "CompositionOther": {
-        "description": "",
-        "line": 17,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "CompositionOther"
-      },
-      "CrossingName": {
-        "description": "",
-        "line": 18,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "CrossingName"
-      },
-      "FordAdditional": {
-        "description": "",
-        "line": 19,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "FordAdditional"
-      },
-      "FordNumber": {
-        "description": "",
-        "line": 20,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "FordNumber"
-      },
-      "FordRemarks": {
-        "description": "",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "FordRemarks"
-      },
-      "HazardDescription": {
-        "description": "",
-        "line": 22,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HazardDescription"
-      },
-      "HighDate": {
-        "description": "",
-        "line": 38,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HighDate"
-      },
-      "HighDepth": {
-        "description": "",
-        "line": 39,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HighDepth"
-      },
-      "HighGroup": {
-        "description": "",
-        "line": 37,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HighGroup"
-      },
-      "HighSeason": {
-        "description": "",
-        "line": 40,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HighSeason"
-      },
-      "HighVelocity": {
-        "description": "",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HighVelocity"
-      },
-      "HighWidth": {
-        "description": "",
-        "line": 42,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "HighWidth"
-      },
-      "LowDate": {
-        "description": "",
-        "line": 45,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "LowDate"
-      },
-      "LowDepth": {
-        "description": "",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "LowDepth"
-      },
-      "LowGroup": {
-        "description": "",
-        "line": 44,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "LowGroup"
-      },
-      "LowSeason": {
-        "description": "",
-        "line": 47,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "LowSeason"
-      },
-      "LowVelocity": {
-        "description": "",
-        "line": 48,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "LowVelocity"
-      },
-      "LowWidth": {
-        "description": "",
-        "line": 49,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "LowWidth"
-      },
-      "MeanDate": {
-        "description": "",
-        "line": 52,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeanDate"
-      },
-      "MeanDepth": {
-        "description": "",
-        "line": 53,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeanDepth"
-      },
-      "MeanGroup": {
-        "description": "",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeanGroup"
-      },
-      "MeanSeason": {
-        "description": "",
-        "line": 54,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeanSeason"
-      },
-      "MeanVelocity": {
-        "description": "",
-        "line": 55,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeanVelocity"
-      },
-      "MeanWidth": {
-        "description": "",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeanWidth"
-      },
-      "MeasureGroup": {
-        "description": "",
-        "line": 23,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "MeasureGroup"
-      },
-      "PavementOther": {
-        "description": "",
-        "line": 24,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "PavementOther"
-      },
-      "PavementType": {
-        "description": "",
-        "line": 25,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "PavementType"
-      },
-      "Remarks": {
-        "description": "",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Remarks"
-      },
-      "RouteEnd": {
-        "description": "",
-        "line": 27,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "End"
-      },
-      "RouteNumber": {
-        "description": "",
-        "line": 28,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Number"
-      },
-      "RouteStart": {
-        "description": "",
-        "line": 29,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Start"
-      },
-      "TimeOne": {
-        "description": "",
-        "line": 30,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TimeOne"
-      },
-      "TimeThree": {
-        "description": "",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TimeThree"
-      },
-      "TimeTwo": {
-        "description": "",
-        "line": 32,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TimeTwo"
-      },
-      "TodayDate": {
-        "description": "",
-        "line": 59,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TodayDate"
-      },
-      "TodayDepth": {
-        "description": "",
-        "line": 60,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TodayDepth"
-      },
-      "TodayGroup": {
-        "description": "",
-        "line": 58,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TodayGroup"
-      },
-      "TodaySeason": {
-        "description": "",
-        "line": 61,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TodaySeason"
-      },
-      "TodayVelocity": {
-        "description": "",
-        "line": 62,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TodayVelocity"
-      },
-      "TodayWidth": {
-        "description": "",
-        "line": 63,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "TodayWidth"
-      },
-      "UsableWidth": {
-        "description": "",
-        "line": 33,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "UsableWidth"
-      },
-      "VelocityDistance": {
-        "description": "",
-        "line": 34,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "Distance"
-      },
-      "VelocityResult": {
-        "description": "",
-        "line": 35,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/FordIds.cs",
-        "automation_id": "VelocityResult"
-      }
-    },
-    "MapControlIds": {
-      "BasemapToggle": {
-        "description": "",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapBasemapToggle"
-      },
-      "CoordinateLabel": {
-        "description": "",
-        "line": 12,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapCoordinateDisplay"
-      },
-      "CustomZoomButton": {
-        "description": "",
-        "line": 9,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapCustomZoom"
-      },
-      "GoToExecute": {
-        "description": "",
-        "line": 14,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapGoToExecute"
-      },
-      "GoToToggle": {
-        "description": "",
-        "line": 13,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapGoToToggle"
-      },
-      "ManualSetLocation": {
-        "description": "",
-        "line": 15,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapManualSetLocation"
-      },
-      "MapScaleCombo": {
-        "description": "",
-        "line": 10,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapScaleSelector"
-      },
-      "MapScaleDisplay": {
-        "description": "",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapScaleDisplay"
-      },
-      "RadialMenuButton": {
-        "description": "",
-        "line": 8,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MapControlIds.cs",
-        "automation_id": "MapRadialMenu"
-      }
-    },
-    "MinefieldIds": {
-      "AirDelivery": {
-        "description": "Looks up a localized string similar to Air.",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "AirDelivery"
-      },
-      "AntiPersonnelMines": {
-        "description": "Looks up a localized string similar to APMines.",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "AntiPersonnelMines"
-      },
-      "AntiTankMines": {
-        "description": "Looks up a localized string similar to ATMines.",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "AntiTankMines"
-      },
-      "Direction": {
-        "description": "Looks up a localized string similar to Direction.",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "Direction"
-      },
-      "GroundDelivery": {
-        "description": "Looks up a localized string similar to Ground.",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "GroundDelivery"
-      },
-      "Remarks": {
-        "description": "Looks up a localized string similar to Remarks.",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "Remarks"
-      },
-      "SelfDestruct15Days": {
-        "description": "Looks up a localized string similar to 15 Hours.",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "SelfDestruct15Days"
-      },
-      "SelfDestruct48Hours": {
-        "description": "Looks up a localized string similar to 48 Hours.",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "SelfDestruct48Hours"
-      },
-      "SelfDestruct4Hours": {
-        "description": "Looks up a localized string similar to 4 hours.",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "SelfDestruct4Hours"
-      },
-      "Speed": {
-        "description": "Looks up a localized string similar to Speed.",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/MinefieldIds.cs",
-        "automation_id": "Speed"
-      }
-    },
-    "RiverIds": {
-      "Anchorage": {
-        "description": "Looks up a localized string similar to Anchorage.",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Anchorage"
-      },
-      "BankHeight": {
-        "description": "Looks up a localized string similar to BankHeight.",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "BankHeight"
-      },
-      "Composition12": {
-        "description": "Looks up a localized string similar to Composition12.",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Composition12"
-      },
-      "Composition12Other": {
-        "description": "Looks up a localized string similar to Composition12Other.",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Composition12Other"
-      },
-      "Composition14": {
-        "description": "Looks up a localized string similar to Composition14.",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Composition14"
-      },
-      "Composition14Other": {
-        "description": "Looks up a localized string similar to Composition14Other.",
-        "line": 36,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Composition14Other"
-      },
-      "Composition34": {
-        "description": "Looks up a localized string similar to Composition34.",
-        "line": 41,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Composition34"
-      },
-      "Composition34Other": {
-        "description": "Looks up a localized string similar to Composition34Other.",
-        "line": 46,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Composition34Other"
-      },
-      "CrossingName": {
-        "description": "Looks up a localized string similar to CrossingName.",
-        "line": 51,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "CrossingName"
-      },
-      "Depth12": {
-        "description": "Looks up a localized string similar to Depth12.",
-        "line": 56,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Depth12"
-      },
-      "Depth14": {
-        "description": "Looks up a localized string similar to Depth14.",
-        "line": 61,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Depth14"
-      },
-      "Depth34": {
-        "description": "Looks up a localized string similar to Depth34.",
-        "line": 66,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Depth34"
-      },
-      "Direction": {
-        "description": "Looks up a localized string similar to Direction.",
-        "line": 71,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Direction"
-      },
-      "Mines": {
-        "description": "Looks up a localized string similar to Mines.",
-        "line": 76,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Mines"
-      },
-      "Mines2M": {
-        "description": "Looks up a localized string similar to Mines2M.",
-        "line": 81,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Mines2M"
-      },
-      "Number": {
-        "description": "Looks up a localized string similar to Number.",
-        "line": 86,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Number"
-      },
-      "Obstacles": {
-        "description": "Looks up a localized string similar to Obstacles.",
-        "line": 91,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Obstacles"
-      },
-      "Obstacles2M": {
-        "description": "Looks up a localized string similar to Obstacles2M.",
-        "line": 96,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Obstacles2M"
-      },
-      "Remarks": {
-        "description": "Looks up a localized string similar to Remarks.",
-        "line": 101,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Remarks"
-      },
-      "SoilType": {
-        "description": "Looks up a localized string similar to SoilType.",
-        "line": 106,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "SoilType"
-      },
-      "SoilType2M": {
-        "description": "Looks up a localized string similar to SoilType2M.",
-        "line": 111,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "SoilType2M"
-      },
-      "SoilType2MOther": {
-        "description": "Looks up a localized string similar to SoilType2MOther.",
-        "line": 116,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "SoilType2MOther"
-      },
-      "SoilTypeOther": {
-        "description": "Looks up a localized string similar to SoilTypeOther.",
-        "line": 121,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "SoilTypeOther"
-      },
-      "Stability": {
-        "description": "Looks up a localized string similar to Stability.",
-        "line": 126,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Stability"
-      },
-      "StabilityOther": {
-        "description": "Looks up a localized string similar to StabilityOther.",
-        "line": 131,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "StabilityOther"
-      },
-      "Tidal": {
-        "description": "Looks up a localized string similar to Tidal.",
-        "line": 136,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Tidal"
-      },
-      "Velocity": {
-        "description": "Looks up a localized string similar to Velocity.",
-        "line": 141,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Velocity"
-      },
-      "Width": {
-        "description": "Looks up a localized string similar to Width.",
-        "line": 146,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/RiverIds.cs",
-        "automation_id": "Width"
-      }
-    },
-    "SoldierIds": {
-      "Active": {
-        "description": "",
-        "line": 26,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "Active"
-      },
-      "DeleteSoldier": {
-        "description": "",
-        "line": 21,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "DeleteSoldier"
-      },
-      "DeleteUnit": {
-        "description": "",
-        "line": 14,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "DeleteUnit"
-      },
-      "EditSoldier": {
-        "description": "",
-        "line": 20,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "EditSoldier"
-      },
-      "EditUnit": {
-        "description": "",
-        "line": 13,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "EditUnit"
-      },
-      "Email": {
-        "description": "",
-        "line": 28,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "Email"
-      },
-      "NewSoldier": {
-        "description": "",
-        "line": 19,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "NewSoldier"
-      },
-      "NewUnit": {
-        "description": "",
-        "line": 12,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "NewUnit"
-      },
-      "Phone": {
-        "description": "",
-        "line": 29,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "Phone"
-      },
-      "Radio": {
-        "description": "",
-        "line": 30,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "Radio"
-      },
-      "Rank": {
-        "description": "",
-        "line": 27,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "Rank"
-      },
-      "Sign": {
-        "description": "",
-        "line": 31,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "Sign"
-      },
-      "SoldierCancel": {
-        "description": "",
-        "line": 24,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "SoldierCancel"
-      },
-      "SoldierCreate": {
-        "description": "",
-        "line": 23,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "SoldierCreate"
-      },
-      "SoldierDropDown": {
-        "description": "",
-        "line": 8,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "SoldierDropDown"
-      },
-      "SoldierName": {
-        "description": "",
-        "line": 22,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "SoldierName"
-      },
-      "SoldierUnit": {
-        "description": "",
-        "line": 11,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "SoldierUnit"
-      },
-      "UnitCancel": {
-        "description": "",
-        "line": 17,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "UnitCancel"
-      },
-      "UnitCreate": {
-        "description": "",
-        "line": 16,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "UnitCreate"
-      },
-      "UnitDropDown": {
-        "description": "",
-        "line": 9,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "UnitDropDown"
-      },
-      "UnitName": {
-        "description": "",
-        "line": 15,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/SoldierIds.cs",
-        "automation_id": "UnitName"
-      }
-    },
-    "TerrainIds": {
-      "Description": {
-        "description": "Looks up a localized string similar to Description.",
-        "line": 10,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "Description"
-      },
-      "ManMade": {
-        "description": "Looks up a localized string similar to ManMade.",
-        "line": 15,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "ManMade"
-      },
-      "ManMadeOptions": {
-        "description": "Looks up a localized string similar to ManMadeOptions.",
-        "line": 20,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "ManMadeOptions"
-      },
-      "Natural": {
-        "description": "Looks up a localized string similar to Natural.",
-        "line": 25,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "Natural"
-      },
-      "NaturalOptions": {
-        "description": "Looks up a localized string similar to NaturalOptions.",
-        "line": 30,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "NaturalOptions"
-      },
-      "Restrictions": {
-        "description": "Looks up a localized string similar to InTunnelRestrictions.",
-        "line": 35,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "InTunnelRestrictions"
-      },
-      "TerrainName": {
-        "description": "Looks up a localized string similar to TerrainName.",
-        "line": 40,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TerrainIds.cs",
-        "automation_id": "TerrainName"
-      }
-    },
-    "TunnelIds": {
-      "BypassAbility": {
-        "description": "Looks up a localized string similar to Ability.",
-        "line": 23,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "BypassAbility"
-      },
-      "BypassDifficulty": {
-        "description": "Looks up a localized string similar to Difficulty.",
-        "line": 28,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "BypassDifficulty"
-      },
-      "ChamberedForDemo": {
-        "description": "Looks up a localized string similar to Chambered.",
-        "line": 33,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "ChamberedForDemo"
-      },
-      "CompositionCondition": {
-        "description": "Looks up a localized string similar to Condition.",
-        "line": 38,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "CompositionCondition"
-      },
-      "DrainageConditions": {
-        "description": "Looks up a localized string similar to Drainage.",
-        "line": 43,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "DrainageConditions"
-      },
-      "EndPoint": {
-        "description": "Looks up a localized string similar to EndPoint.",
-        "line": 48,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "EndPoint"
-      },
-      "FeatureName": {
-        "description": "Looks up a localized string similar to Feature.",
-        "line": 53,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "FeatureName"
-      },
-      "GeoData": {
-        "description": "Looks up a localized string similar to GeoData.",
-        "line": 58,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "GeoData"
-      },
-      "HeadwallNumber": {
-        "description": "Looks up a localized string similar to Headwall.",
-        "line": 63,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "HeadwallNumber"
-      },
-      "Highway": {
-        "description": "Looks up a localized string similar to Highway.",
-        "line": 68,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "Highway"
-      },
-      "InTunnelAlternateCrossings": {
-        "description": "Looks up a localized string similar to InTunnelAlternates.",
-        "line": 13,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "InTunnelAlternateCrossings"
-      },
-      "InTunnelApproaches": {
-        "description": "Looks up a localized string similar to InTunnelApproaches.",
-        "line": 18,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "InTunnelApproaches"
-      },
-      "LiningMaterial": {
-        "description": "Looks up a localized string similar to Lining.",
-        "line": 73,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "LiningMaterial"
-      },
-      "MaxHorizontalClearance": {
-        "description": "Looks up a localized string similar to MaxHorizontalClearance.",
-        "line": 78,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "MaxHorizontalClearance"
-      },
-      "MaxVerticalClearance": {
-        "description": "Looks up a localized string similar to MaxVerticalClearance.",
-        "line": 83,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "MaxVerticalClearance"
-      },
-      "MinHorizontalClearance": {
-        "description": "Looks up a localized string similar to MinHorizontalClearance.",
-        "line": 88,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "MinHorizontalClearance"
-      },
-      "MinVerticalClearance": {
-        "description": "Looks up a localized string similar to MinVerticalClearance.",
-        "line": 93,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "MinVerticalClearance"
-      },
-      "NumberOfTracks": {
-        "description": "Looks up a localized string similar to NumberOfTracks.",
-        "line": 98,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "NumberOfTracks"
-      },
-      "ObstructionRemarks": {
-        "description": "Looks up a localized string similar to TunnelObstruction Remarks.",
-        "line": 118,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "ObstructionRemarks"
-      },
-      "PortalMaterial": {
-        "description": "Looks up a localized string similar to Portal.",
-        "line": 103,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "PortalMaterial"
-      },
-      "Railroad": {
-        "description": "Looks up a localized string similar to Railroad.",
-        "line": 108,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "Railroad"
-      },
-      "Remarks": {
-        "description": "Looks up a localized string similar to Remarks.",
-        "line": 113,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "Remarks"
-      },
-      "RoadwayWidth": {
-        "description": "Looks up a localized string similar to Width.",
-        "line": 148,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "RoadwayWidth"
-      },
-      "StartPoint": {
-        "description": "Looks up a localized string similar to StartPoint.",
-        "line": 123,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "StartPoint"
-      },
-      "SurfaceType": {
-        "description": "Looks up a localized string similar to SurfaceType.",
-        "line": 128,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "SurfaceType"
-      },
-      "SurfaceTypeOther": {
-        "description": "Looks up a localized string similar to SurfaceTypeOther.",
-        "line": 133,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "SurfaceTypeOther"
-      },
-      "TunnelNumber": {
-        "description": "Looks up a localized string similar to Number.",
-        "line": 138,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "TunnelNumber"
-      },
-      "VentilationType": {
-        "description": "Looks up a localized string similar to Ventilation.",
-        "line": 143,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "VentilationType"
-      },
-      "YearConstructed": {
-        "description": "Looks up a localized string similar to Year.",
-        "line": 153,
-        "source": "external/enfire/Source/Enfire.EsriRuntime.Wpf/Utility/AutomationIds/TunnelIds.cs",
-        "automation_id": "YearConstructed"
-      }
-    }
+  "AppBarIds": {
+    "AppBar": "AppBar",
+    "AppBarAdd": "Add",
+    "AppBarAttributes": "Attributes",
+    "AppBarBack": "Back",
+    "AppBarCancel": "Cancel",
+    "AppBarClosePopup": "ClosePopup",
+    "AppBarCopy": "Copy",
+    "AppBarCreate": "Create",
+    "AppBarDelete": "Delete",
+    "AppBarDeleteSpan": "DeleteSpan",
+    "AppBarEdit": "Edit",
+    "AppBarFile": "File",
+    "AppBarHome": "Home",
+    "AppBarMany": "Many",
+    "AppBarMedia": "Media",
+    "AppBarMenu": "Menu",
+    "AppBarMoveDown": "MoveDown",
+    "AppBarMoveUp": "MoveUp",
+    "AppBarNext": "Next",
+    "AppBarOne": "One",
+    "AppBarRecord": "Record",
+    "AppBarReport": "Report",
+    "AppBarSave": "Save",
+    "AppBarSend": "Send",
+    "Remarks": "Remarks",
+    "AppBarImport": "ImportPortal",
+    "AppBarRoute": "Route"
+  },
+  "BridgeIds": {
+    "Abutment": "Abutment",
+    "AddSpan": "Add",
+    "Avlb": "AVLB",
+    "b": "b",
+    "bd": "bd",
+    "br": "br",
+    "BridgeRemarks": "Remarks",
+    "BridgeType": "BridgeType",
+    "BridgeTypeOther": "BridgeTypeOther",
+    "BypassDifficulty": "BypassDifficulty",
+    "BypassRemarks": "BypassRemarks",
+    "BypassDistance": "BypassDistance",
+    "CopySpan": "Copy",
+    "d": "d",
+    "DeckType": "DeckType",
+    "DeleteSpan": "Delete",
+    "df": "df",
+    "ElevationSource": "ElevationSource",
+    "Joint": "Joint",
+    "L": "L",
+    "Material": "Material",
+    "MaterialOther": "MaterialOther",
+    "MlcT1": "MlcT1",
+    "MlcT2": "MlcT2",
+    "MlcW1": "MlcW1",
+    "MlcW2": "MlcW2",
+    "MoveSpanDown": "MoveDown",
+    "MoveSpanUp": "MoveUp",
+    "Nb": "Nb",
+    "NL": "NL",
+    "NS": "NS",
+    "Orientation": "Orientation",
+    "R": "R",
+    "RoadwayWidth": "RoadwayWidth",
+    "Sb": "Sb",
+    "SerialNumber": "SerialNumber",
+    "SpanClearance": "SpanClearance",
+    "SpanCritical": "SpanCritical",
+    "SpanDamaged": "SpanDamaged",
+    "SpanLength": "SpanLength",
+    "SpanType": "SpanType",
+    "SpanTypeOther": "SpanTypeOther",
+    "SpanUnder": "SpanUnder",
+    "SpanWet": "SpanWet",
+    "SS": "SS",
+    "StringerType": "StringerType",
+    "tc": "tc",
+    "td": "td",
+    "tf": "tf",
+    "tw": "tw",
+    "VerticalClearance": "VerticalClearance",
+    "VerticalUnlimited": "VerticalUnlimited",
+    "BridgeMlcResults": "MlcResults",
+    "cbRise": "cbRise",
+    "cbDistortion": "cbDistortion",
+    "cbSagging": "cbSagging",
+    "cbNarrow": "cbNarrow",
+    "cbWider": "cbWider",
+    "cbSmallCrack": "cbSmallCrack",
+    "cbThreeCracks": "cbThreeCracks",
+    "cbWiderCrack": "cbWiderCrack",
+    "cbArchRingCrack": "cbArchRingCrack",
+    "cbDroppedRingCrack": "cbDroppedRingCrack",
+    "cbInwardAbutment": "cbInwardAbutment",
+    "cbOutwardAbutment": "cbOutwardAbutment",
+    "cbVerticalAbutment": "cbVerticalAbutment"
+  },
+  "CommonIds": {
+    "GeneralTab": "General",
+    "MapInfoTab": "MapInfo",
+    "NearestTownTab": "NearestTown",
+    "ReconName": "Name",
+    "StandardId": "StdId",
+    "EditPerson": "EditPerson",
+    "NewSoldier": "NewSoldier",
+    "NewUnit": "NewUnit",
+    "UnitName": "UnitName",
+    "UnitCancel": "UnitCancel",
+    "UnitCreate": "UnitCreate",
+    "DeletePerson": "DeletePerson",
+    "EditUnit": "EditUnit",
+    "DeleteUnit": "DeleteUnit",
+    "MapSeries": "Series",
+    "MapCountry": "Country",
+    "MapScale": "Scale",
+    "MapEdition": "Edition",
+    "MapSheet": "Sheet",
+    "MapName": "MapName",
+    "TownName": "TownName",
+    "TownDirection": "Direction",
+    "TownDistance": "Distance",
+    "GetFromLRF": "LRF",
+    "MapUnits": "MapUnits",
+    "AngleUnits": "AngleUnits",
+    "AngleUnitsSelector": "AngleUnitsSelector",
+    "DistanceUnits": "DistanceUnits",
+    "SpeedUnits": "SpeedUnits",
+    "ElevationSource": "ElevationSource",
+    "TimeFormat": "TimeFormat",
+    "TimeZone": "TimeZone",
+    "TimeZoneSelector": "TimeZoneSelector",
+    "ReportPath": "ReportPath",
+    "WordReport": "WordReport",
+    "PdfReport": "PdfReport",
+    "SelectReportPath": "SelectReportPath",
+    "SoldierDropDown": "SoldierDropDown",
+    "UnitDropDown": "UnitDropDown",
+    "LocationText": "LocationText",
+    "GetLocation": "GetLocation"
+  },
+  "EhsrIds": {
+    "CbrnDescription": "Description",
+    "CbrnEffects": "Effects",
+    "CbrnNone": "None",
+    "CbrnUnknown": "Unknown",
+    "Civilian": "Civilian",
+    "Coalition": "Coalition",
+    "Description": "Description",
+    "Equipment": "Equipment",
+    "Facilities": "Facilities",
+    "Method": "Method",
+    "NatGuard": "NatGuard",
+    "NumberItems": "NumberItems",
+    "Other": "Other",
+    "OtherAssets": "OtherAssets",
+    "Police": "Police",
+    "ProtectionPriority": "Priority",
+    "ProtectionTaken": "Measures",
+    "ReportLocation": "Location",
+    "ReportTitle": "Title",
+    "ReportType": "Type",
+    "ThreatsDescription": "ThreatDescription",
+    "USCoalition": "USCoalition",
+    "USForces": "USForces"
+  },
+  "ExportIds": {
+    "Browse": "Browse",
+    "Location": "Location",
+    "Open": "Open",
+    "SelectAll": "SelectAll",
+    "IncludeAttachments": "IncludeAttachments",
+    "IncludeXMLFiles": "IncludeXMLFiles",
+    "WordOption": "Word",
+    "PDFOption": "PDF",
+    "IncludeSubAttachments": "IncludeSubAttachments",
+    "Report": "Report",
+    "IncludeSubReports": "IncludeSubReports",
+    "IncludeReports": "IncludeReports"
+  },
+  "FerryIds": {
+    "Beam": "Beam",
+    "Capacity": "Capacity",
+    "Class": "Class",
+    "ConstructionType": "ConstructionType",
+    "Crossing": "Crossing",
+    "CrossingLength": "CrossingLength",
+    "CrossingTime": "CrossingTime",
+    "DeadWeight": "DeadWeight",
+    "Depth": "Depth",
+    "Draft": "Draft",
+    "Facilities": "Facilities",
+    "From": "From",
+    "GrossTons": "GrossTons",
+    "HighDepth": "HighDepth",
+    "HighwaySurface": "HighwaySurface",
+    "HorsePower": "HorsePower",
+    "HwyRoute": "HwyRoute",
+    "LeftDifficult": "LeftDifficult",
+    "Length": "Length",
+    "LimitFeature": "LimitFeature",
+    "LowDepth": "LowDepth",
+    "MeanDepth": "MeanDepth",
+    "MLC": "MLC",
+    "Name": "Name",
+    "FerryName": "FerryName",
+    "NetTons": "NetTons",
+    "NumberLanes": "NumberLanes",
+    "NumberUnits": "NumberUnits",
+    "Passengers": "Passengers",
+    "PedOnly": "PedOnly",
+    "PropulsionType": "PropulsionType",
+    "RailroadCars": "RailroadCars",
+    "RailroadLine": "RailroadLine",
+    "RailroadTracks": "RailroadTracks",
+    "Remarks": "Remarks",
+    "RightDifficult": "RightDifficult",
+    "SerialNumber": "SerialNumber",
+    "Sidings": "Sidings",
+    "SignatureDate": "SignatureDate",
+    "To": "To",
+    "TurnTime": "TurnTime",
+    "Vehicles": "Vehicles",
+    "Width": "Width"
+  },
+  "FordIds": {
+    "BaseDate": "Date",
+    "BaseDepth": "Depth",
+    "BaseSeason": "Season",
+    "BaseVelocity": "Velocity",
+    "BaseWidth": "Width",
+    "Bearing": "Bearing",
+    "BottomComposition": "BottomComposition",
+    "BypassImprovementRemarks": "BypassRemarks",
+    "CalculateVelocity": "CalculateVelocity",
+    "CompositionOther": "CompositionOther",
+    "CrossingName": "CrossingName",
+    "FordAdditional": "FordAdditional",
+    "FordNumber": "FordNumber",
+    "FordRemarks": "FordRemarks",
+    "HazardDescription": "HazardDescription",
+    "MeasureGroup": "MeasureGroup",
+    "PavementOther": "PavementOther",
+    "PavementType": "PavementType",
+    "Remarks": "Remarks",
+    "RouteEnd": "End",
+    "RouteNumber": "Number",
+    "RouteStart": "Start",
+    "TimeOne": "TimeOne",
+    "TimeThree": "TimeThree",
+    "TimeTwo": "TimeTwo",
+    "UsableWidth": "UsableWidth",
+    "VelocityDistance": "Distance",
+    "VelocityResult": "VelocityResult",
+    "HighGroup": "HighGroup",
+    "HighDate": "HighDate",
+    "HighDepth": "HighDepth",
+    "HighSeason": "HighSeason",
+    "HighVelocity": "HighVelocity",
+    "HighWidth": "HighWidth",
+    "LowGroup": "LowGroup",
+    "LowDate": "LowDate",
+    "LowDepth": "LowDepth",
+    "LowSeason": "LowSeason",
+    "LowVelocity": "LowVelocity",
+    "LowWidth": "LowWidth",
+    "MeanGroup": "MeanGroup",
+    "MeanDate": "MeanDate",
+    "MeanDepth": "MeanDepth",
+    "MeanSeason": "MeanSeason",
+    "MeanVelocity": "MeanVelocity",
+    "MeanWidth": "MeanWidth",
+    "TodayGroup": "TodayGroup",
+    "TodayDate": "TodayDate",
+    "TodayDepth": "TodayDepth",
+    "TodaySeason": "TodaySeason",
+    "TodayVelocity": "TodayVelocity",
+    "TodayWidth": "TodayWidth"
+  },
+  "MapControlIds": {
+    "RadialMenuButton": "MapRadialMenu",
+    "CustomZoomButton": "MapCustomZoom",
+    "MapScaleCombo": "MapScaleSelector",
+    "MapScaleDisplay": "MapScaleDisplay",
+    "CoordinateLabel": "MapCoordinateDisplay",
+    "GoToToggle": "MapGoToToggle",
+    "GoToExecute": "MapGoToExecute",
+    "GoToCoordinateInput": "MapGoToCoordinateInput",
+    "ManualSetLocation": "MapManualSetLocation",
+    "BasemapToggle": "MapBasemapToggle",
+    "MapViewHost": "MapViewHost",
+    "ReconPopupMenu": "MapReconPopupMenu"
+  },
+  "MinefieldIds": {
+    "AirDelivery": "AirDelivery",
+    "AntiPersonnelMines": "AntiPersonnelMines",
+    "AntiTankMines": "AntiTankMines",
+    "Direction": "Direction",
+    "GroundDelivery": "GroundDelivery",
+    "Remarks": "Remarks",
+    "SelfDestruct15Days": "SelfDestruct15Days",
+    "SelfDestruct48Hours": "SelfDestruct48Hours",
+    "SelfDestruct4Hours": "SelfDestruct4Hours",
+    "Speed": "Speed"
+  },
+  "RiverIds": {
+    "Anchorage": "Anchorage",
+    "BankHeight": "BankHeight",
+    "Composition12": "Composition12",
+    "Composition12Other": "Composition12Other",
+    "Composition14": "Composition14",
+    "Composition14Other": "Composition14Other",
+    "Composition34": "Composition34",
+    "Composition34Other": "Composition34Other",
+    "CrossingName": "CrossingName",
+    "Depth12": "Depth12",
+    "Depth14": "Depth14",
+    "Depth34": "Depth34",
+    "Direction": "Direction",
+    "Mines": "Mines",
+    "Mines2M": "Mines2M",
+    "Number": "Number",
+    "Obstacles": "Obstacles",
+    "Obstacles2M": "Obstacles2M",
+    "Remarks": "Remarks",
+    "SoilType": "SoilType",
+    "SoilType2M": "SoilType2M",
+    "SoilType2MOther": "SoilType2MOther",
+    "SoilTypeOther": "SoilTypeOther",
+    "Stability": "Stability",
+    "StabilityOther": "StabilityOther",
+    "Tidal": "Tidal",
+    "Velocity": "Velocity",
+    "Width": "Width"
+  },
+  "SoldierIds": {
+    "SoldierDropDown": "SoldierDropDown",
+    "UnitDropDown": "UnitDropDown",
+    "SoldierUnit": "SoldierUnit",
+    "NewUnit": "NewUnit",
+    "EditUnit": "EditUnit",
+    "DeleteUnit": "DeleteUnit",
+    "UnitName": "UnitName",
+    "UnitCreate": "UnitCreate",
+    "UnitCancel": "UnitCancel",
+    "NewSoldier": "NewSoldier",
+    "EditSoldier": "EditSoldier",
+    "DeleteSoldier": "DeleteSoldier",
+    "SoldierName": "SoldierName",
+    "SoldierCreate": "SoldierCreate",
+    "SoldierCancel": "SoldierCancel",
+    "Active": "Active",
+    "Rank": "Rank",
+    "Email": "Email",
+    "Phone": "Phone",
+    "Radio": "Radio",
+    "Sign": "Sign"
+  },
+  "TerrainIds": {
+    "Description": "Description",
+    "ManMade": "ManMade",
+    "ManMadeOptions": "ManMadeOptions",
+    "Natural": "Natural",
+    "NaturalOptions": "NaturalOptions",
+    "Restrictions": "InTunnelRestrictions",
+    "TerrainName": "TerrainName"
+  },
+  "TunnelIds": {
+    "InTunnelAlternateCrossings": "InTunnelAlternateCrossings",
+    "InTunnelApproaches": "InTunnelApproaches",
+    "BypassAbility": "BypassAbility",
+    "BypassDifficulty": "BypassDifficulty",
+    "ChamberedForDemo": "ChamberedForDemo",
+    "CompositionCondition": "CompositionCondition",
+    "DrainageConditions": "DrainageConditions",
+    "EndPoint": "EndPoint",
+    "FeatureName": "FeatureName",
+    "GeoData": "GeoData",
+    "HeadwallNumber": "HeadwallNumber",
+    "Highway": "Highway",
+    "LiningMaterial": "LiningMaterial",
+    "MaxHorizontalClearance": "MaxHorizontalClearance",
+    "MaxVerticalClearance": "MaxVerticalClearance",
+    "MinHorizontalClearance": "MinHorizontalClearance",
+    "MinVerticalClearance": "MinVerticalClearance",
+    "NumberOfTracks": "NumberOfTracks",
+    "PortalMaterial": "PortalMaterial",
+    "Railroad": "Railroad",
+    "Remarks": "Remarks",
+    "ObstructionRemarks": "ObstructionRemarks",
+    "StartPoint": "StartPoint",
+    "SurfaceType": "SurfaceType",
+    "SurfaceTypeOther": "SurfaceTypeOther",
+    "TunnelNumber": "TunnelNumber",
+    "VentilationType": "VentilationType",
+    "RoadwayWidth": "RoadwayWidth",
+    "YearConstructed": "YearConstructed"
   }
 }

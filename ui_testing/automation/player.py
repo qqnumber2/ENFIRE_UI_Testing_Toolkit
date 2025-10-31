@@ -4,7 +4,8 @@ import time
 import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional, Set, Sequence
+import re
 from datetime import datetime
 import pyautogui
 import numpy as np
@@ -111,6 +112,8 @@ class PlayerConfig:
     enable_allure: bool = True
     flake_stats_path: Optional[Path] = None
     state_snapshot_dir: Optional[Path] = None
+    semantic_wait_timeout: float = 1.0
+    semantic_poll_interval: float = 0.05
 
 
 class Player:
@@ -132,6 +135,7 @@ class Player:
             self._flake_tracker = FlakeTracker(Path(config.flake_stats_path))
         self._semantic_context: Optional[SemanticContext] = None
         self._semantic_disabled = False
+        self._semantic_mode_active: bool = False
         self._click_mode_counts: Dict[str, int] = {"semantic": 0, "uia": 0, "coordinate": 0}
         self._click_mode_history: List[str] = []
         self._drag_mode_count: int = 0
@@ -142,6 +146,10 @@ class Player:
         self._current_script: Optional[str] = None
         self._uia_warning_logged = False
         self._window_log_once = False
+        self._held_buttons: Set[str] = set()
+        self._last_mouse_down_pos: Optional[Tuple[int, int]] = None
+        self._semantic_wait_timeout = max(0.0, float(getattr(config, "semantic_wait_timeout", 1.0)))
+        self._semantic_poll_interval = max(0.01, float(getattr(config, "semantic_poll_interval", 0.05)))
 
         # Lazy Explorer automation helper (wired by upcoming feature work)
 
@@ -207,14 +215,27 @@ class Player:
         try:
             if WindowSpec is not None:
                 spec = WindowSpec(
-                    title_regex=getattr(self.config, "app_title_regex", None)
-                    or getattr(DEFAULT_WINDOW_SPEC, "title_regex", None),
+                    title_regex=self._normalized_title_regex(),
                     class_name=getattr(DEFAULT_WINDOW_SPEC, "class_name", None),
                 )
                 kwargs["window_spec"] = spec
         except Exception:
             pass
         return kwargs
+
+    def _normalized_title_regex(self) -> Optional[str]:
+        raw = getattr(self.config, "app_title_regex", None)
+        if raw is None or str(raw).strip() == "":
+            default = getattr(DEFAULT_WINDOW_SPEC, "title_regex", None)
+            return default
+        value = str(raw).strip()
+        if not value:
+            return getattr(DEFAULT_WINDOW_SPEC, "title_regex", None)
+        # If it already looks like a regex (contains meta characters), trust it;
+        # otherwise escape and wrap so partial titles still match.
+        if re.search(r"[.^$*+\[\]|()?]", value):
+            return value
+        return f".*{re.escape(value)}.*"
 
     def _semantic_session(self) -> Optional[AutomationSession]:
         if not getattr(self.config, "prefer_semantic_scripts", True):
@@ -243,7 +264,7 @@ class Player:
                 "(Run as administrator if ENFIRE was launched elevated).",
                 exc,
             )
-        self._semantic_disabled = True
+            self._log_available_windows(self._normalized_title_regex() or "<unset>")
         self._semantic_context = None
         self._semantic_registry_cache = None
         return None
@@ -265,7 +286,6 @@ class Player:
             registry = ctx.registry
         except Exception as exc:
             logger.debug("Semantic registry unavailable: %s", exc)
-            self._semantic_disabled = True
             self._semantic_context = None
             self._semantic_registry_cache = None
             return None
@@ -273,6 +293,8 @@ class Player:
         return registry
 
     def _run_semantic_template(self, semantic_meta: Dict[str, Any], expected: Any) -> None:
+        if not self._semantic_mode_active:
+            return
         group = semantic_meta.get("group")
         name = semantic_meta.get("name")
         if not group or not name:
@@ -366,12 +388,12 @@ class Player:
     def _ensure_app_window(self) -> None:
         if Desktop is None:
             return
-        regex = getattr(self.config, "app_title_regex", None)
+        regex = self._normalized_title_regex()
         if not regex:
             return
         for _ in range(6):
             try:
-                Desktop(backend="uia").window(title_re=regex)
+                Desktop(backend="uia").window(title_re=regex).wait("exists ready", timeout=0.5)
                 return
             except Exception:
                 time.sleep(0.5)
@@ -434,10 +456,17 @@ class Player:
         self._drag_mode_count = 0
         self._drag_mode_history = []
         self._current_script = script_name
+        self._held_buttons.clear()
+        semantic_mode = (
+            bool(getattr(self.config, "use_automation_ids", True))
+            and bool(getattr(self.config, "prefer_semantic_scripts", True))
+            and Desktop is not None
+        )
+        self._semantic_mode_active = semantic_mode
         try:
             assert_count = 0
             screenshot_count = 0
-        
+
             shot_idx = 0
         
             base_code = dotted_code_from_test_name(Path(script_name).name)
@@ -487,78 +516,76 @@ class Player:
                         continue
 
                     use_uia = (
-                        auto_id
+                        semantic_mode
+                        and auto_id
                         and not _is_generic_automation_id(auto_id)
-                        and getattr(self.config, "use_automation_ids", True)
-                        and Desktop is not None
                     )
                     if use_uia and self._automation_lookup and str(auto_id) not in self._automation_lookup:
                         logger.debug("AutomationId %s not found in manifest; falling back to coordinates.", auto_id)
                         use_uia = False
 
-                    click_handled = False
+                    property_filter: Optional[Tuple[str, Any]] = None
+                    if semantic_mode:
+                        prop_name = (
+                            action.get("property")
+                            or action.get("property_name")
+                            or action.get("propertyName")
+                        )
+                        prop_expected = action.get("expected")
+                        if prop_name and prop_expected not in (None, ""):
+                            property_filter = (str(prop_name), prop_expected)
+
                     if use_uia:
+                        target = None
+                        mode = None
                         session = self._semantic_session()
                         if session is not None:
                             try:
-                                target = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
-                                logger.info(
-                                    f"Playback(Semantic): click auto_id='{auto_id}'"
-                                    f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
-                                )
-                                target.click_input()
-                                self._note_click_mode("semantic", auto_id, ctrl_type, (x, y))
-                                time.sleep(0.005)
-                                i += 1
-                                click_handled = True
-                                continue
+                                candidate = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+                                if candidate is not None and self._match_property(candidate, property_filter):
+                                    target = candidate
+                                    mode = "semantic"
+                                else:
+                                    logger.debug(
+                                        "Semantic session candidate for auto_id='%s' did not match property filter.",
+                                        auto_id,
+                                    )
                             except Exception as exc:
                                 logger.debug("Semantic session click failed: %s", exc)
-                        if not click_handled:
+                        if target is None:
+                            target = self._resolve_element_by_auto_id(
+                                str(auto_id),
+                                ctrl_type,
+                                property_filter,
+                                skip_semantic=True,
+                            )
+                            if target is not None:
+                                mode = "uia"
+                        if target is not None:
                             try:
-                                desk = Desktop(backend="uia")
-                                target = None
-                                if self.config.app_title_regex:
-                                    try:
-                                        appwin = desk.window(title_re=self.config.app_title_regex)
-                                        query: Dict[str, Any] = {"auto_id": auto_id}
-                                        if ctrl_type:
-                                            query["control_type"] = ctrl_type
-                                        target = appwin.child_window(**query).wrapper_object()
-                                    except Exception:
-                                        target = None
-                                if target is None:
-                                    query2: Dict[str, Any] = {"auto_id": auto_id}
-                                    if ctrl_type:
-                                        query2["control_type"] = ctrl_type
-                                    try:
-                                        target = desk.window(**query2).wrapper_object()
-                                    except Exception:
-                                        target = None
-                                    if target is None:
-                                        try:
-                                            target = desk.child_window(**query2).wrapper_object()
-                                        except Exception:
-                                            target = None
-                                if target is None:
-                                    if ElementNotFoundError is not None:
-                                        raise ElementNotFoundError(query2)
-                                    raise RuntimeError(f"Element '{auto_id}' not found via UIA")
-                                logger.info(
-                                    f"Playback(UIA): click auto_id='{auto_id}'"
-                                    f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
-                                )
                                 target.click_input()
-                                self._note_click_mode("uia", auto_id, ctrl_type, (x, y))
+                                if mode == "semantic":
+                                    logger.info(
+                                        f"Playback(Semantic): click auto_id='{auto_id}'"
+                                        f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
+                                    )
+                                    self._note_click_mode("semantic", auto_id, ctrl_type, (x, y))
+                                else:
+                                    logger.info(
+                                        f"Playback(UIA): click auto_id='{auto_id}'"
+                                        f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
+                                    )
+                                    self._note_click_mode("uia", auto_id, ctrl_type, (x, y))
+                                if self._semantic_mode_active and property_filter:
+                                    self._wait_for_property(str(auto_id), ctrl_type, property_filter)
                                 time.sleep(0.005)
                                 i += 1
-                                click_handled = True
                                 continue
                             except Exception as e:
                                 logger.warning(
                                     f"UIA click failed for auto_id='{auto_id}' (fallback to coords): {e}"
                                 )
-                                self._log_available_windows(getattr(self.config, "app_title_regex", "") or "<unspecified>")
+                                self._log_available_windows(self._normalized_title_regex() or "<unspecified>")
                                 self._log_uia_hint(e)
 
                     fallback_note = "" if auto_id else " [coordinate fallback]"
@@ -573,12 +600,14 @@ class Player:
                     y = int(action.get("y", 0))
         
                     button = str(action.get("button") or "left").lower()
-        
+
                     logger.debug(f"Playback: mouse_down({button}) at ({x}, {y})")
-        
+
                     try:
                         pyautogui.mouseDown(x=x, y=y, button=button, _pause=False)
-        
+                        self._held_buttons.add(button)
+                        self._last_mouse_down_pos = (x, y)
+
                     except Exception as exc:
                         logger.warning(f"mouse_down failed at ({x}, {y}): {exc}")
         
@@ -587,61 +616,62 @@ class Player:
         
                     try:
                         duration_val = action.get("move_duration")
-        
                         move_duration = max(0.0, float(duration_val)) if duration_val is not None else 0.0
-        
                     except Exception:
                         move_duration = 0.0
-        
+
                     if button:
-                        final_x = int(action.get("x", 0))
-        
-                        final_y = int(action.get("y", 0))
-        
-                        j = i + 1
-        
+                        coords: List[Tuple[int, int]] = []
+                        j = i
+                        raw_duration = 0.0
                         while j < total_actions:
                             next_action = actions[j]
-        
                             if next_action.get("action_type") != "mouse_move" or next_action.get("button") != button:
                                 break
-        
-                            final_x = int(next_action.get("x", final_x))
-        
-                            final_y = int(next_action.get("y", final_y))
-        
+                            coords.append((int(next_action.get("x", 0)), int(next_action.get("y", 0))))
+                            try:
+                                delay_component = next_action.get("delay", 0.0) or 0.0
+                                raw_duration += max(float(delay_component), 0.0)
+                            except Exception:
+                                pass
                             j += 1
-        
-                        duration = move_duration if move_duration > 0 else 0.02
-        
-                        duration = min(duration, 0.08)
-        
-                        logger.debug(f"Playback: drag -> ({final_x}, {final_y}) [{button}]")
-        
-                        try:
-                            pyautogui.moveTo(final_x, final_y, duration=duration, _pause=False)
-        
-                        except Exception as exc:
-                            logger.warning(f"drag move failed to ({final_x}, {final_y}): {exc}")
-        
-                        i = j
-        
-                        continue
-        
+
+                        coords = [pt for pt in coords if self._in_primary_monitor(pt[0], pt[1])]
+
+                        if len(coords) > 1:
+                            start_pos = self._last_mouse_down_pos
+                            if (
+                                start_pos is not None
+                                and self._in_primary_monitor(start_pos[0], start_pos[1])
+                                and coords[0] != start_pos
+                            ):
+                                coords.insert(0, start_pos)
+                            total_duration = raw_duration if raw_duration > 0 else None
+                            self._play_drag_path(coords, button, total_duration)
+                            self._note_drag_mode(button, len(coords))
+                            i = j
+                            continue
+                        else:
+                            # Fallback to a simple move if no usable path
+                            if coords:
+                                try:
+                                    pyautogui.moveTo(coords[-1][0], coords[-1][1], duration=move_duration, _pause=False)
+                                except Exception as exc:
+                                    logger.warning(f"mouse_move failed to ({coords[-1][0]}, {coords[-1][1]}): {exc}")
+                            i = j
+                            continue
+
                     x = int(action.get("x", 0))
-        
                     y = int(action.get("y", 0))
-        
+
                     try:
                         if move_duration > 0:
                             pyautogui.moveTo(x, y, duration=move_duration, _pause=False)
-        
                         else:
                             pyautogui.moveTo(x, y, _pause=False)
-        
                     except Exception as exc:
                         logger.warning(f"mouse_move failed to ({x}, {y}): {exc}")
-        
+
                 elif a_type == "mouse_up":
                     x = int(action.get("x", 0))
         
@@ -650,12 +680,15 @@ class Player:
                     button = str(action.get("button") or "left").lower()
         
                     logger.debug(f"Playback: mouse_up({button}) at ({x}, {y})")
-        
+
                     try:
                         pyautogui.mouseUp(x=x, y=y, button=button, _pause=False)
-        
+                        self._held_buttons.discard(button)
+
                     except Exception as exc:
                         logger.warning(f"mouse_up failed at ({x}, {y}): {exc}")
+                    finally:
+                        self._last_mouse_down_pos = None
         
                 elif a_type == "drag":
                     raw_path = action.get("path") or []
@@ -678,12 +711,19 @@ class Player:
                     if len(coords) > 1:
                         logger.debug(f"Playback: drag path ({len(coords)} points) [{button}]")
 
-                        self._play_drag_path(coords, button)
+                        drag_duration = action.get("drag_duration")
+                        try:
+                            drag_duration_val: Optional[float] = (
+                                float(drag_duration) if drag_duration is not None else None
+                            )
+                        except Exception:
+                            drag_duration_val = None
+                        self._play_drag_path(coords, button, drag_duration_val)
                         self._note_drag_mode(button, len(coords))
 
                     else:
                         logger.debug("Playback: drag skipped (insufficient path points)")
-        
+
                 elif a_type == "key":
                     key_name = action.get("key")
         
@@ -716,12 +756,7 @@ class Player:
                     label = ' + '.join(str_keys)
         
                     logger.info(f"Playback: hotkey {label}")
-        
-                    try:
-                        pyautogui.hotkey(*str_keys)
-        
-                    except Exception as exc:
-                        logger.warning(f"hotkey failed ({label}): {exc}")
+                    self._play_hotkey(str_keys)
         
                 elif a_type == "scroll":
                     x = action.get("x")
@@ -952,7 +987,10 @@ class Player:
 
             self._run_state_snapshot_checks()
         finally:
+            self._semantic_mode_active = False
             self._current_script = None
+            self._held_buttons.clear()
+            self._last_mouse_down_pos = None
         # Write Excel after this test
 
         self._write_excel_results(script_name, results)
@@ -961,6 +999,8 @@ class Player:
         return results
 
     def _handle_assert_property(self, action: Dict[str, Any], results: List[Dict[str, Any]]) -> None:
+        if not self._semantic_mode_active:
+            return
         if not getattr(self.config, "prefer_semantic_scripts", True):
             return
         if not getattr(self.config, "use_automation_ids", True):
@@ -986,27 +1026,43 @@ class Player:
         comparator = str(action.get("compare") or action.get("comparison") or "equals").strip().lower()
         expected = action.get("expected")
         element = None
-        session = self._semantic_session()
+        property_filter: Optional[Tuple[str, Any]] = None
+        if prop_name and expected not in (None, ""):
+            property_filter = (str(prop_name), expected)
+        session = self._semantic_session() if self._semantic_mode_active else None
         if session is not None:
             try:
-                element = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+                candidate = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+                if candidate is not None and self._match_property(candidate, property_filter):
+                    element = candidate
+                else:
+                    logger.debug(
+                        "Semantic resolve candidate for %s did not satisfy property filter.",
+                        auto_id,
+                    )
             except Exception as exc:
                 logger.debug("Semantic resolve failed for %s: %s", auto_id, exc)
         if element is None and Desktop is not None:
-            element = self._resolve_element_by_auto_id(str(auto_id), ctrl_type)
+            element = self._resolve_element_by_auto_id(
+                str(auto_id),
+                ctrl_type,
+                property_filter,
+                skip_semantic=True,
+            )
         if element is None:
             logger.warning("assert.property failed: element auto_id='%s' not found", auto_id)
             self._record_assert_result(results, str(auto_id), prop_name, expected, None, False, "not found", semantic_meta if semantic_meta else None)
             return
         actual = self._read_element_property(element, prop_name)
         passed, note = self._compare_property(actual, expected, comparator)
-        try:
-            self._run_semantic_template(semantic_meta, expected)
-        except AssertionError as exc:
-            passed = False
-            note = str(exc)
-        except Exception as exc:
-            logger.debug("Semantic template ignored: %s", exc)
+        if semantic_meta:
+            try:
+                self._run_semantic_template(semantic_meta, expected)
+            except AssertionError as exc:
+                passed = False
+                note = str(exc)
+            except Exception as exc:
+                logger.debug("Semantic template ignored: %s", exc)
         extra = ""
         group = semantic_meta.get("group")
         name = semantic_meta.get("name")
@@ -1380,23 +1436,142 @@ class Player:
 
         if action_type in drag_actions:
             delay *= 0.1
+        if action_type == "mouse_up" and delay < 0.05:
+            delay = 0.05
 
         return delay
 
-    def _play_drag_path(self, coords: List[Tuple[int, int]], button: str) -> None:
+    def _play_drag_path(
+        self,
+        coords: List[Tuple[int, int]],
+        button: str,
+        total_duration: Optional[float] = None,
+    ) -> None:
         if len(coords) < 2:
             return
 
         sampled = self._downsample_points(coords)
+        if len(sampled) < 2:
+            return
+
+        start_x, start_y = sampled[0]
+        try:
+            pyautogui.moveTo(start_x, start_y, duration=0, _pause=False)
+        except Exception as exc:
+            logger.debug("Initial drag move failed to (%s, %s): %s", start_x, start_y, exc)
+
+        if button and button not in self._held_buttons:
+            try:
+                pyautogui.mouseDown(button=button, _pause=False)
+                self._held_buttons.add(button)
+                logger.debug("Supplemental mouse_down for drag using button '%s'", button)
+            except Exception as exc:
+                logger.debug("Supplemental mouse_down failed for drag: %s", exc)
+
+        duration_value = 0.0
+        if total_duration is not None:
+            try:
+                duration_value = max(float(total_duration), 0.0)
+            except Exception:
+                duration_value = 0.0
+
+        steps = max(1, len(sampled) - 1)
+        per_step = duration_value / steps if duration_value > 0 else 0.0
+        if 0 < per_step < 0.005:
+            per_step = 0.005
 
         for px, py in sampled[1:]:
             try:
-                pyautogui.moveTo(px, py, duration=0)
-
+                if per_step > 0:
+                    pyautogui.moveTo(px, py, duration=per_step, _pause=False)
+                else:
+                    pyautogui.moveTo(px, py, duration=0, _pause=False)
             except Exception as exc:
                 logger.warning(f"drag move failed to ({px}, {py}): {exc}")
-
                 break
+
+        # Give the UI a moment to register the selection before the next action (e.g., Ctrl+C)
+        settle = per_step if per_step > 0 else 0.02
+        time.sleep(min(0.05, max(settle, 0.02)))
+
+    def _play_hotkey(self, keys: Sequence[str]) -> None:
+        normalized = [self._normalize_hotkey_part(k) for k in keys if k]
+        if not normalized:
+            return
+        primary = normalized[-1]
+        modifiers = normalized[:-1]
+        pressed_mods: List[str] = []
+        try:
+            for mod in modifiers:
+                if not mod:
+                    continue
+                try:
+                    pyautogui.keyDown(mod, _pause=False)
+                    pressed_mods.append(mod)
+                except Exception as exc:  # pragma: no cover - UI timing dependent
+                    logger.warning("hotkey failed (keyDown %s): %s", mod, exc)
+                time.sleep(0.02)
+            if primary:
+                try:
+                    pyautogui.press(primary, _pause=False)
+                except Exception as exc:
+                    logger.warning("hotkey failed (press %s): %s", primary, exc)
+            time.sleep(0.02)
+        finally:
+            for mod in reversed(pressed_mods):
+                try:
+                    pyautogui.keyUp(mod, _pause=False)
+                except Exception as exc:
+                    logger.debug("hotkey cleanup failed (keyUp %s): %s", mod, exc)
+                time.sleep(0.01)
+
+    def _wait_for_property(
+        self,
+        auto_id: str,
+        ctrl_type: Optional[str],
+        property_filter: Optional[Tuple[str, Any]],
+    ) -> None:
+        if not self._semantic_mode_active:
+            return
+        if not property_filter:
+            return
+        prop_name, expected = property_filter
+        if not prop_name:
+            return
+        timeout = self._semantic_wait_timeout
+        if timeout <= 0:
+            return
+        interval = min(self._semantic_poll_interval, timeout)
+        if interval <= 0:
+            interval = 0.01
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            element = self._resolve_element_by_auto_id(
+                auto_id,
+                ctrl_type,
+                property_filter,
+                skip_semantic=True,
+            )
+            if element is not None and self._match_property(element, property_filter):
+                return
+            time.sleep(interval)
+        logger.debug(
+            "Semantic wait timed out for auto_id='%s' property='%s' expected='%s'",
+            auto_id,
+            prop_name,
+            expected,
+        )
+
+    @staticmethod
+    def _normalize_hotkey_part(key: str) -> str:
+        value = str(key).strip().lower()
+        if value in {"control", "ctl"}:
+            return "ctrl"
+        if value in {"windows", "command", "cmd"}:
+            return "win"
+        if value == "option":
+            return "alt"
+        return value
 
     def _downsample_points(self, coords: List[Tuple[int, int]], max_points: int = 120) -> List[Tuple[int, int]]:
         if len(coords) <= max_points:
@@ -1676,37 +1851,94 @@ class Player:
 
         return Action(**filtered)
 
-    def _resolve_element_by_auto_id(self, auto_id: str, ctrl_type: Optional[str] = None):
-        session = self._semantic_session()
-        if session is not None:
-            try:
-                return session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
-            except Exception as exc:
-                logger.debug("Semantic resolve failed: %s", exc)
+    def _resolve_element_by_auto_id(
+        self,
+        auto_id: str,
+        ctrl_type: Optional[str] = None,
+        property_filter: Optional[Tuple[str, Any]] = None,
+        skip_semantic: bool = False,
+    ) -> Optional[Any]:
+        candidates: List[Any] = []
+        if not skip_semantic:
+            session = self._semantic_session()
+            if session is not None:
+                try:
+                    element = session.resolve_control(automation_id=str(auto_id), control_type=ctrl_type)
+                    if element is not None:
+                        candidates.append(element)
+                        if self._match_property(element, property_filter):
+                            return element
+                except Exception as exc:
+                    logger.debug("Semantic resolve failed: %s", exc)
+        regex = self._normalized_title_regex()
         if Desktop is None:
-            return None
+            return self._first_matching_candidate(candidates, property_filter)
         self._ensure_app_window()
         try:
             desk = Desktop(backend="uia")
-        except Exception:
-            return None
+        except Exception as exc:
+            logger.debug("Desktop backend unavailable for UIA lookup: %s", exc)
+            return self._first_matching_candidate(candidates, property_filter)
         query: Dict[str, Any] = {"auto_id": auto_id}
         if ctrl_type:
             query["control_type"] = ctrl_type
-        try:
-            if self.config.app_title_regex:
+        window_candidates: List[Any] = []
+        if regex:
+            try:
+                appwin = desk.window(title_re=regex)
                 try:
-                    appwin = desk.window(title_re=self.config.app_title_regex)
-                    return appwin.child_window(**query).wrapper_object()
+                    window_candidates = appwin.descendants(**query)
+                except Exception:
+                    window_candidates = []
+                try:
+                    first = appwin.child_window(**query).wrapper_object()
+                    if first not in window_candidates:
+                        window_candidates.append(first)
                 except Exception:
                     pass
-            return desk.window(**query).wrapper_object()
-        except Exception as exc:
+            except Exception as exc:
+                self._log_uia_hint(exc)
+        for candidate in window_candidates:
+            candidates.append(candidate)
+            if self._match_property(candidate, property_filter):
+                return candidate
+        try:
+            fallback = desk.window(**query).wrapper_object()
+            candidates.append(fallback)
+            if self._match_property(fallback, property_filter):
+                return fallback
+        except Exception:
             try:
-                return desk.child_window(**query).wrapper_object()
+                fallback = desk.child_window(**query).wrapper_object()
+                candidates.append(fallback)
+                if self._match_property(fallback, property_filter):
+                    return fallback
             except Exception as inner_exc:
                 self._log_uia_hint(inner_exc)
-                return None
+        return self._first_matching_candidate(candidates, property_filter)
+
+    def _first_matching_candidate(
+        self,
+        candidates: List[Any],
+        property_filter: Optional[Tuple[str, Any]],
+    ) -> Optional[Any]:
+        if not candidates:
+            return None
+        if property_filter and property_filter[0]:
+            for cand in candidates:
+                if self._match_property(cand, property_filter):
+                    return cand
+        return candidates[0]
+
+    def _match_property(self, element: Any, property_filter: Optional[Tuple[str, Any]]) -> bool:
+        if not property_filter:
+            return True
+        prop_name, expected = property_filter
+        if not prop_name:
+            return True
+        actual = self._read_element_property(element, prop_name)
+        passed, _ = self._compare_property(actual, expected, "equals")
+        return passed
 
     def _read_element_property(self, element: Any, prop: str) -> Any:
         target = (prop or "name").strip().lower()

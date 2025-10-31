@@ -480,6 +480,13 @@ class Recorder:
                 button=btn_name,
             )
 
+            prop_snapshot: Optional[Tuple[str, str]] = None
+            if target_elem is not None:
+                prop_snapshot = self._extract_element_property(target_elem)
+                if prop_snapshot:
+                    action.property_name = prop_snapshot[0]
+                    action.expected = prop_snapshot[1]
+
             if semantic_meta:
                 if resolved_auto_id:
                     action.auto_id = resolved_auto_id
@@ -527,9 +534,28 @@ class Recorder:
             if len(path) > 1:
                 sampled = self._downsample_path(path)
                 if sampled:
+                    start_x, start_y = sampled[0]
+                    max_delta = 0
+                    drag_elapsed: Optional[float] = None
+                    start_time = state.get("start_time")
+                    if start_time is not None:
+                        try:
+                            drag_elapsed = max(time.perf_counter() - start_time, 0.0)
+                        except Exception:
+                            drag_elapsed = None
+                        if drag_elapsed is not None:
+                            drag_elapsed = round(drag_elapsed, 3)
                     for (x1, y1), (x2, y2) in zip(sampled, sampled[1:]):
                         total_distance += abs(x2 - x1) + abs(y2 - y1)
-                    if total_distance >= 6:
+                        max_delta = max(max_delta, abs(x2 - start_x), abs(y2 - start_y))
+
+                    should_record_drag = False
+                    if drag_elapsed is not None and drag_elapsed >= 0.1:
+                        should_record_drag = True
+                    elif total_distance >= 3 or max_delta >= 3:
+                        should_record_drag = True
+
+                    if should_record_drag:
                         drag_action = Action(
                             action_type='drag',
                             x=sampled[-1][0],
@@ -537,9 +563,24 @@ class Recorder:
                             delay=release_delay,
                             button=btn_name,
                             path=[[int(px), int(py)] for px, py in sampled],
+                            drag_duration=drag_elapsed,
                         )
                         self.actions.append(drag_action)
-                        logger.info(f"Recorded: drag({btn_name}) path_points={len(sampled)} distance={total_distance}")
+                        if drag_elapsed is not None:
+                            logger.info(
+                                "Recorded: drag(%s) path_points=%d distance=%s duration=%0.3fs",
+                                btn_name,
+                                len(sampled),
+                                total_distance,
+                                drag_elapsed,
+                            )
+                        else:
+                            logger.info(
+                                "Recorded: drag(%s) path_points=%d distance=%s",
+                                btn_name,
+                                len(sampled),
+                                total_distance,
+                            )
                         release_delay = self._elapsed()
                         drag_performed = True
             if not drag_performed:

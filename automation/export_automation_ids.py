@@ -28,13 +28,19 @@ def export_manifest(root: Path, output: Path) -> None:
 
 def main() -> None:
     repo_root = Path(__file__).resolve().parent.parent
-    source_root = repo_root / "enfire" / "Source" / "Enfire.EsriRuntime.Wpf" / "Utility" / "AutomationIds"
+    candidate_roots = [
+        repo_root / "enfire" / "Source" / "Enfire.EsriRuntime.Wpf" / "Utility" / "AutomationIds",
+        repo_root / "external" / "enfire" / "Source" / "Enfire.EsriRuntime.Wpf" / "Utility" / "AutomationIds",
+    ]
     output = repo_root / "automation" / "automation_ids.json"
-    if not source_root.exists():
-        print(f"AutomationIds source folder not found: {source_root}")
+
+    source_root = next((path for path in candidate_roots if path.exists()), None)
+    if source_root is None:
+        print("AutomationIds source folder not found in any expected location.")
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text("{}", encoding="utf-8")
         return
+
     export_manifest(source_root, output)
     print(f"Wrote automation manifest to {output}")
 

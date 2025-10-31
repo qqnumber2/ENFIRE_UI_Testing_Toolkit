@@ -164,12 +164,6 @@
     "USCoalition": "USCoalition",
     "USForces": "USForces"
   },
-  "ExplorerIds": {
-    "Back": "ExplorerBack",
-    "ClosePane": "ExplorerClosePane",
-    "RootList": "ExplorerRootList",
-    "EntitiesList": "ExplorerEntitiesList"
-  },
   "ExportIds": {
     "Browse": "Browse",
     "Location": "Location",
@@ -286,12 +280,12 @@
   "MapControlIds": {
     "RadialMenuButton": "MapRadialMenu",
     "CustomZoomButton": "MapCustomZoom",
-    "MapScaleDisplay": "MapScaleDisplay",
     "MapScaleCombo": "MapScaleSelector",
+    "MapScaleDisplay": "MapScaleDisplay",
     "CoordinateLabel": "MapCoordinateDisplay",
     "GoToToggle": "MapGoToToggle",
-    "GoToCoordinateInput": "MapGoToCoordinateInput",
     "GoToExecute": "MapGoToExecute",
+    "GoToCoordinateInput": "MapGoToCoordinateInput",
     "ManualSetLocation": "MapManualSetLocation",
     "BasemapToggle": "MapBasemapToggle",
     "MapViewHost": "MapViewHost",
@@ -338,14 +332,6 @@
     "Tidal": "Tidal",
     "Velocity": "Velocity",
     "Width": "Width"
-  },
-  "ShellIds": {
-    "Close": "ShellClose",
-    "MaximizeRestore": "ShellMaximizeRestore",
-    "Minimize": "ShellMinimize",
-    "RefreshDevices": "ShellRefreshDevices",
-    "ToggleDeviceStatus": "ShellToggleDeviceStatus",
-    "RecordingIndicator": "ShellRecordingIndicator"
   },
   "SoldierIds": {
     "SoldierDropDown": "SoldierDropDown",

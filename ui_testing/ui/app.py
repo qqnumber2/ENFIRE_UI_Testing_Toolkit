@@ -91,6 +91,8 @@ class TestRunnerApp:
         self.prefer_semantic_var = tk.BooleanVar(master=self.root, value=True)
         self.use_ssim_var = tk.BooleanVar(master=self.root, value=False)
         self.ssim_threshold_var = tk.DoubleVar(master=self.root, value=0.99)
+        self.semantic_wait_timeout_var = tk.DoubleVar(master=self.root, value=1.0)
+        self.semantic_poll_interval_var = tk.DoubleVar(master=self.root, value=0.05)
         self.automation_backend_var = tk.StringVar(master=self.root, value="uia")
         self.normalize_label_var = tk.StringVar(master=self.root, value="Normalize: Not set")
         self._theme_choices = sorted(set(self.root.style.theme_names()))
@@ -135,6 +137,15 @@ class TestRunnerApp:
         default_regex = getattr(self.settings, "target_app_regex", getattr(AppSettings, "target_app_regex", ""))
         self._app_regex_var = tk.StringVar(master=self.root, value=str(default_regex or ""))
 
+        semantic_wait_timeout = max(0.0, float(self.semantic_wait_timeout_var.get()))
+        semantic_poll_interval = max(0.01, float(self.semantic_poll_interval_var.get()))
+        if semantic_wait_timeout > 0 and semantic_poll_interval > semantic_wait_timeout:
+            semantic_poll_interval = semantic_wait_timeout
+            try:
+                self.semantic_poll_interval_var.set(semantic_poll_interval)
+            except Exception:
+                pass
+
         self.player = Player(
             PlayerConfig(
                 scripts_dir=self.paths.scripts_dir,
@@ -158,6 +169,8 @@ class TestRunnerApp:
                 flake_stats_path=self.paths.data_root / "flake_stats.json",
                 state_snapshot_dir=self.paths.data_root / "snapshots",
                 automation_manifest=self.automation_manifest or None,
+                semantic_wait_timeout=semantic_wait_timeout,
+                semantic_poll_interval=semantic_poll_interval,
             )
         )
         self.player.update_automation_manifest(self.automation_manifest)
@@ -954,6 +967,8 @@ class TestRunnerApp:
             backend_choices=["uia", "appium"],
             theme_change_callback=self._on_theme_change,
             app_regex_var=self._app_regex_var,
+            semantic_wait_timeout_var=self.semantic_wait_timeout_var,
+            semantic_poll_interval_var=self.semantic_poll_interval_var,
         )
         self._popup_over_root(dialog)
 
@@ -1291,6 +1306,16 @@ class TestRunnerApp:
         self.ssim_threshold_var.set(float(getattr(self.settings, "ssim_threshold", 0.99)))
         self.automation_backend_var.set(str(getattr(self.settings, "automation_backend", "uia")))
         self.prefer_semantic_var.set(bool(getattr(self.settings, "prefer_semantic_scripts", True)))
+        wait_timeout_raw = float(getattr(self.settings, "semantic_wait_timeout", 1.0))
+        poll_interval_raw = float(getattr(self.settings, "semantic_poll_interval", 0.05))
+        wait_timeout = max(0.0, wait_timeout_raw)
+        poll_interval = max(0.01, poll_interval_raw)
+        if wait_timeout > 0 and poll_interval > wait_timeout:
+            poll_interval = wait_timeout
+        self.semantic_wait_timeout_var.set(wait_timeout)
+        self.semantic_poll_interval_var.set(poll_interval)
+        self.settings.semantic_wait_timeout = wait_timeout
+        self.settings.semantic_poll_interval = poll_interval
         self.normalize_script = self.settings.normalize_script
         self.target_app_regex = getattr(self.settings, "target_app_regex", getattr(self, "target_app_regex", None))
         try:
@@ -1309,6 +1334,8 @@ class TestRunnerApp:
         self.ssim_threshold_var.trace_add("write", lambda *_: self._on_ssim_threshold_changed())
         self.automation_backend_var.trace_add("write", lambda *_: self._on_backend_changed())
         self.prefer_semantic_var.trace_add("write", lambda *_: self._on_prefer_semantic_changed())
+        self.semantic_wait_timeout_var.trace_add("write", lambda *_: self._on_semantic_wait_changed())
+        self.semantic_poll_interval_var.trace_add("write", lambda *_: self._on_semantic_poll_changed())
         self._app_regex_var.trace_add("write", lambda *_: self._on_app_regex_changed())
 
     def _on_use_automation_ids_changed(self) -> None:
@@ -1327,6 +1354,70 @@ class TestRunnerApp:
         value = bool(self.prefer_semantic_var.get())
         self.settings.prefer_semantic_scripts = value
         self.player.config.prefer_semantic_scripts = value
+        self._save_settings()
+
+    def _on_semantic_wait_changed(self) -> None:
+        try:
+            raw_wait = float(self.semantic_wait_timeout_var.get())
+        except tk.TclError:
+            return
+        wait_value = max(0.0, raw_wait)
+        if abs(wait_value - raw_wait) > 1e-6:
+            try:
+                self.semantic_wait_timeout_var.set(wait_value)
+            except Exception:
+                pass
+            return
+        self.settings.semantic_wait_timeout = wait_value
+        if hasattr(self, "player") and self.player is not None:
+            self.player.config.semantic_wait_timeout = wait_value
+        try:
+            raw_poll = float(self.semantic_poll_interval_var.get())
+        except tk.TclError:
+            raw_poll = None
+        if raw_poll is not None:
+            poll_value = max(0.01, raw_poll)
+            if wait_value > 0 and poll_value > wait_value:
+                poll_value = wait_value
+            if abs(poll_value - raw_poll) > 1e-6:
+                try:
+                    self.semantic_poll_interval_var.set(poll_value)
+                except Exception:
+                    pass
+        self._save_settings()
+
+    def _on_semantic_poll_changed(self) -> None:
+        try:
+            raw_poll = float(self.semantic_poll_interval_var.get())
+        except tk.TclError:
+            return
+        poll_value = max(0.01, raw_poll)
+        try:
+            raw_wait = float(self.semantic_wait_timeout_var.get())
+        except tk.TclError:
+            raw_wait = None
+        wait_value = max(0.0, raw_wait) if raw_wait is not None else None
+        if wait_value is not None and wait_value > 0 and poll_value > wait_value:
+            poll_value = wait_value
+        if abs(poll_value - raw_poll) > 1e-6:
+            try:
+                self.semantic_poll_interval_var.set(poll_value)
+            except Exception:
+                pass
+            return
+        if wait_value is not None and abs(wait_value - raw_wait) > 1e-6:
+            try:
+                self.semantic_wait_timeout_var.set(wait_value)
+            except Exception:
+                pass
+            return
+        if wait_value is not None:
+            self.settings.semantic_wait_timeout = wait_value
+            if hasattr(self, "player") and self.player is not None:
+                self.player.config.semantic_wait_timeout = wait_value
+        self.settings.semantic_poll_interval = poll_value
+        if hasattr(self, "player") and self.player is not None:
+            self.player.config.semantic_poll_interval = poll_value
         self._save_settings()
 
     def _on_app_regex_changed(self) -> None:
@@ -1482,6 +1573,26 @@ class TestRunnerApp:
             pass
         self.settings.automation_backend = str(self.automation_backend_var.get()).lower()
         self.settings.prefer_semantic_scripts = bool(self.prefer_semantic_var.get())
+        wait_timeout: Optional[float] = None
+        poll_interval: Optional[float] = None
+        try:
+            wait_timeout = max(0.0, float(self.semantic_wait_timeout_var.get()))
+        except tk.TclError:
+            wait_timeout = None
+        try:
+            poll_interval = max(0.01, float(self.semantic_poll_interval_var.get()))
+        except tk.TclError:
+            poll_interval = None
+        if wait_timeout is not None:
+            self.settings.semantic_wait_timeout = wait_timeout
+        if poll_interval is not None:
+            if wait_timeout is not None and wait_timeout > 0 and poll_interval > wait_timeout:
+                poll_interval = wait_timeout
+                try:
+                    self.semantic_poll_interval_var.set(poll_interval)
+                except Exception:
+                    pass
+            self.settings.semantic_poll_interval = poll_interval
         self.settings.normalize_script = self.normalize_script
         try:
             current_regex = self.target_app_regex

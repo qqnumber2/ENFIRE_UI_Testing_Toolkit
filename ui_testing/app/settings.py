@@ -25,6 +25,8 @@ class AppSettings:
     window_geometry: Optional[str] = None
     window_state: Optional[str] = None
     target_app_regex: Optional[str] = r".*ENFIRE.*"
+    semantic_wait_timeout: float = 1.0
+    semantic_poll_interval: float = 0.05
 
     @classmethod
     def load(cls, path: Path) -> AppSettings:
@@ -51,6 +53,8 @@ class AppSettings:
             window_geometry=data.get("window_geometry"),
             window_state=data.get("window_state"),
             target_app_regex=data.get("target_app_regex", cls.target_app_regex),
+            semantic_wait_timeout=float(data.get("semantic_wait_timeout", cls.semantic_wait_timeout)),
+            semantic_poll_interval=float(data.get("semantic_poll_interval", cls.semantic_poll_interval)),
         )
 
     def save(self, path: Path) -> None:

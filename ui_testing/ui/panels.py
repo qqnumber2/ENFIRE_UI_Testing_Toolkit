@@ -673,20 +673,20 @@ class ResultsPanel(ttk.Frame):
         self._sortable_columns = display_cols
         self._column_indices = {name: idx for idx, name in enumerate(cols)}
         self._active_sort: Optional[tuple[str, bool]] = None
-        for cid, width, anchor in (
-            ("script", 320, "w"),
-            ("index", 80, "center"),
-            ("timestamp", 180, "center"),
-            ("diff", 160, "center"),
-            ("ssim", 200, "center"),
-            ("status", 140, "center"),
+        for cid, width, anchor, stretch, min_width in (
+            ("script", 140, "w", False, 80),
+            ("index", 70, "center", False, 50),
+            ("timestamp", 220, "center", True, 180),
+            ("diff", 200, "center", True, 160),
+            ("ssim", 160, "center", False, 120),
+            ("status", 200, "center", True, 160),
         ):
             self.result_tree.heading(
                 cid,
                 text=headings[cid],
                 command=lambda col=cid: self._sort_results(col),
             )
-            self.result_tree.column(cid, width=width, anchor=anchor)
+            self.result_tree.column(cid, width=width, anchor=anchor, stretch=stretch, minwidth=min_width)
         for hidden in ("original", "test"):
             self.result_tree.column(hidden, width=1, stretch=False, minwidth=1)
 
