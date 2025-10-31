@@ -26,6 +26,14 @@ external/*.zip
 # App run artifacts
 results/
 
+# UI testing runtime data (large and user-specific)
+ui_testing/data/logs/
+ui_testing/data/results/
+ui_testing/data/scripts/
+ui_testing/data/images/
+ui_testing/data/*.xlsx
+ui_testing/data/flake_stats.json
+
 # OS
 .DS_Store
 Thumbs.db
