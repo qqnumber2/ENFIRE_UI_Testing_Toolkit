@@ -28,11 +28,17 @@ package_root = Path(__file__).resolve().parents[2]
 if str(package_root) not in sys.path:
     sys.path.insert(0, str(package_root))
 
+from ui_testing.app.configuration import RuntimeConfig, load_runtime_config
 from ui_testing.app.environment import Paths, build_default_paths, resource_path
 from ui_testing.ui.dialogs import NewRecordingDialog, RecordingRequest
 from ui_testing.ui.background import VideoBackground
-from ui_testing.automation.player import Player, PlayerConfig, compare_with_ssim
+from ui_testing.automation.player import Player, PlayerConfig
+try:
+    from ui_testing.automation.vision.ssim import compare_with_ssim
+except Exception:
+    compare_with_ssim = None  # type: ignore
 from ui_testing.automation.semantic import reset_semantic_context
+from ui_testing.automation.driver import DEFAULT_WINDOW_SPEC
 from ui_testing.automation.recorder import Recorder, RecorderConfig
 from ui_testing.services.ai_summarizer import write_run_bug_report, BugNote
 from ui_testing.app.settings import AppSettings
@@ -66,7 +72,8 @@ class _NullBackground:
 class TestRunnerApp:
     """High-level GUI controller for recording and replaying UI tests."""
 
-    def __init__(self) -> None:
+    def __init__(self, runtime_config: RuntimeConfig | None = None) -> None:
+        self._runtime_config: RuntimeConfig = runtime_config or load_runtime_config()
         # --- root window & Tk variables ---
         self.root = ttk.Window(themename="cosmo")
         self.root.withdraw()
@@ -103,6 +110,7 @@ class TestRunnerApp:
         self.settings_path = self.paths.data_root / "ui_settings.json"
         self._log_file = self.paths.logs_dir / "ui_testing.log"
         self.settings = AppSettings.load(self.settings_path)
+        self._runtime_config.apply_to_settings(self.settings)
         self.normalize_script: Optional[str] = self.settings.normalize_script
         self._apply_settings_to_variables()
         self.paths.tolerance = float(self.tolerance_var.get())
@@ -171,6 +179,9 @@ class TestRunnerApp:
                 automation_manifest=self.automation_manifest or None,
                 semantic_wait_timeout=semantic_wait_timeout,
                 semantic_poll_interval=semantic_poll_interval,
+                calibration_profile=getattr(self.settings, "calibration_profile", None),
+                calibration_dir=self.paths.data_root,
+                window_spec=DEFAULT_WINDOW_SPEC,
             )
         )
         self.player.update_automation_manifest(self.automation_manifest)
@@ -396,6 +407,10 @@ class TestRunnerApp:
                 gui_hwnd=gui_hwnd,
                 always_record_text=True,
                 default_delay=float(self.default_delay_var.get()),
+                automation_manifest=self.automation_manifest or None,
+                calibration_profile=getattr(self.settings, "calibration_profile", None),
+                calibration_dir=self.paths.data_root,
+                window_spec=DEFAULT_WINDOW_SPEC,
             )
         )
         self.recorder.start()
@@ -1158,61 +1173,96 @@ class TestRunnerApp:
 
         sections = [
             (
-                "Overview & Layout",
-                "UI Testing Overview\n\n"
-                "- The window is split into four panes: Available Tests (tree), Results (grid + summary banner), Preview (image diff), and Log (live journal).\n"
-                "- Toolbar buttons control high-frequency actions: Record/Stop, Run Selected/Run All, Normalize helpers, Semantic Helper, Automation Inspector, Settings, open logs, and documentation.\n"
-                "- Status indicators show the active script, remaining queue, and semantic/screenshot configuration so you always know which validation modes are enabled.\n"
-                "- Every run writes to results_summary.xlsx and creates per-script folders under data/results for downstream analysis."
+                "Quick Start & Layout",
+                "Purpose\n\n"
+                "- Automate ENFIRE with coordinate precision plus AutomationId-aware semantics; both modes stay active so legacy tests keep working while new metadata unlocks richer assertions.\n"
+                "- GUI and CLI ride the same recorder/player modules; anything you toggle here mirrors the headless workflow.\n\n"
+                "Prerequisites\n\n"
+                "- Windows 10/11, Python 3.12+, ENFIRE installed and running under the same elevation as this toolkit, global hooks allowed for pynput, and optional Allure CLI for report attachments.\n"
+                "- Recommended flow: `python -m venv .venv`, activate, `pip install -r requirements.txt`, then `python -m ui_testing.gui`.\n\n"
+                "Layout\n\n"
+                "- Available Tests tree (left) mirrors `ui_testing/data/scripts`. Toolbar buttons manage Record/Stop, Run Selected/All, Normalize Set/Clear/Run, Semantic Helper, Automation Inspector, Settings, open logs, and documentation.\n"
+                "- Results grid (top right) streams checkpoints, semantic assertions, screenshot verdicts, and summary banners listing semantic/UIA/coordinate counts plus elapsed time.\n"
+                "- Preview panel (center right) displays baseline vs. target screenshots and diffs, while the Log tab (bottom right) mirrors `logs/ui_testing.log` with severity filters.\n"
+                "- Status bar shows target ENFIRE regex, calibration profile, screenshot/semantic toggles, backend (UIA/Appium), and queue progress so you can audit the run configuration instantly."
             ),
             (
-                "Recording Sessions",
-                "Recording a Test\n\n"
-                "1) Click 'Record New'. Enter the procedure, section, and a descriptive test name (these drive folder structure and workbook sheets).\n"
-                "2) During capture the recorder stores raw cursor coordinates, AutomationIds (when available), semantic metadata (group/name), and keystrokes. Press 'p' for a screenshot checkpoint; press 'F' (or the toolbar Stop button) to finish.\n"
-                "3) The recorder automatically filters out generic AutomationIds ('Window', 'Pane', etc.) and falls back to coordinates when a control is not described by the manifest, ensuring the JSON reflects actionable selectors.\n"
-                "4) Output lands in data/scripts/<proc>/<sec>/<test>.json with matching images under data/images/... Screenshot names use the 0_000O/0_000T convention for quick diffing."
+                "Recording Workflow",
+                "Capture Steps\n\n"
+                "1) Click 'Record New' (or run `python -m ui_testing.cli record PROC/SEC/TEST`) and fill Procedure, Section, Test Name. These values control folder layout, screenshot prefixes, workbook sheet names, and CLI identifiers.\n"
+                "2) Recorder captures: raw cursor coordinates, calibration-normalized offsets, AutomationIds + semantic metadata (group/name/type/description), keystrokes, optional screenshot checkpoints, and timestamped delays.\n"
+                "3) Hotkeys: `p` records a screenshot checkpoint, `F` stops recording, `Ctrl+Alt+R` pauses/resumes, `Ctrl+Shift+S` toggles screenshot capture, `Ctrl+Shift+A` toggles AutomationId capture.\n"
+                "4) Scripts save to `ui_testing/data/scripts/<proc>/<section>/<test>.json`; screenshots save to `ui_testing/data/images/<proc>/<section>/<test>/000_STEP_INDEX{O|T}.png` (O = original baseline, T = target to compare later).\n"
+                "5) Automation manifest (`automation_ids.json`) is consulted live. If a control exposes a known AutomationId, the recorder attaches `semantic_locator` payloads and emits assert.property checkpoints so semantic playback can verify the exact widget.\n"
+                "6) Coordinate steps still record even when semantics exist, ensuring deterministic fallbacks. Use the Semantic Helper later to bulk-upgrade legacy recordings with assert.property nodes."
             ),
             (
                 "Playback & Validation",
-                "Running Scripts\n\n"
-                "- Select one or more tests in the tree (Ctrl/Shift click supported) and use 'Run Selected' or 'Run All'.\n"
-                "- The player resolves clicks in this order: semantic session (manifest-backed AutomationId), UIA window search, then raw coordinates. Summary rows include semantic/UIA/coordinate counts so you can confirm how each run navigated the UI.\n"
-                "- Before running, confirm Settings → Target Application regex matches the ENFIRE window title (default '.*ENFIRE.*') and launch the toolkit with the same elevation as ENFIRE so UI Automation can reach the controls.\n"
-                "- Toggle 'Prefer semantic assertions' to enforce assert.property checks recorded alongside actions. Toggle 'Use Automation IDs' or 'Compare screenshots' to influence which validation channels are active.\n"
-                "- A normalize script (optional) is invoked automatically whenever a new procedure starts; use the Normalize buttons to set, clear, or execute that helper."
+                "Execution Modes\n\n"
+                "- Select a test (or multiple via Shift/Ctrl) and click 'Run Selected' or 'Run All'. CLI equivalents: `python -m ui_testing.cli play PROC/SEC/TEST --semantic --screenshots --ssim` (flags optional).\n"
+                "- Resolver order per action: (1) AutomationId via manifest + semantic registry, (2) UIA traversal using control type/name/class, (3) calibrated screen coordinates. The Results grid logs which tier succeeded; failures bubble to the summary banner and logs.\n"
+                "- Validation toggles: 'Use Automation IDs', 'Prefer semantic assertions', 'Compare screenshots', 'Use SSIM', SSIM threshold, tolerance %, ignore delays, backend selection (UIA or Appium/WinAppDriver). Configure them via Settings or toolbar shortcuts.\n"
+                "- Normalize scripts (optional) execute before each procedure. They live under `ui_testing/data/scripts/_normalize/` and should reset ENFIRE to a clean state (e.g., open workspace, clear dialogs). Set/Clear them from the toolbar.\n"
+                "- Ensure Target Application regex (default `.*ENFIRE.*`) matches the live window title and that your calibration profile is current before playback."
+            ),
+            (
+                "Calibration & Coordinates",
+                "Calibration Basics\n\n"
+                "- Calibration captures ENFIRE window geometry (origin, size, chrome offsets, DPI) so coordinate steps auto-adjust across monitors. Profiles live under `ui_testing/data/calibration/<name>.json`.\n"
+                "- GUI flow: Settings > Calibration > Capture New Profile, move ENFIRE to the target monitor/position, click Capture, name it (e.g., 'lab-west'), then 'Set as Default'.\n"
+                "- CLI flow: `python -m ui_testing.cli calibrate --name lab-west --set-default`. You can list, inspect, or delete profiles with additional CLI subcommands.\n"
+                "- Recorder stores both absolute pixels and normalized values relative to the captured profile; playback resolves the live ENFIRE window, applies the profile, and reconstructs the absolute click. If ENFIRE layout changes or runs maximized, recapture calibration.\n"
+                "- Share calibration JSON through source control or secure storage so every lab uses identical anchor data, minimizing drift."
             ),
             (
                 "Semantic Automation",
-                "Semantic Checks & Helper\n\n"
-                "- The Semantic Helper upgrades legacy scripts by inserting assert.property steps based on the automation manifest directly into the existing JSON. Coordinate-driven playback simply skips those assertions when Automation IDs are disabled.\n"
-                "- During recording, controls are cross-referenced against the manifest. If an AutomationId exists, the recorder captures group/name metadata and auto-generates assert.property steps so playbacks validate the same widget without manual edits.\n"
-                "- During playback, failed semantic lookups automatically fall back to coordinates and log warnings. If you see repeated fallbacks, verify elevation and the target regex."
+                "Manifest & Assertions\n\n"
+                "- `ui_testing/automation/manifest/automation_ids.json` defines AutomationIds, control types, friendly names, and descriptions aligned with ENFIRE's XAML. Regenerate via `automation/export_automation_ids.py` when ENFIRE adds controls.\n"
+                "- Recorder queries the manifest per event. When it finds a match it embeds `semantic_locator` hints plus `assert.property` checkpoints verifying AutomationId, Name, ControlType, and optional values. Coordinate data remains as fallback.\n"
+                "- Player honors Use Automation IDs + Prefer semantic assertions + semantic wait/poll settings. It waits up to the configured timeout for each semantic control, logs the outcome, and only falls back after exhausting manifest + UIA lookups.\n"
+                "- Semantic Helper (toolbar) scans existing JSON to automatically inject missing semantic metadata or assertions, ensuring older suites benefit from newer manifest entries without re-recording.\n"
+                "- Automation Inspector shows live AutomationId/name/type/rectangle for the element beneath your cursor and indicates whether it exists in the manifest so ENFIRE engineers can fill gaps quickly."
             ),
             (
-                "Results & Reporting",
-                "Output Artefacts\n\n"
-                "- The Results panel lists each checkpoint with status, including semantic assertions, screenshot comparisons, and summary lines. Icons surface failures immediately; double-click to jump in the tree.\n"
-                "- Failed runs trigger AI-assisted bug drafts under data/results/<script>/bugdraft_*.md with cropped evidence, heuristics, and recommendations. Diff/crop images are stored alongside the markdown.\n"
-                "- results_summary.xlsx is pruned and rewritten per script to avoid duplicate history and is also attached to Allure (when enabled) for CI review. Flake statistics are recorded per assertion when the optional tracker is configured."
+                "Command-Line Interface",
+                "Shared Engines\n\n"
+                "- Launch with `python -m ui_testing.cli`. Commands mirror GUI workflows so CI/CD or power users can automate everything headlessly.\n"
+                "- `calibrate`: capture/list/show/delete calibration profiles. Pass `--name` plus `--set-default` to store the anchor for later runs.\n"
+                "- `record PROC/SEC/TEST`: headless recorder with flags such as `--calibration`, `--semantic`, `--screenshots`, `--default-delay`, `--target-regex`. Press `F` inside ENFIRE to stop.\n"
+                "- `play PROC/SEC/TEST`: runner with flags `--semantic`, `--prefer-semantic`, `--use-automation-ids`, `--screenshots`, `--ssim`, `--tolerance`, `--backend`, `--results-root`, `--export-json`, `--app-regex`, plus batching options (`--procedure`, `--section`, `--glob`).\n"
+                "- Global flags: `--config <ini>`, `--env KEY=VALUE`, `--log-level DEBUG`, `--headless`, `--dry-run`. Use `--help` on every command for exhaustive arguments.\n"
+                "- CLI smoke test: `python -m ui_testing.cli --help`. Run it after dependency or installer changes to ensure entry points remain functional."
             ),
             (
-                "Settings & Shortcuts",
-                "Customization guide\n\n"
-                "- Settings (gear) exposes theme selection, default delay, tolerance, automation toggles, semantic preference, screenshot handling, SSIM threshold, automation backend (UIA/Appium), normalize script path, and the Target Application regex that scopes UIA searches.\n"
-                "- Playback toggles behave as follows: Ignore Recorded Delays enforces the default pacing; Use Automation IDs enables semantic/UIA navigation; Prefer Semantic Assertions toggles evaluation of the inline assert.property steps; Compare Screenshots controls visual checkpoints; Use SSIM + SSIM Threshold configure structural similarity sensitivity (1.0 is strictest).\n"
-                "- The Automation Inspector window polls the cursor position and reports AutomationId, control type, name, framework, bounding rectangle, and manifest group/name for the element under the pointer.\n"
-                "- Target Application regex defaults to '.*ENFIRE.*'. Update it if you run branded builds with different titles or leave it blank to match any ENFIRE window.\n"
-                "- The Log panel now offers All / Info / Warnings / Errors tabs so you can focus on the messages that matter while the full log continues to stream to disk.\n"
-                "- Hotkeys: 'p' screenshot, 'F' stop recording/playback, 'Ctrl+L' open logs, 'Ctrl+R' start recording, 'Ctrl+Enter' run selected, 'Ctrl+Shift+S' toggle screenshots, 'Ctrl+Shift+A' toggle automation IDs.\n"
-                "- Right-click a tree node to open the JSON, jump to the images, or delete artifacts. Logs are timestamped under data/logs/ui_testing.log for long-term auditing."
+                "Results & Evidence",
+                "Artifacts Produced\n\n"
+                "- `ui_testing/data/results/<proc>/<section>/<test>/` stores per-run logs, JSON metadata, screenshot diffs (`*_diff.png`), SSIM heatmaps, bugdraft markdown, and any exported attachments. Each run lands in a timestamped folder for traceability.\n"
+                "- `results_summary.xlsx` aggregates checkpoint counts, semantic/coordinate mix, durations, and statuses per procedure. The GUI summary banner syncs with this workbook in real time.\n"
+                "- Screenshot triads: `<step>_O.png` (baseline), `<step>_T.png` (current target), `<step>_D.png` (diff). When SSIM is enabled the score is logged and annotated in the Results panel.\n"
+                "- Flake tracker (`ui_testing/data/flake_stats.json`) records assertion stability, enabling reports on frequently failing controls.\n"
+                "- Logs: `logs/ui_testing.log` (application-wide), `player_<timestamp>.log` and `recorder_<timestamp>.log` per session, accessible from the GUI toolbar.\n"
+                "- Reporting extras: bug drafts (`bugdraft_*.md`) collate failing assertions, suspected causes, reproduction steps, and embed cropped screenshots for engineers."
             ),
             (
-                "Packaging & Maintenance",
-                "Shipping the Toolkit\n\n"
-                "- Run setup_and_deploy.ps1 whenever dependencies or scripts change. The build script recreates the virtual environment as needed, installs pinned wheels, runs compileall + pytest -m semantic, builds the PyInstaller bundle, and generates package/installer zips.\n"
-                "- The generated README.txt in the Package folder explains offline deployment steps. Use Install_UI_Testing.bat on target machines for a zero-config install that drops a desktop shortcut.\n"
-                "- Keep automation_ids.json in sync with upstream ENFIRE builds (see automation/export tooling). When manifest entries change, re-run the Semantic Helper to refresh recordings."
+                "Configuration & Troubleshooting",
+                "Configuration Layers\n\n"
+                "- Runtime overrides load in this order: CLI flags / GUI toggles -> environment variables prefixed with `UI_TESTING_` -> INI files read by `ui_testing/app/configuration.py` (repo root or working dir) -> persisted GUI settings `ui_testing/data/ui_settings.json`.\n"
+                "- Key fields: theme, default_delay, tolerance, use_automation_ids, prefer_semantic_scripts, use_screenshots, use_ssim, ssim_threshold, semantic_wait_timeout, semantic_poll_interval, target_app_regex, calibration_profile, backend (`uia` or `appium`).\n\n"
+                "Troubleshooting\n\n"
+                "- GUI won't launch: ensure `.venv` is active, reinstall requirements, and resolve any SyntaxErrors flagged in the console (often leftover merge artifacts).\n"
+                "- Recorder ignores events: keep ENFIRE focused (GUI suppresses clicks on itself), verify pynput hooks are allowed by antivirus, and run both ENFIRE + toolkit with the same elevation.\n"
+                "- Semantic fallbacks dominate: confirm AutomationIds exist via the Inspector, update automation_ids.json from the ENFIRE repo, refresh calibration, and double-check the Target Application regex matches the live window title.\n"
+                "- Screenshot noise: re-record baselines, adjust tolerance/SSIM threshold, or temporarily disable screenshot comparisons until the UI stabilizes.\n"
+                "- Calibration drift: delete broken profiles, rerun `python -m ui_testing.cli calibrate --name new-profile --set-default`, and ensure ENFIRE starts on the same monitor each time."
+            ),
+            (
+                "Developer Notes",
+                "Maintainers' Guide\n\n"
+                "- Key modules: `ui_testing/automation/recorder.py` (pynput hooks, semantic metadata, screenshots), `ui_testing/automation/player.py` and `player_components/` (locator, executor, metrics, screenshot diffing), `ui_testing/automation/locator.py` (manifest normalization), `ui_testing/tools/calibration.py`, `ui_testing/app/configuration.py`, `ui_testing/cli/`, and `ui_testing/tests/` for pytest suites.\n"
+                "- Coding standards: Python 3.12, type hints on public APIs, dataclasses for configs (RecorderConfig, PlayerConfig, CalibrationProfile), `black` + `ruff` + `mypy` alignment, ASCII files by default, descriptive logging.\n"
+                "- Tests: `python -m pytest ui_testing/tests/unit` for fast coverage (config, locator, calibration, CLI helpers). Semantic/UIA tests live under `pytest -m semantic` and require ENFIRE. Smoke tests: `python -m ui_testing.gui` and `python -m ui_testing.cli --help` after touching UI/CLI code.\n"
+                "- Packaging: `setup_and_deploy.ps1` rebuilds the virtualenv, installs dependencies, runs compileall + pytest (semantic marker optional), then packages the PyInstaller build plus installer script. Update README + this panel whenever new features land.\n"
+                "- ENFIRE partnership: ensure AutomationIds are assigned in ENFIRE XAML/C# (see `external/enfire/Enfire.EsriRuntime.Wpf/Utility/AutomationIds`). Regenerate the manifest, refresh calibration, and communicate new workflows to QA so coordinate + semantic modes both stay reliable."
             ),
         ]
         for title, body in sections:
