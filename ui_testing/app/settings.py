@@ -27,6 +27,7 @@ class AppSettings:
     target_app_regex: Optional[str] = r".*ENFIRE.*"
     semantic_wait_timeout: float = 1.0
     semantic_poll_interval: float = 0.05
+    calibration_profile: Optional[str] = None
 
     @classmethod
     def load(cls, path: Path) -> AppSettings:
@@ -55,6 +56,7 @@ class AppSettings:
             target_app_regex=data.get("target_app_regex", cls.target_app_regex),
             semantic_wait_timeout=float(data.get("semantic_wait_timeout", cls.semantic_wait_timeout)),
             semantic_poll_interval=float(data.get("semantic_poll_interval", cls.semantic_poll_interval)),
+            calibration_profile=data.get("calibration_profile"),
         )
 
     def save(self, path: Path) -> None:

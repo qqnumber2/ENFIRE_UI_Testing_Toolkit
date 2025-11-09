@@ -1,5 +1,5 @@
 {
-  "theme": "superhero",
+  "theme": "united",
   "default_delay": 0.3,
   "tolerance": 0.36,
   "ignore_recorded_delays": true,
@@ -16,5 +16,6 @@
   "window_state": "zoomed",
   "target_app_regex": "ENFIRE",
   "semantic_wait_timeout": 1.0,
-  "semantic_poll_interval": 0.05
+  "semantic_poll_interval": 0.05,
+  "calibration_profile": null
 }

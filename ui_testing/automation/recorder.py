@@ -3,6 +3,7 @@ import logging
 import time
 import ctypes
 from dataclasses import dataclass, asdict
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import unquote
@@ -17,9 +18,11 @@ try:
 except Exception:
     pynput_win32 = None  # type: ignore
 try:
-    from ui_testing.automation.driver import AutomationSession  # type: ignore
+    from ui_testing.automation.driver import AutomationSession, DEFAULT_WINDOW_SPEC, WindowSpec  # type: ignore
 except Exception:
     AutomationSession = None  # type: ignore
+    DEFAULT_WINDOW_SPEC = None  # type: ignore
+    WindowSpec = None  # type: ignore
 
 # EXE-safe imports
 try:
@@ -33,6 +36,58 @@ except Exception:
         from action import Action  # type: ignore  # noqa: F401
         from util import ensure_png_name  # type: ignore
 
+# Shared locator helpers
+try:
+    from ui_testing.automation.locator import LocatorService, is_generic_automation_id
+except Exception:
+    try:
+        from .locator import LocatorService, is_generic_automation_id  # type: ignore
+    except Exception:
+        class LocatorService:  # type: ignore[no-redef]
+            def __init__(self, manifest=None) -> None:
+                self._manifest = manifest or {}
+
+            def update_manifest(self, manifest) -> None:
+                self._manifest = manifest or {}
+
+            def contains(self, automation_id):
+                if automation_id is None:
+                    return False
+                return False
+
+            def semantic_metadata(self, automation_id, control_type=None, registry=None):
+                if not automation_id:
+                    return None
+                payload = {"automation_id": str(automation_id)}
+                if control_type:
+                    payload["control_type"] = control_type
+                if registry is not None and hasattr(registry, "get"):
+                    try:
+                        entry = registry.get(str(automation_id))
+                    except Exception:
+                        entry = None
+                    if entry is not None:
+                        payload["group"] = getattr(entry, "group", None)
+                        payload["name"] = getattr(entry, "name", None)
+                        desc = getattr(entry, "description", None)
+                        if desc:
+                            payload["description"] = desc
+                        ctrl = getattr(entry, "control_type", None)
+                        if ctrl and "control_type" not in payload:
+                            payload["control_type"] = ctrl
+                return payload
+
+        def is_generic_automation_id(value: Optional[str]) -> bool:  # type: ignore
+            if not value:
+                return True
+            lowered = str(value).strip().lower()
+            return lowered in {"", "window", "pane", "mainwindowcontrol"}
+from ui_testing.tools.calibration import (
+    CalibrationProfile,
+    capture_window_anchor,
+    load_profile,
+    save_profile,
+)
 # add near the top, after other imports
 try:
     from pywinauto import Desktop
@@ -69,7 +124,7 @@ except Exception:
             return None
 
     def _make_semantic_metadata(self, auto_id: Optional[str], ctrl_type: Optional[str]) -> Optional[Dict[str, Any]]:
-        if not auto_id or _is_generic_automation_id(auto_id):
+        if not auto_id or is_generic_automation_id(auto_id):
             return None
         payload: Dict[str, Any] = {"automation_id": str(auto_id)}
         if ctrl_type:
@@ -93,15 +148,6 @@ except Exception:
         raise RuntimeError("Semantic automation context unavailable")
 
 logger = logging.getLogger(__name__)
-
-_GENERIC_AUTOMATION_IDS = {"", "window", "pane", "mainwindowcontrol"}
-
-
-def _is_generic_automation_id(value: Optional[str]) -> bool:
-    if not value:
-        return True
-    lowered = str(value).strip().lower()
-    return lowered in _GENERIC_AUTOMATION_IDS
 
 
 def _guard_pynput_handler() -> None:
@@ -138,11 +184,17 @@ class RecorderConfig:
     taskbar_crop_px: int = 60
     gui_hwnd: Optional[int] = None
     always_record_text: bool = True
-    default_delay: float = 0.5 
+    default_delay: float = 0.5
+    calibration_profile: Optional[str] = None
+    calibration_dir: Optional[Path] = None
+    window_spec: Optional[Any] = None  # WindowSpec when available
+    automation_manifest: Optional[Dict[str, Dict[str, Dict[str, Any]]]] = None
 
 class Recorder:
     def __init__(self, config: RecorderConfig) -> None:
         self.config = config
+        if getattr(self.config, "window_spec", None) is None and DEFAULT_WINDOW_SPEC is not None:
+            self.config.window_spec = DEFAULT_WINDOW_SPEC
         self.actions: List[Action] = []
         self.running = False
         self._text_buffer: List[str] = []
@@ -163,7 +215,45 @@ class Recorder:
         self._semantic_context: Optional[SemanticContext] = None
         self._semantic_registry_cache: Optional[AutomationRegistry] = None
         self._semantic_disabled = False
+        self._locator = LocatorService(config.automation_manifest or {})
         self._manifest_rect_cache: Dict[str, Tuple[int, int, int, int]] = {}
+        self._calibration_profile: Optional[CalibrationProfile] = None
+        self._calibration_anchor: Optional[Tuple[int, int]] = None
+        self._initialize_calibration()
+
+    def _initialize_calibration(self) -> None:
+        profile_name = getattr(self.config, "calibration_profile", None)
+        base_dir = getattr(self.config, "calibration_dir", None)
+        if not profile_name or base_dir is None:
+            self._calibration_profile = None
+            self._calibration_anchor = None
+            return
+        anchor = capture_window_anchor(getattr(self.config, "window_spec", None))
+        if anchor is None:
+            logger.warning("Calibration profile '%s' requested but ENFIRE window anchor unavailable.", profile_name)
+            self._calibration_profile = None
+            self._calibration_anchor = None
+            return
+        ax, ay, width, height = anchor
+        profile = load_profile(base_dir, profile_name)
+        if profile is None:
+            profile = CalibrationProfile(
+                name=profile_name,
+                anchor_x=int(ax),
+                anchor_y=int(ay),
+                width=width,
+                height=height,
+            )
+        else:
+            profile.anchor_x = int(ax)
+            profile.anchor_y = int(ay)
+            profile.width = width
+            profile.height = height
+            profile.updated_at = datetime.now(timezone.utc).isoformat()
+        save_profile(base_dir, profile)
+        self._calibration_profile = profile
+        self._calibration_anchor = (int(ax), int(ay))
+        logger.info("Calibration profile '%s' updated with anchor (%s, %s)", profile_name, ax, ay)
 
     def start(self) -> None:
         self.running = True
@@ -193,6 +283,21 @@ class Recorder:
         if dt > 10:
             dt = 10.0
         return round(dt, 3)
+
+    def _relative_coords(self, x: int, y: int) -> Tuple[Optional[int], Optional[int]]:
+        if self._calibration_anchor is None:
+            return None, None
+        ax, ay = self._calibration_anchor
+        return int(x) - int(ax), int(y) - int(ay)
+
+    def _relative_path(self, points: List[Tuple[int, int]]) -> Optional[List[List[int]]]:
+        if self._calibration_anchor is None:
+            return None
+        rel_points: List[List[int]] = []
+        ax, ay = self._calibration_anchor
+        for px, py in points:
+            rel_points.append([int(px) - int(ax), int(py) - int(ay)])
+        return rel_points
 
 
     def stop(self) -> None:
@@ -297,6 +402,10 @@ class Recorder:
                 self._semantic_context = get_semantic_context()
             if self._semantic_registry_cache is None:
                 self._semantic_registry_cache = self._semantic_context.registry
+                if self._semantic_registry_cache is not None:
+                    self._refresh_locator_from_registry(self._semantic_registry_cache)
+            elif not self._locator.manifest:
+                self._refresh_locator_from_registry(self._semantic_registry_cache)
             return self._semantic_registry_cache
         except Exception as exc:
             logger.debug("Semantic registry unavailable: %s", exc)
@@ -306,25 +415,36 @@ class Recorder:
             return None
 
     def _make_semantic_metadata(self, auto_id: Optional[str], ctrl_type: Optional[str]) -> Optional[Dict[str, Any]]:
-        if not auto_id:
-            return None
-        payload: Dict[str, Any] = {"automation_id": str(auto_id)}
-        if ctrl_type:
-            payload["control_type"] = str(ctrl_type)
         registry = self._semantic_registry()
-        if registry is None:
-            return payload
-        entry = registry.get(str(auto_id))
-        if entry is None:
-            logger.debug("Semantic metadata skipped; AutomationId '%s' not in manifest.", auto_id)
-            return None
-        payload["group"] = entry.group
-        payload["name"] = entry.name
-        if entry.control_type and "control_type" not in payload:
-            payload["control_type"] = entry.control_type
-        if entry.description:
-            payload["description"] = entry.description
-        return payload
+        return self._locator.semantic_metadata(auto_id, ctrl_type, registry)
+
+    def _refresh_locator_from_registry(self, registry: AutomationRegistry) -> None:
+        manifest: Dict[str, Dict[str, Dict[str, Any]]] = {}
+        try:
+            for group in getattr(registry, "groups", lambda: [])():
+                entries = registry.by_group(group)
+                if not entries:
+                    continue
+                manifest[group] = {}
+                for name, entry in entries.items():
+                    manifest[group][name] = {
+                        "automation_id": entry.automation_id,
+                        "control_type": entry.control_type,
+                        "description": entry.description,
+                    }
+        except Exception as exc:
+            logger.debug("Unable to rebuild manifest from registry: %s", exc)
+            return
+        if manifest:
+            existing = {
+                group: dict(entries)
+                for group, entries in self._locator.manifest.items()
+            }
+            for group, entries in existing.items():
+                target = manifest.setdefault(group, {})
+                for name, payload in entries.items():
+                    target.setdefault(name, payload)
+            self._locator.update_manifest(manifest)
 
     def _resolve_automation_target(self, x: int, y: int) -> Tuple[Optional[Any], Optional[str], Optional[str]]:
         if Desktop is None:
@@ -347,7 +467,7 @@ class Recorder:
                 break
             auto_id = getattr(info, "automation_id", None) or None
             ctrl_type = getattr(info, "control_type", None) or ctrl_type_hint
-            if auto_id and not _is_generic_automation_id(auto_id):
+            if auto_id and not is_generic_automation_id(auto_id):
                 if element is not None and current is not element:
                     try:
                         logger.debug("Resolved AutomationId '%s' via ancestor (depth=%d)", auto_id, depth)
@@ -390,7 +510,7 @@ class Recorder:
             return None, None
         for entry in entries:
             auto_id = getattr(entry, "automation_id", None)
-            if not auto_id or _is_generic_automation_id(auto_id):
+            if not auto_id or is_generic_automation_id(auto_id):
                 continue
             rect = self._manifest_rect_cache.get(auto_id)
             wrapper = None
@@ -447,6 +567,8 @@ class Recorder:
                 return
 
             self._commit_text_buffer()
+            rel_x, rel_y = self._relative_coords(x, y)
+            calibration_profile = self._calibration_profile.name if self._calibration_profile else None
 
             auto_id: Optional[str] = None
             ctrl_type: Optional[str] = None
@@ -454,7 +576,7 @@ class Recorder:
             if Desktop is not None:
                 target_elem, auto_id, ctrl_type = self._resolve_automation_target(x, y)
             manifest_wrapper: Optional[Any] = None
-            if auto_id is None or _is_generic_automation_id(auto_id):
+            if auto_id is None or is_generic_automation_id(auto_id):
                 entry, wrapper = self._resolve_manifest_entry_at_point(int(x), int(y))
                 if entry is not None:
                     auto_id = getattr(entry, "automation_id", auto_id)
@@ -478,6 +600,9 @@ class Recorder:
                 y=y,
                 delay=self._elapsed(),
                 button=btn_name,
+                rel_x=rel_x,
+                rel_y=rel_y,
+                calibration_profile=calibration_profile,
             )
 
             prop_snapshot: Optional[Tuple[str, str]] = None
@@ -505,6 +630,8 @@ class Recorder:
                 "semantic": semantic_meta,
                 "down_index": len(self.actions) - 1,
                 "down_delay": action.delay,
+                "rel_coords": (rel_x, rel_y),
+                "calibration_profile": calibration_profile,
             }
             meta = ""
             if resolved_auto_id or resolved_ctrl_type:
@@ -525,6 +652,7 @@ class Recorder:
         self._commit_text_buffer()
         release_delay = self._elapsed()
         click_recorded = False
+        release_rel = self._relative_coords(x, y)
 
         if state is not None:
             self._record_mouse_move(btn_name, x, y, force=True)
@@ -556,6 +684,7 @@ class Recorder:
                         should_record_drag = True
 
                     if should_record_drag:
+                        rel_path = self._relative_path(sampled)
                         drag_action = Action(
                             action_type='drag',
                             x=sampled[-1][0],
@@ -564,6 +693,8 @@ class Recorder:
                             button=btn_name,
                             path=[[int(px), int(py)] for px, py in sampled],
                             drag_duration=drag_elapsed,
+                            rel_path=rel_path,
+                            calibration_profile=self._calibration_profile.name if self._calibration_profile else None,
                         )
                         self.actions.append(drag_action)
                         if drag_elapsed is not None:
@@ -598,6 +729,10 @@ class Recorder:
                     down_action.button = btn_name
                     down_action.auto_id = auto_id
                     down_action.control_type = ctrl_type
+                    rel_coords = state.get("rel_coords")
+                    if rel_coords:
+                        down_action.rel_x, down_action.rel_y = rel_coords
+                    down_action.calibration_profile = state.get("calibration_profile")
                     if semantic_meta:
                         down_action.semantic = semantic_meta
                     if down_delay is not None:
@@ -609,6 +744,9 @@ class Recorder:
                         y=int(y),
                         delay=release_delay,
                         button=btn_name,
+                        rel_x=(state.get("rel_coords") or release_rel)[0] if state else release_rel[0],
+                        rel_y=(state.get("rel_coords") or release_rel)[1] if state else release_rel[1],
+                        calibration_profile=state.get("calibration_profile") if state else (self._calibration_profile.name if self._calibration_profile else None),
                     )
                     if auto_id:
                         click_action.auto_id = auto_id
@@ -630,6 +768,9 @@ class Recorder:
             y=y,
             delay=release_delay,
             button=btn_name,
+            rel_x=release_rel[0],
+            rel_y=release_rel[1],
+            calibration_profile=self._calibration_profile.name if self._calibration_profile else None,
         )
         self.actions.append(action)
         logger.info(f"Recorded: mouse_up({btn_name}) at ({x}, {y})")

@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Tuple, Optional, Set, Sequence
 import re
 from datetime import datetime
 import pyautogui
-import numpy as np
-from PIL import Image, ImageChops
+from PIL import Image
 
 # NEW: guarded pywinauto import (so EXE still runs even if not installed)
 
@@ -62,13 +61,11 @@ except Exception:
     def get_semantic_context(*args, **kwargs):  # type: ignore
         raise PywinautoUnavailableError("Semantic context unavailable")
 try:
-    from ui_testing.automation.vision.ssim import compare_with_ssim
-except Exception:
-    compare_with_ssim = None  # type: ignore
-try:
     from ui_testing.automation.flake_tracker import FlakeTracker
 except Exception:
     FlakeTracker = None  # type: ignore
+from ui_testing.automation.player_components.screenshots import ScreenshotComparator, ScreenshotResult
+from ui_testing.automation.player_components.metrics import PlaybackMetrics
 try:
     from ui_testing.automation.reporting.allure_helpers import attach_file, attach_image
 except Exception:
@@ -78,16 +75,126 @@ try:
     from ui_testing.automation.state_snapshots import validate_exports
 except Exception:
     validate_exports = None  # type: ignore
+from ui_testing.tools.calibration import (
+    capture_window_anchor,
+    compute_offset,
+    load_profile,
+)
+try:
+    from ui_testing.automation.locator import (
+        LocatorService,
+        ManifestIndex,
+        is_generic_automation_id,
+        normalize_manifest,
+    )
+except Exception:
+    try:
+        from .locator import LocatorService, ManifestIndex, is_generic_automation_id, normalize_manifest  # type: ignore
+    except Exception:
+        @dataclass  # type: ignore[misc]
+        class ManifestIndex:  # type: ignore[no-redef]
+            groups: Dict[str, Dict[str, Dict[str, Any]]] = None  # type: ignore[assignment]
+            lookup: Dict[str, Tuple[str, str]] = None  # type: ignore[assignment]
+
+            def __post_init__(self) -> None:
+                if self.groups is None:
+                    self.groups = {}
+                if self.lookup is None:
+                    self.lookup = {}
+
+            def get(self, automation_id: str):
+                return self.lookup.get(str(automation_id))
+
+            def contains(self, automation_id: str) -> bool:
+                return str(automation_id) in self.lookup
+
+        def normalize_manifest(manifest):  # type: ignore
+            instance = ManifestIndex()
+            if isinstance(manifest, dict):
+                instance.groups = manifest  # type: ignore[assignment]
+                instance.lookup = {}
+                for group, mapping in manifest.items():
+                    if isinstance(mapping, dict):
+                        for name, payload in mapping.items():
+                            auto_id = None
+                            if isinstance(payload, dict):
+                                auto_id = payload.get("automation_id") or payload.get("id")
+                            else:
+                                auto_id = str(payload)
+                            if auto_id:
+                                instance.lookup[str(auto_id)] = (str(group), str(name))
+            return instance
+
+        def is_generic_automation_id(value):  # type: ignore
+            if not value:
+                return True
+            lowered = str(value).strip().lower()
+            return lowered in {"", "window", "pane", "mainwindowcontrol"}
+
+        class LocatorService:  # type: ignore[no-redef]
+            def __init__(self, manifest=None) -> None:
+                self.update_manifest(manifest)
+
+            def update_manifest(self, manifest) -> None:
+                self._index = normalize_manifest(manifest or {})
+
+            @property
+            def manifest(self):
+                return getattr(self._index, "groups", {})
+
+            @property
+            def lookup(self):
+                return getattr(self._index, "lookup", {})
+
+            def contains(self, automation_id):
+                if automation_id is None:
+                    return False
+                return str(automation_id) in self.lookup
+
+            def manifest_entry(self, automation_id):
+                if automation_id is None:
+                    return None
+                key = getattr(self._index, "lookup", {}).get(str(automation_id))
+                if not key:
+                    return None
+                group, name = key
+                return self.manifest.get(group, {}).get(name)
+
+            def semantic_metadata(self, automation_id, control_type=None, registry=None):
+                if not automation_id or is_generic_automation_id(automation_id):
+                    return None
+                payload = {"automation_id": str(automation_id)}
+                if control_type:
+                    payload["control_type"] = control_type
+                if registry is not None and hasattr(registry, "get"):
+                    try:
+                        entry = registry.get(str(automation_id))
+                    except Exception:
+                        entry = None
+                    if entry is not None:
+                        payload["group"] = getattr(entry, "group", None)
+                        payload["name"] = getattr(entry, "name", None)
+                        ctrl = getattr(entry, "control_type", None)
+                        if ctrl and "control_type" not in payload:
+                            payload["control_type"] = ctrl
+                        desc = getattr(entry, "description", None)
+                        if desc:
+                            payload["description"] = desc
+                        return payload
+                lookup_entry = getattr(self._index, "lookup", {}).get(str(automation_id))
+                if lookup_entry:
+                    group, name = lookup_entry
+                    payload["group"] = group
+                    payload["name"] = name
+                    meta = self.manifest.get(group, {}).get(name, {})
+                    desc = meta.get("description")
+                    if desc:
+                        payload["description"] = desc
+                    ctrl = meta.get("control_type")
+                    if ctrl and "control_type" not in payload:
+                        payload["control_type"] = ctrl
+                return payload
 logger = logging.getLogger(__name__)
-
-_GENERIC_AUTOMATION_IDS = {"", "window", "pane", "mainwindowcontrol"}
-
-
-def _is_generic_automation_id(value: Optional[str]) -> bool:
-    if not value:
-        return True
-    lowered = str(value).strip().lower()
-    return lowered in _GENERIC_AUTOMATION_IDS
 
 @dataclass
 class PlayerConfig:
@@ -114,18 +221,30 @@ class PlayerConfig:
     state_snapshot_dir: Optional[Path] = None
     semantic_wait_timeout: float = 1.0
     semantic_poll_interval: float = 0.05
+    calibration_profile: Optional[str] = None
+    calibration_dir: Optional[Path] = None
+    window_spec: Optional[WindowSpec] = None
 
 
 class Player:
     def __init__(self, config: PlayerConfig) -> None:
         self.config = config
+        if getattr(self.config, "window_spec", None) is None and DEFAULT_WINDOW_SPEC is not None:
+            self.config.window_spec = DEFAULT_WINDOW_SPEC
+        self._locator = LocatorService(config.automation_manifest or {})
         self.update_automation_manifest(config.automation_manifest or {})
+        self._calibration_profile = None
+        self._current_anchor: Optional[Tuple[int, int]] = None
+        self._calibration_offset: Tuple[int, int] = (0, 0)
+        self._initialize_calibration()
 
-        self._ssim_available = compare_with_ssim is not None
-        if not self._ssim_available and getattr(self.config, "use_ssim", False):
+        self._screenshot_comparator = ScreenshotComparator(
+            use_ssim=getattr(config, "use_ssim", False),
+            ssim_threshold=getattr(config, "ssim_threshold", 0.99),
+        )
+        if getattr(self.config, "use_ssim", False) and not self._screenshot_comparator.using_ssim:
             logger.warning(
-                "SSIM comparisons requested but scikit-image is not available. "
-                "Disabling SSIM for this session."
+                "SSIM comparisons requested but scikit-image is not available. Disabling SSIM for this session."
             )
             self.config.use_ssim = False
 
@@ -136,10 +255,7 @@ class Player:
         self._semantic_context: Optional[SemanticContext] = None
         self._semantic_disabled = False
         self._semantic_mode_active: bool = False
-        self._click_mode_counts: Dict[str, int] = {"semantic": 0, "uia": 0, "coordinate": 0}
-        self._click_mode_history: List[str] = []
-        self._drag_mode_count: int = 0
-        self._drag_mode_history: List[str] = []
+        self._metrics = PlaybackMetrics()
         self._semantic_registry_cache = None
         self._allure_enabled = bool(getattr(config, "enable_allure", True) and attach_image is not None)
         self._state_snapshot_dir = Path(config.state_snapshot_dir) if getattr(config, "state_snapshot_dir", None) else None
@@ -156,43 +272,15 @@ class Player:
     @property
     def ssim_available(self) -> bool:
         """Return True when SSIM comparisons can run (scikit-image is installed)."""
-        return self._ssim_available
+        return self._screenshot_comparator.ssim_available
 
     def update_automation_manifest(
         self, manifest: Optional[Dict[str, Dict[str, Dict[str, Any]]]]
     ) -> None:
-        structured: Dict[str, Dict[str, Dict[str, Any]]] = {}
-        lookup: Dict[str, Tuple[str, str]] = {}
-        source = manifest or {}
-        for group, mapping in source.items():
-            if not isinstance(mapping, dict):
-                continue
-            group_key = str(group)
-            group_entries: Dict[str, Dict[str, Any]] = {}
-            for name, payload in mapping.items():
-                auto_id: Optional[str] = None
-                metadata: Dict[str, Any]
-                if isinstance(payload, dict):
-                    auto_id = payload.get("automation_id") or payload.get("id")
-                    if auto_id:
-                        metadata = dict(payload)
-                        metadata["automation_id"] = str(auto_id)
-                    else:
-                        continue
-                else:
-                    auto_id = str(payload)
-                    if not auto_id:
-                        continue
-                    metadata = {"automation_id": auto_id}
-                name_key = str(name)
-                group_entries[name_key] = metadata
-                lookup[str(auto_id)] = (group_key, name_key)
-            if group_entries:
-                structured[group_key] = group_entries
+        self._locator.update_manifest(manifest or {})
+        structured = self._locator.manifest
         self.automation_manifest = structured
         self.config.automation_manifest = structured
-        self._automation_lookup = lookup
-
 
         self._explorer_controller = None
 
@@ -205,6 +293,76 @@ class Player:
 
         except Exception:
             pass
+
+    def _initialize_calibration(self) -> None:
+        profile_name = getattr(self.config, "calibration_profile", None)
+        base_dir = getattr(self.config, "calibration_dir", None)
+        if not profile_name or base_dir is None:
+            self._calibration_profile = None
+            self._current_anchor = None
+            self._calibration_offset = (0, 0)
+            return
+        profile = load_profile(base_dir, profile_name)
+        if profile is None:
+            logger.debug("Calibration profile '%s' not found in %s", profile_name, base_dir)
+            self._calibration_profile = None
+            self._current_anchor = None
+            self._calibration_offset = (0, 0)
+            return
+        anchor = capture_window_anchor(getattr(self.config, "window_spec", None))
+        if anchor is None:
+            logger.warning("Calibration profile '%s' requested but ENFIRE window anchor unavailable.", profile_name)
+            self._calibration_profile = None
+            self._current_anchor = None
+            self._calibration_offset = (0, 0)
+            return
+        dx, dy = compute_offset(profile, (anchor[0], anchor[1]))
+        self._calibration_profile = profile
+        self._current_anchor = (int(anchor[0]), int(anchor[1]))
+        self._calibration_offset = (dx, dy)
+        if dx or dy:
+            logger.info("Applied calibration offset (%s, %s) using profile '%s'", dx, dy, profile.name)
+
+    def _calibrated_point(self, x: int, y: int) -> Tuple[int, int]:
+        dx, dy = self._calibration_offset
+        if dx == 0 and dy == 0:
+            return x, y
+        return x + dx, y + dy
+
+    def _resolve_point(self, action: Optional[Dict[str, Any]], x: int, y: int) -> Tuple[int, int]:
+        rel_x = self._extract_action_value(action, "rel_x")
+        rel_y = self._extract_action_value(action, "rel_y")
+        if rel_x is not None and rel_y is not None and self._current_anchor is not None:
+            try:
+                return int(self._current_anchor[0]) + int(rel_x), int(self._current_anchor[1]) + int(rel_y)
+            except Exception:
+                pass
+        return self._calibrated_point(x, y)
+
+    def _resolve_path(
+        self, action: Optional[Dict[str, Any]], coords: List[Tuple[int, int]]
+    ) -> List[Tuple[int, int]]:
+        rel_path = self._extract_action_value(action, "rel_path")
+        if rel_path and self._current_anchor is not None:
+            anchor_x, anchor_y = self._current_anchor
+            resolved: List[Tuple[int, int]] = []
+            for point in rel_path:
+                try:
+                    px, py = int(point[0]), int(point[1])
+                except Exception:
+                    continue
+                resolved.append((anchor_x + px, anchor_y + py))
+            if resolved:
+                return resolved
+        return [self._calibrated_point(px, py) for px, py in coords]
+
+    @staticmethod
+    def _extract_action_value(action: Optional[Dict[str, Any]], key: str):
+        if action is None:
+            return None
+        if isinstance(action, dict):
+            return action.get(key)
+        return getattr(action, key, None)
 
     def _semantic_context_kwargs(self) -> Dict[str, Any]:
         kwargs: Dict[str, Any] = {
@@ -341,32 +499,6 @@ class Player:
             except Exception:
                 pass
 
-    def _note_click_mode(
-        self,
-        mode: str,
-        auto_id: Optional[str],
-        control_type: Optional[str],
-        coords: Tuple[int, int],
-    ) -> None:
-        if mode not in self._click_mode_counts:
-            self._click_mode_counts[mode] = 0
-        self._click_mode_counts[mode] += 1
-        detail = mode
-        if mode in {"semantic", "uia"}:
-            if auto_id:
-                detail += f":{auto_id}"
-            if control_type:
-                detail += f"[{control_type}]"
-        else:
-            detail += f":({coords[0]},{coords[1]})"
-            if auto_id and not _is_generic_automation_id(auto_id):
-                detail += f" from {auto_id}"
-        self._click_mode_history.append(detail)
-
-    def _note_drag_mode(self, button: str, point_count: int) -> None:
-        self._drag_mode_count += 1
-        self._drag_mode_history.append(f"{button}:{point_count}pts")
-
     def _log_uia_hint(self, exc: Exception) -> None:
         if self._uia_warning_logged:
             return
@@ -451,10 +583,7 @@ class Player:
             actions: List[Dict[str, Any]] = json.load(f)
 
         results: List[Dict[str, Any]] = []
-        self._click_mode_counts = {"semantic": 0, "uia": 0, "coordinate": 0}
-        self._click_mode_history = []
-        self._drag_mode_count = 0
-        self._drag_mode_history = []
+        self._metrics.reset()
         self._current_script = script_name
         self._held_buttons.clear()
         semantic_mode = (
@@ -518,9 +647,9 @@ class Player:
                     use_uia = (
                         semantic_mode
                         and auto_id
-                        and not _is_generic_automation_id(auto_id)
+                        and not is_generic_automation_id(auto_id)
                     )
-                    if use_uia and self._automation_lookup and str(auto_id) not in self._automation_lookup:
+                    if use_uia and not self._locator.contains(auto_id):
                         logger.debug("AutomationId %s not found in manifest; falling back to coordinates.", auto_id)
                         use_uia = False
 
@@ -569,13 +698,13 @@ class Player:
                                         f"Playback(Semantic): click auto_id='{auto_id}'"
                                         f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
                                     )
-                                    self._note_click_mode("semantic", auto_id, ctrl_type, (x, y))
+                                    self._metrics.note_click("semantic", auto_id, ctrl_type, (x, y))
                                 else:
                                     logger.info(
                                         f"Playback(UIA): click auto_id='{auto_id}'"
                                         f"{' ctrl=' + ctrl_type if ctrl_type else ''}"
                                     )
-                                    self._note_click_mode("uia", auto_id, ctrl_type, (x, y))
+                                    self._metrics.note_click("uia", auto_id, ctrl_type, (x, y))
                                 if self._semantic_mode_active and property_filter:
                                     self._wait_for_property(str(auto_id), ctrl_type, property_filter)
                                 time.sleep(0.005)
@@ -588,11 +717,15 @@ class Player:
                                 self._log_available_windows(self._normalized_title_regex() or "<unspecified>")
                                 self._log_uia_hint(e)
 
+                    cx, cy = self._resolve_point(action, x, y)
                     fallback_note = "" if auto_id else " [coordinate fallback]"
-                    logger.info(f"Playback: click at ({x}, {y}){fallback_note}")
+                    if (cx, cy) != (x, y):
+                        logger.info(f"Playback: click at ({x}, {y}) -> calibrated ({cx}, {cy}){fallback_note}")
+                    else:
+                        logger.info(f"Playback: click at ({x}, {y}){fallback_note}")
 
-                    pyautogui.click(x, y, _pause=False)
-                    self._note_click_mode("coordinate", auto_id, ctrl_type, (x, y))
+                    pyautogui.click(cx, cy, _pause=False)
+                    self._metrics.note_click("coordinate", auto_id, ctrl_type, (cx, cy))
         
                 elif a_type == "mouse_down":
                     x = int(action.get("x", 0))
@@ -601,15 +734,19 @@ class Player:
         
                     button = str(action.get("button") or "left").lower()
 
-                    logger.debug(f"Playback: mouse_down({button}) at ({x}, {y})")
+                    cx, cy = self._resolve_point(action, x, y)
+                    if (cx, cy) != (x, y):
+                        logger.debug(f"Playback: mouse_down({button}) at ({x}, {y}) -> ({cx}, {cy})")
+                    else:
+                        logger.debug(f"Playback: mouse_down({button}) at ({x}, {y})")
 
                     try:
-                        pyautogui.mouseDown(x=x, y=y, button=button, _pause=False)
+                        pyautogui.mouseDown(x=cx, y=cy, button=button, _pause=False)
                         self._held_buttons.add(button)
-                        self._last_mouse_down_pos = (x, y)
+                        self._last_mouse_down_pos = (cx, cy)
 
                     except Exception as exc:
-                        logger.warning(f"mouse_down failed at ({x}, {y}): {exc}")
+                        logger.warning(f"mouse_down failed at ({cx}, {cy}): {exc}")
         
                 elif a_type == "mouse_move":
                     button = action.get("button")
@@ -622,6 +759,7 @@ class Player:
 
                     if button:
                         coords: List[Tuple[int, int]] = []
+                        coord_actions: List[Dict[str, Any]] = []
                         j = i
                         raw_duration = 0.0
                         while j < total_actions:
@@ -629,6 +767,7 @@ class Player:
                             if next_action.get("action_type") != "mouse_move" or next_action.get("button") != button:
                                 break
                             coords.append((int(next_action.get("x", 0)), int(next_action.get("y", 0))))
+                            coord_actions.append(next_action)
                             try:
                                 delay_component = next_action.get("delay", 0.0) or 0.0
                                 raw_duration += max(float(delay_component), 0.0)
@@ -636,7 +775,19 @@ class Player:
                                 pass
                             j += 1
 
-                        coords = [pt for pt in coords if self._in_primary_monitor(pt[0], pt[1])]
+                        filtered_coords: List[Tuple[int, int]] = []
+                        filtered_actions: List[Optional[Dict[str, Any]]] = []
+                        for idx, (px, py) in enumerate(coords):
+                            if self._in_primary_monitor(px, py):
+                                filtered_coords.append((px, py))
+                                filtered_actions.append(coord_actions[idx] if idx < len(coord_actions) else None)
+                        coords = filtered_coords
+                        coord_actions = filtered_actions
+                        resolved_coords: List[Tuple[int, int]] = []
+                        for idx, (px, py) in enumerate(coords):
+                            source_action = coord_actions[idx] if idx < len(coord_actions) else None
+                            resolved_coords.append(self._resolve_point(source_action, px, py))
+                        coords = resolved_coords
 
                         if len(coords) > 1:
                             start_pos = self._last_mouse_down_pos
@@ -648,14 +799,15 @@ class Player:
                                 coords.insert(0, start_pos)
                             total_duration = raw_duration if raw_duration > 0 else None
                             self._play_drag_path(coords, button, total_duration)
-                            self._note_drag_mode(button, len(coords))
+                            self._metrics.note_drag(button, len(coords))
                             i = j
                             continue
                         else:
                             # Fallback to a simple move if no usable path
                             if coords:
                                 try:
-                                    pyautogui.moveTo(coords[-1][0], coords[-1][1], duration=move_duration, _pause=False)
+                                    px, py = coords[-1]
+                                    pyautogui.moveTo(px, py, duration=move_duration, _pause=False)
                                 except Exception as exc:
                                     logger.warning(f"mouse_move failed to ({coords[-1][0]}, {coords[-1][1]}): {exc}")
                             i = j
@@ -665,12 +817,13 @@ class Player:
                     y = int(action.get("y", 0))
 
                     try:
+                        cx, cy = self._resolve_point(action, x, y)
                         if move_duration > 0:
-                            pyautogui.moveTo(x, y, duration=move_duration, _pause=False)
+                            pyautogui.moveTo(cx, cy, duration=move_duration, _pause=False)
                         else:
-                            pyautogui.moveTo(x, y, _pause=False)
+                            pyautogui.moveTo(cx, cy, _pause=False)
                     except Exception as exc:
-                        logger.warning(f"mouse_move failed to ({x}, {y}): {exc}")
+                        logger.warning(f"mouse_move failed to ({cx}, {cy}): {exc}")
 
                 elif a_type == "mouse_up":
                     x = int(action.get("x", 0))
@@ -679,14 +832,18 @@ class Player:
         
                     button = str(action.get("button") or "left").lower()
         
-                    logger.debug(f"Playback: mouse_up({button}) at ({x}, {y})")
+                    cx, cy = self._resolve_point(action, x, y)
+                    if (cx, cy) != (x, y):
+                        logger.debug(f"Playback: mouse_up({button}) at ({x}, {y}) -> ({cx}, {cy})")
+                    else:
+                        logger.debug(f"Playback: mouse_up({button}) at ({x}, {y})")
 
                     try:
-                        pyautogui.mouseUp(x=x, y=y, button=button, _pause=False)
+                        pyautogui.mouseUp(x=cx, y=cy, button=button, _pause=False)
                         self._held_buttons.discard(button)
 
                     except Exception as exc:
-                        logger.warning(f"mouse_up failed at ({x}, {y}): {exc}")
+                        logger.warning(f"mouse_up failed at ({cx}, {cy}): {exc}")
                     finally:
                         self._last_mouse_down_pos = None
         
@@ -696,17 +853,29 @@ class Player:
                     button = str(action.get("button") or "left").lower()
         
                     coords: List[Tuple[int, int]] = []
-        
                     for point in raw_path:
                         try:
                             px, py = int(point[0]), int(point[1])
-        
                         except Exception:
                             continue
-        
                         coords.append((px, py))
-        
                     coords = [pt for pt in coords if self._in_primary_monitor(pt[0], pt[1])]
+                    rel_path = self._extract_action_value(action, "rel_path")
+                    if rel_path and self._current_anchor is not None:
+                        anchor_x, anchor_y = self._current_anchor
+                        resolved: List[Tuple[int, int]] = []
+                        for point in rel_path:
+                            try:
+                                px, py = int(point[0]), int(point[1])
+                            except Exception:
+                                continue
+                            resolved.append((anchor_x + px, anchor_y + py))
+                        if resolved:
+                            coords = resolved
+                        else:
+                            coords = [self._calibrated_point(pt[0], pt[1]) for pt in coords]
+                    else:
+                        coords = [self._calibrated_point(pt[0], pt[1]) for pt in coords]
         
                     if len(coords) > 1:
                         logger.debug(f"Playback: drag path ({len(coords)} points) [{button}]")
@@ -719,7 +888,7 @@ class Player:
                         except Exception:
                             drag_duration_val = None
                         self._play_drag_path(coords, button, drag_duration_val)
-                        self._note_drag_mode(button, len(coords))
+                        self._metrics.note_drag(button, len(coords))
 
                     else:
                         logger.debug("Playback: drag skipped (insufficient path points)")
@@ -769,30 +938,22 @@ class Player:
         
                     if dx or dy:
                         if x is not None and y is not None:
+                            xi, yi = self._resolve_point(action, int(x), int(y))
                             try:
                                 cur = pyautogui.position()
-        
                                 cx = int(getattr(cur, 'x', cur[0]))
-        
                                 cy = int(getattr(cur, 'y', cur[1]))
-        
                             except Exception:
                                 cx = cy = None
-        
                             try:
-                                if cx != int(x) or cy != int(y):
-                                    pyautogui.moveTo(int(x), int(y), duration=0)
-        
+                                if cx != xi or cy != yi:
+                                    pyautogui.moveTo(xi, yi, duration=0)
                             except Exception:
                                 pass
-        
-                            xi = int(x)
-        
-                            yi = int(y)
-        
+
                         else:
                             xi = yi = None
-        
+
                         if xi is not None and yi is not None and not self._in_primary_monitor(xi, yi):
                             logger.info(f"Playback: scroll ignored outside primary monitor at ({xi}, {yi})")
         
@@ -883,14 +1044,14 @@ class Player:
         
                     orig_path = img_dir / orig_name
         
-                    (
-                        passed,
-                        diff_pct,
-                        diff_path,
-                        highlight_path,
-                        ssim_score,
-                        ssim_threshold_value,
-                    ) = self._compare_and_highlight(orig_path, test_path)
+                    diff_tolerance = self._diff_tolerance()
+                    comparison = self._screenshot_comparator.compare(orig_path, test_path, diff_tolerance)
+                    passed = comparison.passed
+                    diff_pct = comparison.diff_percent
+                    diff_path = comparison.diff_path
+                    highlight_path = comparison.highlight_path
+                    ssim_score = comparison.ssim_score
+                    ssim_threshold_value = comparison.ssim_threshold
                     identifier = f"screenshot:{shot_idx}"
 
                     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -943,20 +1104,21 @@ class Player:
             validation_fail = any(r.get("status") == "fail" for r in results)
             validation_total = assert_count + screenshot_count
             note_parts = [f"Asserts: {assert_count}", f"Screenshots: {screenshot_count}"]
+            click_counts = self._metrics.click_counts
             note_parts.append(
                 "Clicks semantic/UIA/coords: "
-                f"{self._click_mode_counts.get('semantic', 0)}/"
-                f"{self._click_mode_counts.get('uia', 0)}/"
-                f"{self._click_mode_counts.get('coordinate', 0)}"
+                f"{click_counts.get('semantic', 0)}/"
+                f"{click_counts.get('uia', 0)}/"
+                f"{click_counts.get('coordinate', 0)}"
             )
-            if self._click_mode_counts.get("coordinate", 0):
+            if click_counts.get("coordinate", 0):
                 note_parts.append(
-                    f"Coordinates used for {self._click_mode_counts.get('coordinate', 0)} click(s)."
+                    f"Coordinates used for {click_counts.get('coordinate', 0)} click(s)."
                 )
             else:
                 note_parts.append("All clicks resolved via AutomationIds (semantic/UIA).")
-            if self._drag_mode_count:
-                note_parts.append(f"Drags replayed: {self._drag_mode_count} (coordinate path)")
+            if self._metrics.drag_count:
+                note_parts.append(f"Drags replayed: {self._metrics.drag_count} (coordinate path)")
             if validation_total == 0:
                 summary_status = "warn"
                 note_parts.append("No semantic assertions or screenshot checkpoints executed.")
@@ -980,10 +1142,17 @@ class Player:
             }
             results.append(summary_entry)
 
-            if self._click_mode_history:
-                logger.info("Click playback modes: %s", "; ".join(self._click_mode_history))
-            if self._drag_mode_history:
-                logger.info("Drag playback details: %s", "; ".join(self._drag_mode_history))
+            if self._metrics.click_history:
+                logger.info("Click playback modes: %s", "; ".join(self._metrics.click_history))
+            if self._metrics.drag_history:
+                logger.info("Drag playback details: %s", "; ".join(self._metrics.drag_history))
+            if click_counts.get("uia", 0) or click_counts.get("semantic", 0):
+                logger.info(
+                    "Non-coordinate modes handled %d clicks (semantic %d / UIA %d).",
+                    click_counts.get("uia", 0) + click_counts.get("semantic", 0),
+                    click_counts.get("semantic", 0),
+                    click_counts.get("uia", 0),
+                )
 
             self._run_state_snapshot_checks()
         finally:
@@ -1010,11 +1179,11 @@ class Player:
         if not auto_id:
             logger.warning("assert.property skipped (missing auto_id)")
             return
-        if _is_generic_automation_id(auto_id):
+        if is_generic_automation_id(auto_id):
             logger.debug("assert.property skipped for generic auto_id=%s", auto_id)
             return
         ctrl_type = action.get("control_type") or semantic_meta.get("control_type")
-        if self._automation_lookup and str(auto_id) not in self._automation_lookup:
+        if not self._locator.contains(auto_id):
             logger.debug("AutomationId %s not defined in manifest", auto_id)
             return
         prop_name = (
@@ -1101,284 +1270,17 @@ class Player:
         return shot
 
     def _compare_exact(self, orig_path: Path, test_path: Path) -> bool:
-        """Backward-compat entry; now delegates to tolerance-based compare."""
-
-        is_pass, *_ = self._compare_and_highlight(orig_path, test_path)
-        return is_pass
-    def _bounding_boxes_from_mask(self, mask: np.ndarray, cell: int = 12,
-
-                                min_area: int = 60, pad: int = 3) -> list[tuple[int,int,int,int]]:
-        """
-
-        Cluster a boolean mask into disjoint components using a coarse grid,
-
-        return a list of pixel-space bounding boxes (x0, y0, x1, y1).
-
-        - cell: size of coarse grid cell in pixels (larger = faster, fewer boxes)
-
-        - min_area: drop tiny boxes (in pixels, after final bbox)
-
-        - pad: expand each bbox by this many pixels on each side (clamped)
-
-        """
-
-        h, w = mask.shape
-
-        ys, xs = np.where(mask)
-
-        if len(xs) == 0:
-            return []
-
-        # Map pixels to coarse cells
-
-        gx = xs // cell
-
-        gy = ys // cell
-
-        cells = np.stack([gy, gx], axis=1)
-
-        # Unique cells containing diffs
-
-        uniq = np.unique(cells, axis=0)
-
-        # Build adjacency on grid (8-neighborhood)
-
-        from collections import defaultdict, deque
-
-        cell_set = {tuple(c) for c in uniq}
-
-        visited = set()
-
-        boxes = []
-
-        def cell_to_bbox(cy: int, cx: int):
-            # Coarse cell bounds in pixel space
-
-            y0 = cy * cell
-
-            x0 = cx * cell
-
-            y1 = min((cy + 1) * cell - 1, h - 1)
-
-            x1 = min((cx + 1) * cell - 1, w - 1)
-
-            return y0, x0, y1, x1
-
-        # Precompute a fine mask to refine bounds inside coarse unions
-
-        fine_mask = mask
-
-        for cy, cx in uniq:
-            if (cy, cx) in visited:
-                continue
-
-            # BFS over coarse neighbors
-
-            Q = deque([(cy, cx)])
-
-            visited.add((cy, cx))
-
-            comp_cells = [(cy, cx)]
-
-            while Q:
-                y, x = Q.popleft()
-
-                for dy in (-1, 0, 1):
-                    for dx in (-1, 0, 1):
-                        if dy == 0 and dx == 0:
-                            continue
-
-                        ny, nx = y + dy, x + dx
-
-                        if (ny, nx) in cell_set and (ny, nx) not in visited:
-                            visited.add((ny, nx))
-
-                            Q.append((ny, nx))
-
-                            comp_cells.append((ny, nx))
-
-            # Convert component coarse cells to a union bbox (coarse)
-
-            y0 = min(cy for cy, cx in comp_cells) * cell
-
-            x0 = min(cx for cy, cx in comp_cells) * cell
-
-            y1 = min((max(cy for cy, cx in comp_cells) + 1) * cell - 1, h - 1)
-
-            x1 = min((max(cx for cy, cx in comp_cells) + 1) * cell - 1, w - 1)
-
-            # Refine bbox using fine mask in that region (shrinks to true extents)
-
-            sub = fine_mask[y0:y1+1, x0:x1+1]
-
-            if sub.any():
-                sy, sx = np.where(sub)
-
-                ry0 = y0 + sy.min()
-
-                ry1 = y0 + sy.max()
-
-                rx0 = x0 + sx.min()
-
-                rx1 = x0 + sx.max()
-
-            else:
-                ry0, ry1, rx0, rx1 = y0, y1, x0, x1
-
-            # Pad and clamp
-
-            ry0 = max(0, ry0 - pad); rx0 = max(0, rx0 - pad)
-
-            ry1 = min(h - 1, ry1 + pad); rx1 = min(w - 1, rx1 + pad)
-
-            if (ry1 - ry0 + 1) * (rx1 - rx0 + 1) >= min_area:
-                boxes.append((rx0, ry0, rx1, ry1))
-
-        return boxes
-
-    def _compare_and_highlight(
-        self, orig_path: Path, test_path: Path
-    ) -> tuple[bool, float, Optional[Path], Optional[Path], Optional[float], Optional[float]]:
-        """Return (pass flag, pixel diff %, diff image path, highlight image path, SSIM score, SSIM threshold)."""
-
-        try:
-            if not orig_path.exists() or not test_path.exists():
-                logger.error(f"Missing image(s): {orig_path} | {test_path}")
-                return False, 100.0, None, None, None, None
-
-            o = Image.open(orig_path).convert("RGBA")
-            t = Image.open(test_path).convert("RGBA")
-            if o.size != t.size:
-                t = t.resize(o.size, Image.LANCZOS)
-
-            diff_path: Optional[Path] = None
-            highlight_path: Optional[Path] = None
-
-            ssim_score: Optional[float] = None
-            ssim_threshold_value: Optional[float] = None
-            ssim_pass = True
-            use_ssim = bool(getattr(self.config, "use_ssim", False)) and self._ssim_available
-            if use_ssim:
-                ssim_threshold = float(getattr(self.config, "ssim_threshold", 0.99))
-                ssim_threshold_value = ssim_threshold
-                try:
-                    ssim_pass, ssim_score = compare_with_ssim(o, t, ssim_threshold)
-                    logger.debug("SSIM score %.4f (threshold %.4f)", ssim_score, ssim_threshold)
-                except Exception as exc:
-                    logger.debug("SSIM comparison failed: %s", exc)
-                    ssim_pass = True
-                    ssim_score = None
-
-            a = np.asarray(o, dtype=np.int16)
-            b = np.asarray(t, dtype=np.int16)
-            absdiff = np.abs(a - b)
-            diff_mask = np.any(absdiff > 0, axis=2)
-            total = diff_mask.size
-            num_diff = int(diff_mask.sum())
-            diff_percent = (num_diff / total) * 100.0
-
-            # Save D image (black & white difference)
-            perpix = absdiff[..., :3].max(axis=2)
-            if perpix.max() > 0:
-                perpix = (perpix.astype(np.float32) / perpix.max()) * 255.0
-            d_img = Image.fromarray(perpix.astype(np.uint8), mode="L")
-            stem = test_path.stem
-            d_name = (stem[:-1] + "D") if stem and stem[-1] in ("T", "O") else (stem + "_D")
-            d_path_candidate = test_path.with_name(d_name + ".png")
-            try:
-                d_img.save(d_path_candidate)
-                diff_path = d_path_candidate
-            except Exception:
-                pass
-
-            # Save H image (overlay)
-            if num_diff > 0:
-                overlay = np.zeros_like(a)
-                overlay[..., 0] = 255
-                overlay[..., 3] = np.where(diff_mask, 96, 0)
-                hi = Image.alpha_composite(o, Image.fromarray(overlay.astype(np.uint8)))
-                boxes = self._bounding_boxes_from_mask(diff_mask, cell=12, min_area=60, pad=3)
-                arr = np.array(hi)
-                for (x0, y0, x1, y1) in boxes:
-                    arr[y0:y0+3, x0:x1+1] = [255, 0, 0, 255]
-                    arr[y1-2:y1+1, x0:x1+1] = [255, 0, 0, 255]
-                    arr[y0:y1+1, x0:x0+3] = [255, 0, 0, 255]
-                    arr[y0:y1+1, x1-2:x1+1] = [255, 0, 0, 255]
-                hi = Image.fromarray(arr, mode="RGBA")
-                h_name = (stem[:-1] + "H") if stem and stem[-1] in ("T", "O") else (stem + "_H")
-                h_path_candidate = test_path.with_name(h_name + ".png")
-                try:
-                    hi.save(h_path_candidate)
-                    highlight_path = h_path_candidate
-                except Exception:
-                    pass
-
-            tol = float(getattr(self.config, "diff_tolerance_percent", getattr(self.config, "diff_tolerance", 0.0)))
-            pixel_pass = diff_percent <= tol
-            is_pass = pixel_pass and (ssim_pass if use_ssim else True)
-            return is_pass, diff_percent, diff_path, highlight_path, ssim_score, ssim_threshold_value
-
-        except Exception as e:
-            logger.exception(f"Compare failed for {orig_path} vs {test_path}: {e}")
-            return False, 100.0, None, None, None, None
-
-    def _make_highlight_image(self, base_img: Image.Image, mask: np.ndarray) -> Image.Image:
-        """Return base_img with semi-transparent red overlay where mask is True, and a union bbox outline."""
-
-        h, w = mask.shape
-
-        # Create an RGBA from base
-
-        comp = base_img.convert("RGBA")
-
-        overlay = Image.new("RGBA", (w, h), (255, 0, 0, 0))
-
-        # Semi-transparent red where mask True
-
-        alpha = 96  # tweak intensity (0..255)
-
-        r = np.zeros((h, w, 4), dtype=np.uint8)
-
-        r[..., 0] = 255  # R
-
-        r[..., 3] = 0
-
-        r[mask, 3] = alpha
-
-        overlay = Image.fromarray(r, mode="RGBA")
-
-        comp = Image.alpha_composite(comp, overlay)
-
-        # Draw a union bounding box (single outline) for quick spotting
-
-        if mask.any():
-            ys, xs = np.where(mask)
-
-            y0, y1 = ys.min(), ys.max()
-
-            x0, x1 = xs.min(), xs.max()
-
-            # Draw rectangle  (simple 3px outline)
-
-            draw = Image.fromarray(np.array(comp))
-
-            arr = np.array(draw)
-
-            # top & bottom
-
-            arr[y0:y0+3, x0:x1+1] = [255, 0, 0, 255]
-
-            arr[y1-2:y1+1, x0:x1+1] = [255, 0, 0, 255]
-
-            # left & right
-
-            arr[y0:y1+1, x0:x0+3] = [255, 0, 0, 255]
-
-            arr[y0:y1+1, x1-2:x1+1] = [255, 0, 0, 255]
-
-            comp = Image.fromarray(arr, mode="RGBA")
-
-        return comp.convert("RGB")
+        result = self._screenshot_comparator.compare(orig_path, test_path, self._diff_tolerance())
+        return result.passed
+
+    def _diff_tolerance(self) -> float:
+        return float(
+            getattr(
+                self.config,
+                "diff_tolerance_percent",
+                getattr(self.config, "diff_tolerance", 0.0),
+            )
+        )
 
     def _split_hierarchy(self, script_name: str) -> Tuple[str, str, str]:
         p = Path(script_name)

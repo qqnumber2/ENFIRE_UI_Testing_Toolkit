@@ -27,6 +27,10 @@ class Action:
     expected: Optional[Any] = None
     compare: Optional[str] = None
     semantic: Optional[Dict[str, Any]] = None
+    rel_x: Optional[int] = None
+    rel_y: Optional[int] = None
+    rel_path: Optional[List[List[int]]] = None
+    calibration_profile: Optional[str] = None
 
 
 

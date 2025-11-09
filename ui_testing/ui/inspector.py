@@ -14,17 +14,19 @@ try:
     from pywinauto import Desktop  # type: ignore
 except Exception:  # pragma: no cover - optional dependency
     Desktop = None  # type: ignore
+try:
+    from ui_testing.automation.locator import is_generic_automation_id
+except Exception:  # pragma: no cover - fallback when package layout differs
+    try:
+        from ..automation.locator import is_generic_automation_id  # type: ignore
+    except Exception:  # pragma: no cover - final fallback
+        def is_generic_automation_id(value: Optional[str]) -> bool:  # type: ignore
+            if not value:
+                return True
+            lowered = str(value).strip().lower()
+            return lowered in {"", "window", "pane", "mainwindowcontrol"}
 
 logger = logging.getLogger(__name__)
-
-_GENERIC_AUTOMATION_IDS = {"", "window", "pane", "mainwindowcontrol"}
-
-
-def _is_generic_automation_id(value: Optional[str]) -> bool:
-    if not value:
-        return True
-    lowered = str(value).strip().lower()
-    return lowered in _GENERIC_AUTOMATION_IDS
 
 
 @dataclass(frozen=True)
@@ -220,7 +222,7 @@ class AutomationInspector:
         element = wrapper.element_info
         raw_auto_id = getattr(element, "automation_id", "") or ""
         auto_id = str(raw_auto_id).strip()
-        if _is_generic_automation_id(auto_id):
+        if is_generic_automation_id(auto_id):
             auto_id = ""
         _, nearest_auto_id = self._find_nearest_automation_id(wrapper)
         nearest_auto_id = str(nearest_auto_id).strip() if nearest_auto_id else ""
@@ -281,7 +283,7 @@ class AutomationInspector:
             except Exception:
                 break
             auto_id = getattr(element, "automation_id", "") or ""
-            if auto_id and not _is_generic_automation_id(auto_id):
+            if auto_id and not is_generic_automation_id(auto_id):
                 return current, auto_id
             try:
                 current = current.parent()
@@ -302,7 +304,7 @@ class AutomationInspector:
             label = getattr(element, "control_type", "") or getattr(element, "class_name", "") or "Element"
             auto_id = getattr(element, "automation_id", "") or ""
             name = getattr(element, "name", "") or ""
-            if auto_id and not _is_generic_automation_id(auto_id):
+            if auto_id and not is_generic_automation_id(auto_id):
                 descriptor = f"{label}#{auto_id}"
             elif name:
                 descriptor = f"{label}('{name}')"
