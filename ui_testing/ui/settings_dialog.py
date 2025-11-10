@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import tkinter as tk
+from typing import Callable, Sequence
+
 import ttkbootstrap as ttk
 
 
@@ -27,6 +29,11 @@ class SettingsDialog(ttk.Toplevel):
         app_regex_var: tk.StringVar,
         semantic_wait_timeout_var: tk.DoubleVar,
         semantic_poll_interval_var: tk.DoubleVar,
+        calibration_var: tk.StringVar,
+        calibration_choices: Sequence[str],
+        capture_calibration_callback: Callable[[], None],
+        refresh_calibration_callback: Callable[[], None],
+        open_calibration_dir_callback: Callable[[], None],
     ) -> None:
         super().__init__(master=master)
         self.title("Settings")
@@ -51,6 +58,11 @@ class SettingsDialog(ttk.Toplevel):
         self._app_regex_var = app_regex_var
         self._semantic_wait_timeout_var = semantic_wait_timeout_var
         self._semantic_poll_interval_var = semantic_poll_interval_var
+        self._calibration_var = calibration_var
+        self._calibration_choices = list(calibration_choices) if calibration_choices else [""]
+        self._capture_calibration_callback = capture_calibration_callback
+        self._refresh_calibration_callback = refresh_calibration_callback
+        self._open_calibration_dir_callback = open_calibration_dir_callback
 
         body = ttk.Frame(self, padding=16)
         body.pack(fill=tk.BOTH, expand=True)
@@ -184,6 +196,42 @@ class SettingsDialog(ttk.Toplevel):
             bootstyle="secondary",
         ).pack(anchor="w", pady=(4, 0))
 
+        calibration_frame = ttk.Labelframe(body, text="Calibration Profiles", padding=12)
+        calibration_frame.pack(fill=tk.X, expand=False, pady=(12, 0))
+        self._calibration_combo = ttk.Combobox(
+            calibration_frame,
+            state="readonly",
+            values=self._calibration_choices,
+            textvariable=self._calibration_var,
+            width=24,
+        )
+        self._calibration_combo.pack(fill=tk.X)
+        ttk.Label(
+            calibration_frame,
+            text="Select a profile to normalize coordinate fallbacks; leave blank to disable calibration.",
+            bootstyle="secondary",
+        ).pack(anchor="w", pady=(6, 4))
+        cal_btns = ttk.Frame(calibration_frame)
+        cal_btns.pack(fill=tk.X, expand=False)
+        ttk.Button(
+            cal_btns,
+            text="Capture New Profile",
+            command=self._capture_calibration,
+            bootstyle="outline",
+        ).pack(side=tk.LEFT, padx=(0, 6), pady=(0, 4))
+        ttk.Button(
+            cal_btns,
+            text="Refresh List",
+            command=self._refresh_calibration_choices,
+            bootstyle="outline",
+        ).pack(side=tk.LEFT, padx=(0, 6), pady=(0, 4))
+        ttk.Button(
+            cal_btns,
+            text="Open Folder",
+            command=self._open_calibration_dir,
+            bootstyle="outline",
+        ).pack(side=tk.LEFT, pady=(0, 4))
+
         button_row = ttk.Frame(body)
         button_row.pack(fill=tk.X, expand=False, pady=(16, 0))
         ttk.Button(button_row, text="Close", command=self._on_close, bootstyle="primary").pack(side=tk.RIGHT)
@@ -210,3 +258,22 @@ class SettingsDialog(ttk.Toplevel):
             self._theme_change_callback(self._theme_var.get())
         self.grab_release()
         self.destroy()
+
+    def refresh_calibration_choices(self, choices: Sequence[str]) -> None:
+        self._calibration_choices = list(choices) if choices else [""]
+        try:
+            self._calibration_combo.configure(values=self._calibration_choices)
+        except Exception:
+            pass
+
+    def _capture_calibration(self) -> None:
+        if callable(self._capture_calibration_callback):
+            self._capture_calibration_callback()
+
+    def _refresh_calibration_choices(self) -> None:
+        if callable(self._refresh_calibration_callback):
+            self._refresh_calibration_callback()
+
+    def _open_calibration_dir(self) -> None:
+        if callable(self._open_calibration_dir_callback):
+            self._open_calibration_dir_callback()

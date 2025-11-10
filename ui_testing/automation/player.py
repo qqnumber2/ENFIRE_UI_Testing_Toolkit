@@ -323,6 +323,11 @@ class Player:
         if dx or dy:
             logger.info("Applied calibration offset (%s, %s) using profile '%s'", dx, dy, profile.name)
 
+    def set_calibration(self, profile_name: Optional[str], calibration_dir: Optional[Path]) -> None:
+        self.config.calibration_profile = profile_name
+        self.config.calibration_dir = calibration_dir
+        self._initialize_calibration()
+
     def _calibrated_point(self, x: int, y: int) -> Tuple[int, int]:
         dx, dy = self._calibration_offset
         if dx == 0 and dy == 0:

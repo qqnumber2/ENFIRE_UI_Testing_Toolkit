@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 import tkinter as tk
-from tkinter import filedialog, messagebox, scrolledtext
+from tkinter import filedialog, messagebox, scrolledtext, simpledialog
 
 import ttkbootstrap as ttk
 from ttkbootstrap.toast import ToastNotification
@@ -53,6 +53,12 @@ from ui_testing.ui.panels import (
     open_path_in_explorer,
 )
 from ui_testing.ui.settings_dialog import SettingsDialog
+from ui_testing.tools.calibration import (
+    CalibrationProfile,
+    capture_window_anchor,
+    list_profiles,
+    save_profile,
+)
 
 _LOGGER = logging.getLogger(__name__)
 warnings.filterwarnings("ignore", message="Cannot parse header or footer.*", category=UserWarning, module="openpyxl")
@@ -101,9 +107,12 @@ class TestRunnerApp:
         self.semantic_wait_timeout_var = tk.DoubleVar(master=self.root, value=1.0)
         self.semantic_poll_interval_var = tk.DoubleVar(master=self.root, value=0.05)
         self.automation_backend_var = tk.StringVar(master=self.root, value="uia")
+        self.calibration_profile_var = tk.StringVar(master=self.root, value="")
         self.normalize_label_var = tk.StringVar(master=self.root, value="Normalize: Not set")
         self._theme_choices = sorted(set(self.root.style.theme_names()))
         self._ssim_warning_shown = False
+        self._calibration_profiles: List[str] = []
+        self._settings_dialog: Optional[SettingsDialog] = None
 
         # --- filesystem paths & persisted settings ---
         self.paths: Paths = build_default_paths()
@@ -113,6 +122,9 @@ class TestRunnerApp:
         self._runtime_config.apply_to_settings(self.settings)
         self.normalize_script: Optional[str] = self.settings.normalize_script
         self._apply_settings_to_variables()
+        self._calibration_profiles = self._load_calibration_profiles()
+        initial_calibration = getattr(self.settings, "calibration_profile", None) or ""
+        self.calibration_profile_var.set(initial_calibration)
         self.paths.tolerance = float(self.tolerance_var.get())
         self.automation_manifest: Dict[str, Dict[str, Dict[str, Any]]] = self._load_automation_manifest()
 
@@ -188,6 +200,8 @@ class TestRunnerApp:
         if not self.player.ssim_available and self.use_ssim_var.get():
             self._show_ssim_unavailable_warning()
             self.use_ssim_var.set(False)
+
+        self.calibration_profile_var.trace_add("write", lambda *_: self._on_calibration_profile_changed())
 
         # --- GUI assembly ---
         self.actions_panel: ActionsPanel
@@ -965,6 +979,7 @@ class TestRunnerApp:
             self._inspector_window = None
 
     def open_settings_dialog(self, _event: Optional[tk.Event] = None) -> None:
+        self._refresh_calibration_profiles()
         dialog = SettingsDialog(
             self.root,
             theme_var=self.theme_var,
@@ -984,7 +999,14 @@ class TestRunnerApp:
             app_regex_var=self._app_regex_var,
             semantic_wait_timeout_var=self.semantic_wait_timeout_var,
             semantic_poll_interval_var=self.semantic_poll_interval_var,
+            calibration_var=self.calibration_profile_var,
+            calibration_choices=self._calibration_profiles,
+            capture_calibration_callback=lambda: self._handle_capture_calibration(dialog),
+            refresh_calibration_callback=lambda: self._handle_refresh_calibration(dialog),
+            open_calibration_dir_callback=self._open_calibration_dir,
         )
+        self._settings_dialog = dialog
+        dialog.bind("<Destroy>", lambda *_: setattr(self, "_settings_dialog", None))
         self._popup_over_root(dialog)
 
     def semantic_upgrade_selected_scripts(self) -> None:
@@ -1161,7 +1183,12 @@ class TestRunnerApp:
     def show_instructions(self, _event: Optional[tk.Event] = None) -> None:
         win = tk.Toplevel(self.root)
         win.title("Instructions")
-        win.geometry("820x600")
+        win.geometry("1100x720")
+        try:
+            win.minsize(960, 640)
+        except Exception:
+            pass
+        win.resizable(True, True)
         try:
             win.iconbitmap(resource_path("assets/ui_testing.ico"))
         except Exception:
@@ -1177,6 +1204,7 @@ class TestRunnerApp:
                 "Purpose\n\n"
                 "- Automate ENFIRE with coordinate precision plus AutomationId-aware semantics; both modes stay active so legacy tests keep working while new metadata unlocks richer assertions.\n"
                 "- GUI and CLI ride the same recorder/player modules; anything you toggle here mirrors the headless workflow.\n\n"
+                "- Semantic-first defaults keep AutomationId targeting + assert.property validation enabled; coordinate clicks only run when metadata is missing so legacy content still executes.\n\n"
                 "Prerequisites\n\n"
                 "- Windows 10/11, Python 3.12+, ENFIRE installed and running under the same elevation as this toolkit, global hooks allowed for pynput, and optional Allure CLI for report attachments.\n"
                 "- Recommended flow: `python -m venv .venv`, activate, `pip install -r requirements.txt`, then `python -m ui_testing.gui`.\n\n"
@@ -1194,6 +1222,7 @@ class TestRunnerApp:
                 "3) Hotkeys: `p` records a screenshot checkpoint, `F` stops recording, `Ctrl+Alt+R` pauses/resumes, `Ctrl+Shift+S` toggles screenshot capture, `Ctrl+Shift+A` toggles AutomationId capture.\n"
                 "4) Scripts save to `ui_testing/data/scripts/<proc>/<section>/<test>.json`; screenshots save to `ui_testing/data/images/<proc>/<section>/<test>/000_STEP_INDEX{O|T}.png` (O = original baseline, T = target to compare later).\n"
                 "5) Automation manifest (`automation_ids.json`) is consulted live. If a control exposes a known AutomationId, the recorder attaches `semantic_locator` payloads and emits assert.property checkpoints so semantic playback can verify the exact widget.\n"
+                "- assert.property checkpoints are the primary verification channel for \"future mode\"—coordinate values stay in the JSON strictly as deterministic fallbacks.\n"
                 "6) Coordinate steps still record even when semantics exist, ensuring deterministic fallbacks. Use the Semantic Helper later to bulk-upgrade legacy recordings with assert.property nodes."
             ),
             (
@@ -1203,6 +1232,7 @@ class TestRunnerApp:
                 "- Resolver order per action: (1) AutomationId via manifest + semantic registry, (2) UIA traversal using control type/name/class, (3) calibrated screen coordinates. The Results grid logs which tier succeeded; failures bubble to the summary banner and logs.\n"
                 "- Validation toggles: 'Use Automation IDs', 'Prefer semantic assertions', 'Compare screenshots', 'Use SSIM', SSIM threshold, tolerance %, ignore delays, backend selection (UIA or Appium/WinAppDriver). Configure them via Settings or toolbar shortcuts.\n"
                 "- Normalize scripts (optional) execute before each procedure. They live under `ui_testing/data/scripts/_normalize/` and should reset ENFIRE to a clean state (e.g., open workspace, clear dialogs). Set/Clear them from the toolbar.\n"
+                "- Treat semantic assertions as the verdict of record: playback fails whenever assert.property mismatches occur, while coordinate clicks only fire when AutomationIds and UIA traversal cannot locate a control.\n"
                 "- Ensure Target Application regex (default `.*ENFIRE.*`) matches the live window title and that your calibration profile is current before playback."
             ),
             (
@@ -1220,6 +1250,7 @@ class TestRunnerApp:
                 "- `ui_testing/automation/manifest/automation_ids.json` defines AutomationIds, control types, friendly names, and descriptions aligned with ENFIRE's XAML. Regenerate via `automation/export_automation_ids.py` when ENFIRE adds controls.\n"
                 "- Recorder queries the manifest per event. When it finds a match it embeds `semantic_locator` hints plus `assert.property` checkpoints verifying AutomationId, Name, ControlType, and optional values. Coordinate data remains as fallback.\n"
                 "- Player honors Use Automation IDs + Prefer semantic assertions + semantic wait/poll settings. It waits up to the configured timeout for each semantic control, logs the outcome, and only falls back after exhausting manifest + UIA lookups.\n"
+                "- Future mode expectation: keep `Use Automation IDs` and `Prefer semantic assertions` enabled so every action validates ENFIRE's UI/UX contract; coordinate playback is accepted only as a last-tier escape hatch.\n"
                 "- Semantic Helper (toolbar) scans existing JSON to automatically inject missing semantic metadata or assertions, ensuring older suites benefit from newer manifest entries without re-recording.\n"
                 "- Automation Inspector shows live AutomationId/name/type/rectangle for the element beneath your cursor and indicates whether it exists in the manifest so ENFIRE engineers can fill gaps quickly."
             ),
@@ -1289,6 +1320,94 @@ class TestRunnerApp:
     # ------------------------------------------------------------------
     # Settings helpers
     # ------------------------------------------------------------------
+    def _load_calibration_profiles(self) -> List[str]:
+        try:
+            names = list_profiles(self.paths.data_root)
+        except Exception as exc:
+            _LOGGER.warning("Unable to enumerate calibration profiles: %s", exc)
+            names = []
+        return [""] + names
+
+    def _refresh_calibration_profiles(self, select: Optional[str] = None) -> List[str]:
+        choices = self._load_calibration_profiles()
+        self._calibration_profiles = choices
+        if select is not None:
+            self.calibration_profile_var.set(select or "")
+        if self._settings_dialog is not None:
+            try:
+                self._settings_dialog.refresh_calibration_choices(choices)
+            except Exception:
+                pass
+        return choices
+
+    def _handle_capture_calibration(self, _dialog: SettingsDialog) -> None:
+        self._capture_calibration_profile()
+
+    def _handle_refresh_calibration(self, _dialog: SettingsDialog) -> None:
+        self._refresh_calibration_profiles()
+
+    def _open_calibration_dir(self) -> None:
+        target = self.paths.data_root / "calibration"
+        target.mkdir(parents=True, exist_ok=True)
+        open_path_in_explorer(target)
+
+    def _capture_calibration_profile(self) -> bool:
+        name = simpledialog.askstring(
+            "Capture Calibration Profile",
+            "Enter a descriptive profile name:",
+            parent=self._settings_dialog or self.root,
+        )
+        if not name:
+            return False
+        profile_name = name.strip()
+        if not profile_name:
+            return False
+        anchor = capture_window_anchor(DEFAULT_WINDOW_SPEC)
+        if anchor is None:
+            messagebox.showerror(
+                "Calibration",
+                "Could not locate the ENFIRE window. Ensure ENFIRE is visible and matches the Target Application regex.",
+                parent=self._settings_dialog or self.root,
+            )
+            return False
+        ax, ay, width, height = anchor
+        profile = CalibrationProfile(
+            name=profile_name,
+            anchor_x=int(ax),
+            anchor_y=int(ay),
+            width=width,
+            height=height,
+        )
+        try:
+            save_profile(self.paths.data_root, profile)
+        except Exception as exc:
+            _LOGGER.exception("Failed to save calibration profile: %s", exc)
+            messagebox.showerror(
+                "Calibration",
+                f"Failed to save profile '{profile_name}':\n{exc}",
+                parent=self._settings_dialog or self.root,
+            )
+            return False
+        self._refresh_calibration_profiles(select=profile_name)
+        self._save_settings()
+        messagebox.showinfo(
+            "Calibration",
+            f"Saved calibration profile '{profile_name}'. Coordinate fallbacks will now normalize to this window anchor.",
+            parent=self._settings_dialog or self.root,
+        )
+        return True
+
+    def _on_calibration_profile_changed(self, *_: object) -> None:
+        raw_value = self.calibration_profile_var.get().strip()
+        profile_value = raw_value or None
+        self.settings.calibration_profile = profile_value
+        if hasattr(self, "player") and self.player is not None:
+            try:
+                self.player.set_calibration(profile_value, self.paths.data_root)
+            except Exception as exc:
+                _LOGGER.warning("Failed to apply calibration profile '%s': %s", profile_value, exc)
+        self._save_settings()
+
     def _popup_over_root(self, window: tk.Misc) -> None:
         try:
             self.root.update_idletasks()
