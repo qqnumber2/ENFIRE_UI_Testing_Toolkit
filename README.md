@@ -321,6 +321,13 @@ When writing custom tooling (e.g., script that pre-processes JSON actions), refe
 - `LocatorService` normalizes the manifest into `groups` + lookup dictionaries, filters generic AutomationIds, stores descriptions/control types, and provides helper APIs (`contains`, `manifest_entry`, `semantic_metadata`).
 - Recorder + player + automation inspector all peg off this service, guaranteeing consistent behavior across components.
 
+### How semantic assertions catch regressions
+
+1. **During recording** the toolkit resolves the AutomationId under the cursor. If it exists in the manifest, the recorder snapshots a stable property (`value` or `name`) from the element and emits an `assert.property` action with the captured expectation (see `ui_testing/automation/recorder.py:_append_assert_property`).
+2. **During playback** `_handle_assert_property` (in `player.py`) re-resolves the AutomationId via SemanticContext/UIA, re-reads the requested property, and compares it to the recorded expectation using the declared comparator (`equals` by default, `contains` when specified). Each assertion yields a structured result row (pass/fail, actual vs. expected, note) that feeds the Results grid, Excel summary, logs, and Allure attachments.
+3. **Manifest metadata** (group/name/description/control type) is stored alongside the action in the `semantic` block so investigators know exactly which ENFIRE control was validated. Newly added coverage (e.g., `CrossfireIds.ItemSelectorSearch`, `MediaPlaybackIds.*`, `VelocityToolIds.AttributeScrollRegion`, `SurfaceChromeIds.*`) ensures these semantic assertions can latch onto controls that previously fell back to blind coordinates.
+4. **Fallback handling** – if the AutomationId disappears or the property mismatches, playback marks the step as failed, logs the reason (`not found`, comparator mismatch, template error), and still proceeds to keep the rest of the script observable. Coordinate clicks only fire when semantic + UIA lookups cannot satisfy an action.
+
 ---
 
 ## Artifacts, Reporting, and Evidence

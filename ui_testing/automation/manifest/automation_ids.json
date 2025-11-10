@@ -395,5 +395,73 @@
     "VentilationType": "VentilationType",
     "RoadwayWidth": "RoadwayWidth",
     "YearConstructed": "YearConstructed"
+  },
+  "CrossfireIds": {
+    "ItemSelectorSearch": {
+      "automation_id": "DropDownSearch",
+      "control_type": "TextBox",
+      "description": "Search box within the Crossfire item selector view"
+    }
+  },
+  "VelocityToolIds": {
+    "AttributeScrollRegion": {
+      "automation_id": "AttributeScrollViewer",
+      "control_type": "SurfaceScrollViewer",
+      "description": "Velocity calculator attribute scroll region"
+    }
+  },
+  "MediaPlaybackIds": {
+    "PlaybackSingle": {
+      "automation_id": "PlaybackSingle",
+      "control_type": "Button",
+      "description": "Explorer media playback single-item toggle"
+    },
+    "PlaybackAll": {
+      "automation_id": "PlaybackAll",
+      "control_type": "Button",
+      "description": "Explorer media playback all-items toggle"
+    },
+    "RepeatSingle": {
+      "automation_id": "RepeatSingle",
+      "control_type": "Button",
+      "description": "Explorer media playback repeat single option"
+    },
+    "RepeatAll": {
+      "automation_id": "RepeatAll",
+      "control_type": "Button",
+      "description": "Explorer media playback repeat all option"
+    },
+    "PlaybackPrevious": {
+      "automation_id": "Previous",
+      "control_type": "Button",
+      "description": "Explorer media playback previous clip button"
+    },
+    "PlaybackPlay": {
+      "automation_id": "Play",
+      "control_type": "Button",
+      "description": "Explorer media playback play button"
+    },
+    "PlaybackPause": {
+      "automation_id": "Pause",
+      "control_type": "Button",
+      "description": "Explorer media playback pause button"
+    },
+    "ProgressSlider": {
+      "automation_id": "ProgressSlider",
+      "control_type": "SurfaceSlider",
+      "description": "Explorer media playback progress slider"
+    }
+  },
+  "SurfaceChromeIds": {
+    "HorizontalScrollBar": {
+      "automation_id": "HorizontalScrollBar",
+      "control_type": "SurfaceScrollBar",
+      "description": "Shared style horizontal scroll bar"
+    },
+    "VerticalScrollBar": {
+      "automation_id": "VerticalScrollBar",
+      "control_type": "SurfaceScrollBar",
+      "description": "Shared style vertical scroll bar"
+    }
   }
 }
