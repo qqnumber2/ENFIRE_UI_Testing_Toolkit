@@ -235,6 +235,7 @@ class Player:
         self.update_automation_manifest(config.automation_manifest or {})
         self._calibration_profile = None
         self._current_anchor: Optional[Tuple[int, int]] = None
+        self._current_window_size: Optional[Tuple[int, int]] = None
         self._calibration_offset: Tuple[int, int] = (0, 0)
         self._initialize_calibration()
 
@@ -300,6 +301,7 @@ class Player:
         if not profile_name or base_dir is None:
             self._calibration_profile = None
             self._current_anchor = None
+            self._current_window_size = None
             self._calibration_offset = (0, 0)
             return
         profile = load_profile(base_dir, profile_name)
@@ -307,6 +309,7 @@ class Player:
             logger.debug("Calibration profile '%s' not found in %s", profile_name, base_dir)
             self._calibration_profile = None
             self._current_anchor = None
+            self._current_window_size = None
             self._calibration_offset = (0, 0)
             return
         anchor = capture_window_anchor(getattr(self.config, "window_spec", None))
@@ -314,11 +317,20 @@ class Player:
             logger.warning("Calibration profile '%s' requested but ENFIRE window anchor unavailable.", profile_name)
             self._calibration_profile = None
             self._current_anchor = None
+            self._current_window_size = None
             self._calibration_offset = (0, 0)
             return
         dx, dy = compute_offset(profile, (anchor[0], anchor[1]))
         self._calibration_profile = profile
         self._current_anchor = (int(anchor[0]), int(anchor[1]))
+        width = anchor[2] if len(anchor) > 2 else None
+        height = anchor[3] if len(anchor) > 3 else None
+        if width and height:
+            self._current_window_size = (int(width), int(height))
+        elif profile.width and profile.height:
+            self._current_window_size = (int(profile.width), int(profile.height))
+        else:
+            self._current_window_size = None
         self._calibration_offset = (dx, dy)
         if dx or dy:
             logger.info("Applied calibration offset (%s, %s) using profile '%s'", dx, dy, profile.name)
@@ -337,6 +349,22 @@ class Player:
     def _resolve_point(self, action: Optional[Dict[str, Any]], x: int, y: int) -> Tuple[int, int]:
         rel_x = self._extract_action_value(action, "rel_x")
         rel_y = self._extract_action_value(action, "rel_y")
+        rel_pct_x = self._extract_action_value(action, "rel_percent_x")
+        rel_pct_y = self._extract_action_value(action, "rel_percent_y")
+        if (
+            rel_pct_x is not None
+            and rel_pct_y is not None
+            and self._current_anchor is not None
+            and self._current_window_size is not None
+        ):
+            anchor_x, anchor_y = self._current_anchor
+            width, height = self._current_window_size
+            try:
+                resolved_x = anchor_x + int(round(float(rel_pct_x) * width))
+                resolved_y = anchor_y + int(round(float(rel_pct_y) * height))
+                return resolved_x, resolved_y
+            except Exception:
+                pass
         if rel_x is not None and rel_y is not None and self._current_anchor is not None:
             try:
                 return int(self._current_anchor[0]) + int(rel_x), int(self._current_anchor[1]) + int(rel_y)
@@ -1005,6 +1033,18 @@ class Player:
                         self._handle_assert_property(action, results)
                         if len(results) > before_len:
                             assert_count += 1
+                elif a_type == "assert.list_item":
+                    if not getattr(self.config, "prefer_semantic_scripts", True):
+                        logger.debug("Playback: list assertion skipped (semantic checks disabled).")
+                    elif not getattr(self.config, "use_automation_ids", True):
+                        logger.debug("Playback: list assertion skipped (automation IDs disabled).")
+                    elif Desktop is None:
+                        logger.debug("Playback: list assertion skipped (UI Automation backend unavailable).")
+                    else:
+                        before_len = len(results)
+                        self._handle_assert_list_item(action, results)
+                        if len(results) > before_len:
+                            assert_count += 1
                 elif a_type == "screenshot":
                     if not getattr(self.config, "use_screenshots", True):
                         logger.info("Playback: screenshot checkpoint skipped (screenshots disabled)")
@@ -1251,6 +1291,91 @@ class Player:
             "PASS" if passed else "FAIL",
         )
         self._record_assert_result(results, str(auto_id), prop_name, expected, actual, passed, note, semantic_meta if semantic_meta else None)
+
+    def _handle_assert_list_item(self, action: Dict[str, Any], results: List[Dict[str, Any]]) -> None:
+        if not self._semantic_mode_active:
+            return
+        list_auto_id = action.get("list_auto_id")
+        item_name = action.get("item_name")
+        if not list_auto_id or not item_name:
+            logger.debug("assert.list_item skipped (missing list_auto_id or item_name)")
+            return
+        list_control_type = action.get("list_control_type")
+        item_control_type = action.get("item_control_type")
+        list_element = self._resolve_element_by_auto_id(
+            str(list_auto_id),
+            list_control_type,
+            property_filter=None,
+            skip_semantic=False,
+        )
+        if list_element is None:
+            logger.warning("assert.list_item failed: list auto_id='%s' not found", list_auto_id)
+            self._record_assert_result(
+                results,
+                str(list_auto_id),
+                "list_contains",
+                item_name,
+                None,
+                False,
+                "list not found",
+            )
+            return
+        child = self._find_child_by_name(list_element, str(item_name), item_control_type)
+        passed = child is not None
+        note = "" if passed else f"'{item_name}' not found"
+        actual = item_name if passed else None
+        self._record_assert_result(
+            results,
+            str(list_auto_id),
+            "list_contains",
+            item_name,
+            actual,
+            passed,
+            note,
+        )
+
+    def _find_child_by_name(self, parent: Any, expected: str, control_type: Optional[str]) -> Optional[Any]:
+        target = str(expected).strip()
+        if not target:
+            return None
+        candidates: List[Any] = []
+        try:
+            candidates.extend(parent.children())
+        except Exception:
+            pass
+        try:
+            # Limit depth to avoid huge traversals
+            candidates.extend(parent.descendants(depth=2))
+        except Exception:
+            pass
+        seen = set()
+        for child in candidates:
+            if child in seen:
+                continue
+            seen.add(child)
+            name = self._read_element_property(child, "name")
+            if name and str(name).strip() == target:
+                if control_type and not self._control_type_matches(child, control_type):
+                    continue
+                return child
+        return None
+
+    def _control_type_matches(self, element: Any, expected: Optional[str]) -> bool:
+        if not expected:
+            return True
+        try:
+            info = element.element_info
+        except Exception:
+            info = None
+        actual = None
+        if info is not None:
+            actual = getattr(info, "control_type", None) or getattr(info, "class_name", None)
+        if actual is None:
+            try:
+                actual = element.friendly_class_name()
+            except Exception:
+                actual = None
+        return str(actual).strip().lower() == str(expected).strip().lower()
 
     def _capture_screenshot_primary(self) -> Image.Image:
         prev_failsafe = pyautogui.FAILSAFE

@@ -29,8 +29,14 @@ class Action:
     semantic: Optional[Dict[str, Any]] = None
     rel_x: Optional[int] = None
     rel_y: Optional[int] = None
+    rel_percent_x: Optional[float] = None
+    rel_percent_y: Optional[float] = None
     rel_path: Optional[List[List[int]]] = None
     calibration_profile: Optional[str] = None
+    list_auto_id: Optional[str] = None
+    list_control_type: Optional[str] = None
+    item_name: Optional[str] = None
+    item_control_type: Optional[str] = None
 
 
 

@@ -219,6 +219,7 @@ class Recorder:
         self._manifest_rect_cache: Dict[str, Tuple[int, int, int, int]] = {}
         self._calibration_profile: Optional[CalibrationProfile] = None
         self._calibration_anchor: Optional[Tuple[int, int]] = None
+        self._current_window_size: Optional[Tuple[int, int]] = None
         self._initialize_calibration()
 
     def _initialize_calibration(self) -> None:
@@ -227,12 +228,14 @@ class Recorder:
         if not profile_name or base_dir is None:
             self._calibration_profile = None
             self._calibration_anchor = None
+            self._current_window_size = None
             return
         anchor = capture_window_anchor(getattr(self.config, "window_spec", None))
         if anchor is None:
             logger.warning("Calibration profile '%s' requested but ENFIRE window anchor unavailable.", profile_name)
             self._calibration_profile = None
             self._calibration_anchor = None
+            self._current_window_size = None
             return
         ax, ay, width, height = anchor
         profile = load_profile(base_dir, profile_name)
@@ -253,6 +256,15 @@ class Recorder:
         save_profile(base_dir, profile)
         self._calibration_profile = profile
         self._calibration_anchor = (int(ax), int(ay))
+        if width and height:
+            self._current_window_size = (int(width), int(height))
+        else:
+            try:
+                calc_width = int(profile.width) if profile.width else None
+                calc_height = int(profile.height) if profile.height else None
+                self._current_window_size = (calc_width, calc_height) if calc_width and calc_height else None
+            except Exception:
+                self._current_window_size = None
         logger.info("Calibration profile '%s' updated with anchor (%s, %s)", profile_name, ax, ay)
 
     def start(self) -> None:
@@ -298,6 +310,17 @@ class Recorder:
         for px, py in points:
             rel_points.append([int(px) - int(ax), int(py) - int(ay)])
         return rel_points
+
+    def _relative_percent(self, x: int, y: int) -> Tuple[Optional[float], Optional[float]]:
+        if self._calibration_anchor is None or self._current_window_size is None:
+            return None, None
+        width, height = self._current_window_size
+        if not width or not height:
+            return None, None
+        ax, ay = self._calibration_anchor
+        rel_x = (int(x) - int(ax)) / float(width)
+        rel_y = (int(y) - int(ay)) / float(height)
+        return rel_x, rel_y
 
 
     def stop(self) -> None:
@@ -568,6 +591,7 @@ class Recorder:
 
             self._commit_text_buffer()
             rel_x, rel_y = self._relative_coords(x, y)
+            rel_pct_x, rel_pct_y = self._relative_percent(x, y)
             calibration_profile = self._calibration_profile.name if self._calibration_profile else None
 
             auto_id: Optional[str] = None
@@ -602,6 +626,8 @@ class Recorder:
                 button=btn_name,
                 rel_x=rel_x,
                 rel_y=rel_y,
+                rel_percent_x=rel_pct_x,
+                rel_percent_y=rel_pct_y,
                 calibration_profile=calibration_profile,
             )
 
@@ -631,6 +657,7 @@ class Recorder:
                 "down_index": len(self.actions) - 1,
                 "down_delay": action.delay,
                 "rel_coords": (rel_x, rel_y),
+                "rel_percent": (rel_pct_x, rel_pct_y),
                 "calibration_profile": calibration_profile,
             }
             meta = ""
@@ -653,6 +680,7 @@ class Recorder:
         release_delay = self._elapsed()
         click_recorded = False
         release_rel = self._relative_coords(x, y)
+        release_rel_pct = self._relative_percent(x, y)
 
         if state is not None:
             self._record_mouse_move(btn_name, x, y, force=True)
@@ -732,20 +760,27 @@ class Recorder:
                     rel_coords = state.get("rel_coords")
                     if rel_coords:
                         down_action.rel_x, down_action.rel_y = rel_coords
+                    rel_percent = state.get("rel_percent")
+                    if rel_percent:
+                        down_action.rel_percent_x, down_action.rel_percent_y = rel_percent
                     down_action.calibration_profile = state.get("calibration_profile")
                     if semantic_meta:
                         down_action.semantic = semantic_meta
                     if down_delay is not None:
                         down_action.delay = down_delay
                 else:
+                    rel_coords_state = state.get("rel_coords") if state else None
+                    rel_percent_state = state.get("rel_percent") if state else None
                     click_action = Action(
                         action_type='click',
                         x=int(x),
                         y=int(y),
                         delay=release_delay,
                         button=btn_name,
-                        rel_x=(state.get("rel_coords") or release_rel)[0] if state else release_rel[0],
-                        rel_y=(state.get("rel_coords") or release_rel)[1] if state else release_rel[1],
+                        rel_x=(rel_coords_state or release_rel)[0] if (rel_coords_state or release_rel) else None,
+                        rel_y=(rel_coords_state or release_rel)[1] if (rel_coords_state or release_rel) else None,
+                        rel_percent_x=(rel_percent_state or release_rel_pct)[0] if (rel_percent_state or release_rel_pct) else None,
+                        rel_percent_y=(rel_percent_state or release_rel_pct)[1] if (rel_percent_state or release_rel_pct) else None,
                         calibration_profile=state.get("calibration_profile") if state else (self._calibration_profile.name if self._calibration_profile else None),
                     )
                     if auto_id:
